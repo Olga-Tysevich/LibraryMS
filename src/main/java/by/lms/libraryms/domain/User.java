@@ -1,5 +1,6 @@
 package by.lms.libraryms.domain;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -17,9 +18,13 @@ public class User extends AbstractDomainClass {
     @Indexed(unique = true)
     private String email;
     private String password;
+    @NotBlank(message = "{validation.object.name.empty}")
     private String firstName;
+    @NotBlank(message = "{validation.object.surname.empty}")
     private String lastName;
     private Set<String> phone;
     private Set<ObjectId> addressIds;
     private Set<RoleEnum> roles;
+    @NotBlank(message = "{validation.user.locale.empty}")
+    private String locale;
 }

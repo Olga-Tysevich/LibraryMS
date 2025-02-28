@@ -12,7 +12,7 @@ import java.util.Objects;
 @Data
 public abstract class AbstractDomainClass {
     @Id
-    private int id;
+    private String  id;
 
     @CreatedDate
     @Field("created_at")
@@ -26,7 +26,7 @@ public abstract class AbstractDomainClass {
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
         AbstractDomainClass that = (AbstractDomainClass) object;
-        return id == that.id && Objects.equals(createdAt, that.createdAt);
+        return id.equals(that.id) && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override

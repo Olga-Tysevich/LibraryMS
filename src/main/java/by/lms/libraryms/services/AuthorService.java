@@ -1,15 +1,13 @@
 package by.lms.libraryms.services;
 
 import by.lms.libraryms.domain.Author;
-import by.lms.libraryms.services.searchreq.AuthorReq;
-
-import java.util.List;
+import by.lms.libraryms.services.searchobjects.AuthorReq;
+import by.lms.libraryms.services.searchobjects.ListForPageResp;
 
 public interface AuthorService {
-    String addAuthor(Author author);
-    String deleteAuthor(String id);
-    String updateAuthor(Author author);
+    Author addAuthor(Author author);
+    Author deleteAuthor(AuthorReq searchReq);
+    Author updateAuthor(Author author);
     Author getAuthor(AuthorReq searchReq);
-    List<Author> getAllAuthors();
-    List<Author> getAuthors(AuthorReq searchReq);
+    ListForPageResp<Author> getAuthors(AuthorReq searchReq);
 }

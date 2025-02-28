@@ -3,11 +3,10 @@ package by.lms.libraryms.services.impl;
 import by.lms.libraryms.domain.Author;
 import by.lms.libraryms.repo.AuthorRepo;
 import by.lms.libraryms.services.AuthorService;
-import by.lms.libraryms.services.searchreq.AuthorReq;
+import by.lms.libraryms.services.searchobjects.AuthorReq;
+import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,18 +14,18 @@ public class AuthorServiceImpl implements AuthorService {
     private AuthorRepo authorRepo;
 
     @Override
-    public String addAuthor(Author author) {
-        return "";
+    public Author addAuthor(Author author) {
+        return null;
     }
 
     @Override
-    public String deleteAuthor(String id) {
-        return "";
+    public Author deleteAuthor(AuthorReq searchReq) {
+        return null;
     }
 
     @Override
-    public String updateAuthor(Author author) {
-        return "";
+    public Author updateAuthor(Author author) {
+        return null;
     }
 
     @Override
@@ -35,12 +34,8 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public List<Author> getAllAuthors() {
-        return List.of();
+    public ListForPageResp<Author> getAuthors(AuthorReq searchReq) {
+        return null;
     }
 
-    @Override
-    public List<Author> getAuthors(AuthorReq searchReq) {
-        return List.of();
-    }
 }

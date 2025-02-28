@@ -1,5 +1,6 @@
 package by.lms.libraryms.conf.i18n;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -10,7 +11,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
-//TODO ДОБАВИТЬ ПЕРЕХВАТЧИК ОШИБОК (ЧИТАЙ "ЛОКАЛИЗАЦИЯ")
+//TODO ДОБАВИТЬ ПЕРЕХВАТЧИК ОШИБОК (ЧИТАЙ "ЛОКАЛИЗАЦИЯ") И РАЗООБРАТЬСЯ С ЛОКАЛИЗАЦИЕЙ
 @Configuration
 public class LocaleConfig implements WebMvcConfigurer {
 
@@ -31,5 +32,15 @@ public class LocaleConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+    }
+
+    @Bean
+    public Locale currentUserLocale(HttpServletRequest request) {
+        // Получаем имя пользователя из сессии или запроса
+        String username = "currentUser"; // Это можно получить из текущего контекста или сессии
+//        User user = userService.getUserByUsername(username);  // Получаем пользователя из БД
+//
+//        String locale = user.getLocale() != null ? user.getLocale() : Locale.ENGLISH.getLanguage();
+        return new Locale(null);  // Возвращаем локаль из базы данных или дефолтную
     }
 }

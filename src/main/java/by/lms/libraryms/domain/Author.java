@@ -13,8 +13,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "authors")
 public class Author extends AbstractDomainClass {
-    @NotEmpty(message = "{validation.author.name.empty}")
+    @NotEmpty(message = "{validation.object.name.empty}")
     private String name;
-    @NotEmpty(message = "{validation.author.surname.empty}")
+    @NotEmpty(message = "{validation.object.surname.empty}")
     private String surname;
 }
