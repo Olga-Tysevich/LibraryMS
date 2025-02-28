@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: LibraryMS
+
+  messages:
+    basename: by/lms/libraryms/i18n/messages
+    encoding: UTF-8
