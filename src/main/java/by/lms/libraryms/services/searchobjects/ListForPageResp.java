@@ -17,7 +17,7 @@ public class ListForPageResp<T> {
     @NotNull(message = "{validation.object.list.null}")
     private List<T> list;
     private int totalPages;
-    private int totalElements;
+    private long totalElements;
     private int nextPageIndex;
     private int previousPageIndex;
 }

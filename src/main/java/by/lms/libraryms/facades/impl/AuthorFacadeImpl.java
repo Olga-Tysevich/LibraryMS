@@ -60,7 +60,7 @@ public class AuthorFacadeImpl implements AuthorFacade {
     }
 
     @Override
-    public AuthorDTO getAuthor(AuthorSearchReqDTO searchReqDTO) {
+    public AuthorDTO getAuthor(@NotNull AuthorSearchReqDTO searchReqDTO) {
         return Optional.of(searchReqDTO)
                 .map(authorMapper::toSearchReq)
                 .map(authorService::getAuthor)

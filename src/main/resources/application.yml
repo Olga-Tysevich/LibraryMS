@@ -5,3 +5,7 @@ spring:
   messages:
     basename: by/lms/libraryms/i18n/messages
     encoding: UTF-8
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/librarymsdb
