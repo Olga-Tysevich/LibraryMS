@@ -1,5 +1,6 @@
 package by.lms.libraryms.dto.resp;
 
+import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,14 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ObjectChangedDTO {
-    @NotEmpty(message = "{validation.object.id.empty}")
+    @NotEmpty(message = Constants.EMPTY_ID_MESSAGE)
     private String id;
-    @NotEmpty(message = "{validation.object.class.empty}")
+    @NotEmpty(message = Constants.EMPTY_OBJECT_CLASS_MESSAGE)
     private String objectClass;
-    @NotNull(message = "{validation.object.date.null}")
+    @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
     private LocalDateTime createdAt;
-    @NotNull(message = "{validation.object.date.null}")
+    @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
     private LocalDateTime updatedAt;
-    @NotNull(message = "{validation.object.date.null}")
     private LocalDateTime deletedAt;
 }

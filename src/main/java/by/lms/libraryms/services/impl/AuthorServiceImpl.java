@@ -6,6 +6,7 @@ import by.lms.libraryms.exceptions.ObjectNotFound;
 import by.lms.libraryms.repo.AuthorRepo;
 import by.lms.libraryms.repo.search.AuthorSearch;
 import by.lms.libraryms.services.AuthorService;
+import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.searchobjects.AuthorReq;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.utils.ParamsManager;
@@ -21,6 +22,7 @@ import static by.lms.libraryms.utils.Constants.OBJECTS_NOT_FOUND;
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepo authorRepo;
     private final AuthorSearch authorSearch;
+    private final NotificationService notificationService;
 
     @Override
     public Author addAuthor(Author author) {

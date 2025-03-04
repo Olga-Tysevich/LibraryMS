@@ -9,3 +9,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/librarymsdb
+
+telegram:
+  bots:
+    libraryMsBot:
+      token: 7922300546:AAEhE6e6YgYWmpUbGZPaHYJuEXTSbeSWnks
+      name: LibrarymsBot
+      commonChannelId: -1002261464282

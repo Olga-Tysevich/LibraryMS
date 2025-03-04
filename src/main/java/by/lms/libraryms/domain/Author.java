@@ -1,5 +1,6 @@
 package by.lms.libraryms.domain;
 
+import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,8 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "authors")
 public class Author extends AbstractDomainClass {
-    @NotEmpty(message = "{validation.object.name.empty}")
+    @NotEmpty(message = Constants.EMPTY_NAME_MESSAGE)
     private String name;
-    @NotEmpty(message = "{validation.object.surname.empty}")
+    @NotEmpty(message =  Constants.EMPTY_SURNAME_MESSAGE)
     private String surname;
 }

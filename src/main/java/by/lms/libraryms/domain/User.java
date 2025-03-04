@@ -27,4 +27,6 @@ public class User extends AbstractDomainClass {
     private Set<RoleEnum> roles;
     @NotBlank(message = "{validation.user.locale.empty}")
     private String locale;
+    @Indexed(unique = true)
+    private long telegramChatId;
 }

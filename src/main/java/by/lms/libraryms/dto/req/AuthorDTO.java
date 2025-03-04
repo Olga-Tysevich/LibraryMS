@@ -1,6 +1,7 @@
 package by.lms.libraryms.dto.req;
 
 import by.lms.libraryms.dto.AbstractDTO;
+import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,8 +12,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorDTO extends AbstractDTO {
-    @NotEmpty(message = "{validation.object.name.empty}")
+    @NotEmpty(message = Constants.EMPTY_NAME_MESSAGE)
     private String name;
-    @NotEmpty(message = "{validation.object.surname.empty}")
+    @NotEmpty(message = Constants.EMPTY_SURNAME_MESSAGE)
     private String surname;
 }
