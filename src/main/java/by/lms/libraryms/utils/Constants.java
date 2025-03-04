@@ -1,7 +1,7 @@
 package by.lms.libraryms.utils;
 
 public interface Constants {
-    int DEFAULT_PAGE_SIZE = 20;
+    Integer DEFAULT_PAGE_SIZE = 20;
 
     //Telegram
     String TELEGRAM_PATH_TEMPLATE = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s";

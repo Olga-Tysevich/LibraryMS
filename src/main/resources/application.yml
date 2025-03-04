@@ -3,7 +3,7 @@ spring:
     name: LibraryMS
 
   messages:
-    basename: by/lms/libraryms/i18n/messages
+    basename: by/lms/libraryms/i18n
     encoding: UTF-8
 
   data:

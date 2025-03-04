@@ -12,9 +12,9 @@ import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.ReportTypeEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,7 +32,7 @@ public class AuthorFacadeImpl implements AuthorFacade {
         ObjectChangedDTO result = Optional.of(authorDTO)
                 .map(authorMapper::toAuthor)
                 .map(authorService::addAuthor)
-                .map(a -> authorMapper.toObjectChangedDTO(a, null, LocaleContextHolder.getLocale()))
+                .map(a -> authorMapper.toObjectChangedDTO(a, null))
                 .orElseGet(() -> {
                     notificationService.createReport(ReportTypeEnum.EXCEPTION, authorDTO);
                     return null;
@@ -55,7 +55,7 @@ public class AuthorFacadeImpl implements AuthorFacade {
         ObjectChangedDTO result = Optional.of(authorDTO)
                 .map(authorMapper::toAuthor)
                 .map(authorService::updateAuthor)
-                .map(a -> authorMapper.toObjectChangedDTO(a, null, LocaleContextHolder.getLocale()))
+                .map(a -> authorMapper.toObjectChangedDTO(a, null))
                 .orElseGet(() -> {
                     notificationService.createReport(ReportTypeEnum.EXCEPTION, authorDTO);
                     return null;
@@ -77,7 +77,7 @@ public class AuthorFacadeImpl implements AuthorFacade {
         ObjectChangedDTO result = Optional.of(searchReqDTO)
                 .map(authorMapper::toSearchReq)
                 .map(authorService::deleteAuthor)
-                .map(a -> authorMapper.toObjectChangedDTO(a, null, LocaleContextHolder.getLocale()))
+                .map(a -> authorMapper.toObjectChangedDTO(a, Instant.now()))
                 .orElseGet(() -> {
                     notificationService.createReport(ReportTypeEnum.EXCEPTION, buildAuthorForReport(searchReqDTO));
                     return null;
@@ -120,8 +120,9 @@ public class AuthorFacadeImpl implements AuthorFacade {
                 .build();
     }
 
+    //TODO настроить библиотекаря
     private String createMessage(String pattern, LocalDateTime dateTime, String name, String surname) {
-        return String.format(dateTime + " " + pattern, name, surname);
+        return dateTime + " " + String.format(pattern, "", name, surname);
     }
 
 }

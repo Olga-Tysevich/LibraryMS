@@ -41,6 +41,6 @@ public class LocaleConfig implements WebMvcConfigurer {
 //        User user = userService.getUserByUsername(username);  // Получаем пользователя из БД
 //
 //        String locale = user.getLocale() != null ? user.getLocale() : Locale.ENGLISH.getLanguage();
-        return new Locale(null);  // Возвращаем локаль из базы данных или дефолтную
+        return Locale.of("en", "US");
     }
 }

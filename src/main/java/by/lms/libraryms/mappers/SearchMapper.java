@@ -9,12 +9,11 @@ import java.time.ZoneOffset;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {}
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface SearchMapper {
 
-        @Named("mapLocalDateTimeToInstant")
+    @Named("mapLocalDateTimeToInstant")
     static Instant mapLocalDateTimeToInstant(LocalDateTime localDateTime) {
         return localDateTime != null ? localDateTime.toInstant(ZoneOffset.UTC) : null;
     }

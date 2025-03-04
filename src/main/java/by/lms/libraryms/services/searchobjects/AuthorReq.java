@@ -1,12 +1,13 @@
 package by.lms.libraryms.services.searchobjects;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthorReq extends SearchReq {
     private String name;
     private String surname;

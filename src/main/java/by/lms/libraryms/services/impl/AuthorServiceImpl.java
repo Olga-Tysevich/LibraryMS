@@ -22,7 +22,6 @@ import static by.lms.libraryms.utils.Constants.OBJECTS_NOT_FOUND;
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepo authorRepo;
     private final AuthorSearch authorSearch;
-    private final NotificationService notificationService;
 
     @Override
     public Author addAuthor(Author author) {

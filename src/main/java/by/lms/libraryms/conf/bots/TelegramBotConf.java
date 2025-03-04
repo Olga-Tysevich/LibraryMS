@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Data
 public class TelegramBotConf {
-    @Value("{telegram.bots.libraryMsBot.name}")
+    @Value("${telegram.bots.libraryMsBot.name}")
     private String botName;
-    @Value("{telegram.bots.libraryMsBot.token}")
+    @Value("${telegram.bots.libraryMsBot.token}")
     private String botToken;
-    @Value("{telegram.bots.libraryMsBot.commonChannelId}")
+    @Value("${telegram.bots.libraryMsBot.commonChannelId}")
     private String commonChannelId;
 
     @Bean

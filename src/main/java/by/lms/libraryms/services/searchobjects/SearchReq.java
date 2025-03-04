@@ -1,15 +1,19 @@
 package by.lms.libraryms.services.searchobjects;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
 
-@Builder
+@SuperBuilder
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class SearchReq {
     private String id;
     private Instant createdAt;

@@ -4,8 +4,8 @@ import by.lms.libraryms.dto.SearchReqDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder

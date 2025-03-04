@@ -22,11 +22,12 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         List<T> results = mongoTemplate.find(query, entityClass);
         long totalElements = mongoTemplate.count(query.limit(0).skip(0), entityClass);
 
+        checkRequest(searchReq);
         int totalPages = (int) Math.ceil((double) totalElements / searchReq.getPageSize());
-        if (totalPages == 0) totalPages = 1;
 
         int nextPageIndex = searchReq.getPageNum() + 1 < totalPages ? searchReq.getPageNum() + 1 : 0;
-        int previousPageIndex = searchReq.getPageNum() > 0 ? searchReq.getPageNum() - 1 : totalPages - 1;
+        int totalPagesIndex = totalPages == 0 ? totalPages : 1;
+        int previousPageIndex = searchReq.getPageNum() > 0 ? searchReq.getPageNum() - 1 : totalPagesIndex;
 
         return ListForPageResp.<T>builder()
                 .objectsClass(entityClass.getSimpleName())
@@ -41,6 +42,7 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
 
     protected Query query(@NotNull R request) {
         Query query = new Query();
+        checkRequest(request);
 
         if (Objects.nonNull(request.getId())) {
             query.addCriteria(Criteria.where("id").is(request.getId()));
@@ -55,10 +57,9 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         }
 
         if (Objects.nonNull(request.getPageNum())) {
-            int pageSize = (request.getPageSize() != null ? request.getPageSize() : Constants.DEFAULT_PAGE_SIZE);
-            int skip = (request.getPageNum() - 1) * pageSize;
+            int skip = (request.getPageNum() - 1) * request.getPageSize();
             query.skip(skip);
-            query.limit(pageSize);
+            query.limit(request.getPageSize());
         }
 
         if (Objects.nonNull(request.getOrderBy()) && Objects.nonNull(request.getDirection())) {
@@ -66,6 +67,13 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         }
 
         return query;
+    }
+
+    private void checkRequest(@NotNull R request) {
+        request.setPageSize(Objects.requireNonNullElse(request.getPageSize(), Constants.DEFAULT_PAGE_SIZE));
+        request.setPageNum(Objects.requireNonNullElse(request.getPageNum(), 0));
+        request.setDirection(Objects.requireNonNullElse(request.getDirection(), Sort.Direction.ASC));
+        request.setOrderBy(Objects.requireNonNullElse(request.getOrderBy(), Sort.Order.by("createdAt")));
     }
 
 }

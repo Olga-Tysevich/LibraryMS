@@ -2,36 +2,32 @@ package by.lms.libraryms.mappers;
 
 
 import by.lms.libraryms.domain.AbstractDomainClass;
-import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
-import org.mapstruct.Context;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Locale;
-import java.util.Objects;
 
 public interface ObjectMapper<T extends AbstractDomainClass> {
     @Mappings({
             @Mapping(target = "objectClass", expression = "java(entity.getClass().getSimpleName())"),
-            @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "createdAt", source = "entity.createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "updatedAt", source = "entity.updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime")
     })
-    ObjectChangedDTO toObjectChangedDTO(T entity, Instant deletedAt, @Context Locale locale);
+    ObjectChangedDTO toObjectChangedDTO(T entity, Instant deletedAt);
 
     @Named("mapInstantToLocalDateTime")
-    static LocalDateTime mapInstantToLocalDateTime(Instant instant, @Context Locale locale) {
+    static LocalDateTime mapInstantToLocalDateTime(Instant instant) {
         if (instant == null) return null;
-        if (Objects.nonNull(locale)) {
-            ZoneId zoneId = ZoneId.of(getTimeZoneByLocale(locale));
-            return LocalDateTime.ofInstant(instant, zoneId);
-        }
-        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+        ZoneId zoneId = ZoneId.of(getTimeZoneByLocale(LocaleContextHolder.getLocale()));
+        return LocalDateTime.ofInstant(instant, zoneId);
     }
 
     static String getTimeZoneByLocale(Locale locale) {

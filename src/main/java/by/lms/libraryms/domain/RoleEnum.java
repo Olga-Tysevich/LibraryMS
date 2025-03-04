@@ -13,4 +13,5 @@ public enum RoleEnum {
 
     private final int id;
     private final String roleName;
+
 }
