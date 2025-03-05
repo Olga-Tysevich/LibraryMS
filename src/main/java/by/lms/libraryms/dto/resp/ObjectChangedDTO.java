@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ObjectChangedDTO<T> extends ObjectChangedDTO<ObjectChangedDTO<AuthorDTO>> {
+public class ObjectChangedDTO<T> {
     @NotEmpty(message = Constants.EMPTY_ID_MESSAGE)
     private String id;
     @NotEmpty(message = Constants.EMPTY_OBJECT_CLASS_MESSAGE)

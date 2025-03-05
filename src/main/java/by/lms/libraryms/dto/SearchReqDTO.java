@@ -16,7 +16,6 @@ public abstract class SearchReqDTO {
     private Set<String> id;
     private LocalDateTime createdAtFrom;
     private LocalDateTime createdAtTo;
-    private LocalDateTime updatedAt;
     private LocalDateTime updatedAtFrom;
     private LocalDateTime updatedAtTo;
     private Integer pageNum;

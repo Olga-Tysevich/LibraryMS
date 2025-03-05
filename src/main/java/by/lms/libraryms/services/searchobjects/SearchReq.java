@@ -20,7 +20,7 @@ public abstract class SearchReq {
     private Instant createdAtFrom;
     private Instant createdAtTo;
     private Instant updatedAtFrom;
-    private Instant updatedAtTO;
+    private Instant updatedAtTo;
     private Integer pageNum;
     private Integer pageSize;
     private Sort.Direction direction;

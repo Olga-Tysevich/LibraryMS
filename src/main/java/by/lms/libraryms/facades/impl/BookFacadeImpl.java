@@ -4,10 +4,11 @@ import by.lms.libraryms.conf.i18n.MessageTypeEnum;
 import by.lms.libraryms.domain.Book;
 import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.BookSearchReqDTO;
+import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.BookFacade;
 import by.lms.libraryms.mappers.BookMapper;
-import by.lms.libraryms.services.AuthorService;
 import by.lms.libraryms.services.BookService;
+import by.lms.libraryms.services.messages.MessageService;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,20 +19,11 @@ import org.springframework.stereotype.Component;
 public class BookFacadeImpl extends AbstractFacadeImpl<Book, BookDTO,
         BookSearchReq, BookSearchReqDTO,
         BookService, BookMapper> implements BookFacade {
-    private AuthorService authorService;
+    private MessageService<BookDTO> messageService;
 
+    @Override
+    protected String message(MessageTypeEnum type, ObjectChangedDTO<BookDTO> result) {
+        return messageService.createMessage(type, result);
+    }
 
-//    @Override
-//    protected String[] getArgs(BookDTO dto) {
-//
-//        Object[] result = new Object[5];
-//        String authors = "{" + authorService.getAllByIds(dto.getAuthorIds()).stream()
-//                .map(a -> a.getName() + a.getSurname())
-//                .collect(Collectors.joining(", ")) + "}";
-//        //TODO добавить библиотекаря
-//        result[0] = "";
-//        //TODO обавить жанры
-////        List<GenreDTO>
-//        return new String[0];
-//    }
 }

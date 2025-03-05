@@ -8,6 +8,7 @@ import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.services.searchobjects.SearchReq;
+import org.bson.types.ObjectId;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
@@ -18,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO> extends SearchMapper {
@@ -47,19 +50,11 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
     SR toSearchReq(SRD searchReqDTO);
 
     @Mappings({
-            @Mapping(target = "createdAt", source = "createdAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
-            @Mapping(target = "updatedAt", source = "updatedAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
-            @Mapping(target = "direction", source = "direction", qualifiedByName = "mapStringToDirection"),
-            @Mapping(target = "orderBy", source = "orderBy", qualifiedByName = "mapStringToOrder")
-    })
-    DTO searchReqToDTO(SRD searchReqDTO);
-
-    @Mappings({
             @Mapping(target = "objectClass", expression = "java(entity.getClass().getSimpleName())"),
             @Mapping(target = "createdAt", source = "entity.createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "updatedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "object", expression = "java(toDTO(entity)")
+            @Mapping(target = "object", expression = "java(toDTO(entity))")
     })
     ObjectChangedDTO<DTO> toObjectChangedDTO(Entity entity, Instant deletedAt);
 
@@ -71,6 +66,16 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
 
         ZoneId zoneId = ZoneId.of(getTimeZoneByLocale(LocaleContextHolder.getLocale()));
         return LocalDateTime.ofInstant(instant, zoneId);
+    }
+
+    @Named("mapStringSetToObjectIdSet")
+    static Set<ObjectId> mapStringSetToObjectIdSet(Set<String> ids) {
+        return ids == null ? null : ids.stream().map(ObjectId::new).collect(Collectors.toSet());
+    }
+
+    @Named("mapObjectIdSetToStringSet")
+    static Set<String> mapObjectIdSetToStringSet(Set<ObjectId> objectIds) {
+        return objectIds == null ? null : objectIds.stream().map(ObjectId::toHexString).collect(Collectors.toSet());
     }
 
     static String getTimeZoneByLocale(Locale locale) {

@@ -8,7 +8,7 @@ import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.AuthorFacade;
 import by.lms.libraryms.mappers.AuthorMapper;
 import by.lms.libraryms.services.AuthorService;
-import by.lms.libraryms.services.messages.impl.AuthorMessageService;
+import by.lms.libraryms.services.messages.MessageService;
 import by.lms.libraryms.services.searchobjects.AuthorSearchReq;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,11 +20,12 @@ public class AuthorFacadeImpl extends AbstractFacadeImpl<Author, AuthorDTO,
         AuthorSearchReq, AuthorSearchReqDTO,
         AuthorService, AuthorMapper>
         implements AuthorFacade {
-    private final AuthorMessageService messageService;
+    private final MessageService<AuthorDTO> messageService;
 
 
     @Override
     protected String message(MessageTypeEnum type, ObjectChangedDTO<AuthorDTO> result) {
                 return messageService.createMessage(type, result);
     }
+
 }
