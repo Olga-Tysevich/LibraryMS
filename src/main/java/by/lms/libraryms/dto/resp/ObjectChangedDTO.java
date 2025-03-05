@@ -1,5 +1,6 @@
 package by.lms.libraryms.dto.resp;
 
+import by.lms.libraryms.dto.req.AuthorDTO;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ObjectChangedDTO<T> {
+public class ObjectChangedDTO<T> extends ObjectChangedDTO<ObjectChangedDTO<AuthorDTO>> {
     @NotEmpty(message = Constants.EMPTY_ID_MESSAGE)
     private String id;
     @NotEmpty(message = Constants.EMPTY_OBJECT_CLASS_MESSAGE)

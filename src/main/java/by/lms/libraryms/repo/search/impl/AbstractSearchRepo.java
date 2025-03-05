@@ -51,12 +51,12 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
             query.addCriteria(Criteria.where("id").is(request.getId()));
         }
 
-        if (Objects.nonNull(request.getCreatedAt())) {
-            query.addCriteria(Criteria.where("createdAt").gte(request.getCreatedAt()));
+        if (Objects.nonNull(request.getCreatedAtFrom())) {
+            query.addCriteria(Criteria.where("createdAt").gte(request.getCreatedAtFrom()));
         }
 
-        if (Objects.nonNull(request.getUpdatedAt())) {
-            query.addCriteria(Criteria.where("updatedAt").gte(request.getUpdatedAt()));
+        if (Objects.nonNull(request.getUpdatedAtFrom())) {
+            query.addCriteria(Criteria.where("updatedAt").gte(request.getUpdatedAtFrom()));
         }
 
         if (Objects.nonNull(request.getPageNum())) {

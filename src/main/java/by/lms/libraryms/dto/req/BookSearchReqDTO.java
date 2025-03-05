@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -16,8 +17,10 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public class BookSearchReqDTO extends SearchReqDTO {
-    private String title;
-    private int year;
+    private List<String> titles;
+    private List<Integer> years;
+    private Integer yearFrom;
+    private Integer yearTo;
     private Set<ObjectId> authorIds;
     private Set<ObjectId> genreIds;
 }

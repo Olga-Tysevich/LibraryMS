@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,17 @@ public class MessageConf {
         bookMap.put(MessageTypeEnum.ADD, bookCreatedMessage);
         bookMap.put(MessageTypeEnum.UPDATE, bookUpdatedMessage);
         bookMap.put(MessageTypeEnum.DELETE, bookDeletedMessage);
+    }
+
+    public String messagePattern(MessageTypeEnum type, String className) {
+        Map<MessageTypeEnum, String> resultMap;
+        switch (className) {
+            case "Author" -> resultMap = authorMap;
+            case "Book" -> resultMap = bookMap;
+            default -> resultMap = Collections.emptyMap();
+        }
+
+        return resultMap.getOrDefault(type, "");
     }
 
 }

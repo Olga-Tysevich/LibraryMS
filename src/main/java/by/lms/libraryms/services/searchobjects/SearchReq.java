@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
+import java.util.List;
 
 @SuperBuilder
 @Setter
@@ -15,9 +16,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class SearchReq {
-    private String id;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private List<String> id;
+    private Instant createdAtFrom;
+    private Instant createdAtTo;
+    private Instant updatedAtFrom;
+    private Instant updatedAtTO;
     private Integer pageNum;
     private Integer pageSize;
     private Sort.Direction direction;

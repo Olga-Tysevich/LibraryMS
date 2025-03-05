@@ -37,19 +37,27 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
     List<DTO> toDTOList(List<Entity> entities);
 
     @Mappings({
-            @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
-            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "createdAtFrom", source = "createdAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "createdAtTo", source = "createdAtTo", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "updatedAtFrom", source = "updatedAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "updatedAtTo", source = "updatedAtTo", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "direction", source = "direction", qualifiedByName = "mapStringToDirection"),
             @Mapping(target = "orderBy", source = "orderBy", qualifiedByName = "mapStringToOrder")
     })
-    SR toSearchReq(SRD dto);
+    SR toSearchReq(SRD searchReqDTO);
 
+    @Mappings({
+            @Mapping(target = "createdAt", source = "createdAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "updatedAt", source = "updatedAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "direction", source = "direction", qualifiedByName = "mapStringToDirection"),
+            @Mapping(target = "orderBy", source = "orderBy", qualifiedByName = "mapStringToOrder")
+    })
     DTO searchReqToDTO(SRD searchReqDTO);
 
     @Mappings({
             @Mapping(target = "objectClass", expression = "java(entity.getClass().getSimpleName())"),
             @Mapping(target = "createdAt", source = "entity.createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "updatedAt", source = "entity.updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "updatedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "object", expression = "java(toDTO(entity)")
     })

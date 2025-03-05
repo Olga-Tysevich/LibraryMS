@@ -44,8 +44,13 @@ public class BookSearchImpl extends AbstractSearchRepo<Book, BookSearchReq> impl
     }
 
     private Query addParams(Query query, BookSearchReq searchReq) {
-        if (Objects.nonNull(searchReq.getTitle())) {
-            query.addCriteria(Criteria.where("title").regex(searchReq.getTitle()));
+
+        if (!searchReq.getTitles().isEmpty()) {
+                List<Criteria> regexCriteria = searchReq.getTitles().stream()
+                        .map(title -> Criteria.where("title").regex(title, "i"))
+                        .toList();
+
+                query.addCriteria(new Criteria().orOperator(regexCriteria.toArray(new Criteria[0])));
         }
 
         if (Objects.nonNull(searchReq.getAuthorIds()) && !searchReq.getAuthorIds().isEmpty()) {
@@ -56,8 +61,14 @@ public class BookSearchImpl extends AbstractSearchRepo<Book, BookSearchReq> impl
             query.addCriteria(Criteria.where("genreIds").in(searchReq.getGenreIds()));
         }
 
-        if (searchReq.getYear() > 0) {
-            query.addCriteria(Criteria.where("year").is(searchReq.getYear()));
+        if (!searchReq.getYears().isEmpty()) {
+            query.addCriteria(Criteria.where("year").in(searchReq.getYears()));
+        }
+
+        if (Objects.nonNull(searchReq.getYearFrom()) && Objects.nonNull(searchReq.getYearTo())
+        && searchReq.getYearFrom() < searchReq.getYearTo()) {
+            query.addCriteria(Criteria.where("year").gte(searchReq.getYearFrom())
+                    .and("year").lte(searchReq.getYearTo()));
         }
 
         return query;

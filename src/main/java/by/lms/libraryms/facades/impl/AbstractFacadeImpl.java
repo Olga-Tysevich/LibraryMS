@@ -1,6 +1,5 @@
 package by.lms.libraryms.facades.impl;
 
-import by.lms.libraryms.conf.i18n.MessageConf;
 import by.lms.libraryms.conf.i18n.MessageTypeEnum;
 import by.lms.libraryms.domain.AbstractDomainClass;
 import by.lms.libraryms.dto.AbstractDTO;
@@ -17,9 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -28,32 +24,29 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         SR extends SearchReq, SRD extends SearchReqDTO,
         Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>, Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
         implements AbstractFacade<Entity, DTO, SR, SRD, Service, Mapper> {
-    private Mapper mapper;
     private Service service;
     @Getter
     private NotificationService<DTO> notificationService;
-    @Getter
-    private MessageConf messageConf;
 
 
     @Override
     public ObjectChangedDTO<DTO> add(@NotNull DTO dto) {
         ObjectChangedDTO<DTO> result = service.add(dto);
-        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.ADD, result, dto);
+        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.ADD, result);
         return result;
     }
 
     @Override
     public ObjectChangedDTO<DTO> update(@NotNull DTO dto) {
         ObjectChangedDTO<DTO> result = service.update(dto);
-        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.UPDATE, result, dto);
+        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.UPDATE, result);
         return result;
     }
 
     @Override
     public ObjectChangedDTO<DTO> delete(@NotNull SRD searchReqDTO) {
         ObjectChangedDTO<DTO> result = service.delete(searchReqDTO);
-        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.DELETE, result, buildDTOForReport(searchReqDTO));
+        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.DELETE, result);
         return result;
     }
 
@@ -67,37 +60,16 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         return service.getAll(searchReqDTO);
     }
 
-    protected abstract Map<MessageTypeEnum, String> getMessages();
+    protected abstract String message(MessageTypeEnum type, ObjectChangedDTO<DTO> result);
 
-    protected abstract Object[] getArgs(DTO dto);
-
-    private DTO buildDTOForReport(SRD searchReqDTO) {
-        return mapper.searchReqToDTO(searchReqDTO);
-    }
-
-    private String getMessagePattern(MessageTypeEnum type) {
-        Map<MessageTypeEnum, String> messages = getMessages();
-        return messages.getOrDefault(type, "");
-    }
-
-    private String createMessage(String pattern, LocalDateTime dateTime, Object... args) {
-        return dateTime + " " + MessageFormat.format(pattern, args);
-    }
-
-    private void sendMessage(MessageTypeEnum type, ObjectChangedDTO<DTO> result, DTO dto) {
+    private void sendMessage(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
         if (Objects.nonNull(result)) {
-            Object[] args = Objects.nonNull(dto) ? getArgs(dto) : new String[0];
-            sendMessage(type, result.getUpdatedAt(), args);
+            sendMessage(message(type, result));
         }
     }
 
     //TODO настроить библиотекаря
-    private void sendMessage(MessageTypeEnum type, LocalDateTime updatedAt, Object[] args) {
-        String message = createMessage(
-                getMessagePattern(type),
-                updatedAt,
-                args
-        );
+    private void sendMessage(String message) {
         notificationService.sendMessage(message);
     }
 }

@@ -4,12 +4,13 @@ import by.lms.libraryms.dto.SearchReqDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 public class AuthorSearchReqDTO extends SearchReqDTO {
-    private String name;
-    private String surname;
+    private List<String> fullNames;
 }
