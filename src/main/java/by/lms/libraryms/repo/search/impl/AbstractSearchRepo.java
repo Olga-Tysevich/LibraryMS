@@ -5,6 +5,7 @@ import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,7 +14,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 public abstract class AbstractSearchRepo<T, R extends SearchReq> implements SearchRepo<T, R> {
+    private final MongoTemplate mongoTemplate;
 
     protected ListForPageResp<T> findList(@NotNull MongoTemplate mongoTemplate,
                                           @NotNull Query query,
@@ -74,6 +77,10 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         request.setPageNum(Objects.requireNonNullElse(request.getPageNum(), 0));
         request.setDirection(Objects.requireNonNullElse(request.getDirection(), Sort.Direction.ASC));
         request.setOrderBy(Objects.requireNonNullElse(request.getOrderBy(), Sort.Order.by("createdAt")));
+    }
+
+    protected MongoTemplate mongoTemplate() {
+        return mongoTemplate;
     }
 
 }

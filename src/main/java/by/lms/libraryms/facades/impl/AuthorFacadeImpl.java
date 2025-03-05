@@ -1,118 +1,29 @@
 package by.lms.libraryms.facades.impl;
 
 import by.lms.libraryms.conf.i18n.MessageConf;
+import by.lms.libraryms.conf.i18n.MessageTypeEnum;
+import by.lms.libraryms.domain.Author;
 import by.lms.libraryms.dto.req.AuthorDTO;
 import by.lms.libraryms.dto.req.AuthorSearchReqDTO;
-import by.lms.libraryms.dto.resp.ListForPageDTO;
-import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.AuthorFacade;
 import by.lms.libraryms.mappers.AuthorMapper;
 import by.lms.libraryms.services.AuthorService;
-import by.lms.libraryms.services.NotificationService;
-import by.lms.libraryms.services.ReportTypeEnum;
-import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
+import by.lms.libraryms.services.searchobjects.AuthorSearchReq;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
 
 @Component
-@RequiredArgsConstructor
-public class AuthorFacadeImpl implements AuthorFacade {
-    private final AuthorService authorService;
-    private final AuthorMapper authorMapper;
-    private final NotificationService<AuthorDTO> notificationService;
-    private final MessageConf messageConf;
+@AllArgsConstructor
+public class AuthorFacadeImpl extends AbstractFacadeImpl<Author, AuthorDTO,
+        AuthorSearchReq, AuthorSearchReqDTO,
+        AuthorService, AuthorMapper>
+        implements AuthorFacade {
+
 
     @Override
-    public ObjectChangedDTO addAuthor(@NotNull AuthorDTO authorDTO) {
-        ObjectChangedDTO result = Optional.of(authorDTO)
-                .map(authorMapper::toAuthor)
-                .map(authorService::addAuthor)
-                .map(a -> authorMapper.toObjectChangedDTO(a, null))
-                .orElseGet(() -> {
-                    notificationService.createReport(ReportTypeEnum.EXCEPTION, authorDTO);
-                    return null;
-                });
-
-        if (Objects.nonNull(result)) {
-            String message = createMessage(
-                    messageConf.getAuthorCreatedMessage(),
-                    result.getCreatedAt(),
-                    authorDTO.getName(),
-                    authorDTO.getSurname()
-            );
-            notificationService.sendMessage(message);
-        }
-        return result;
-    }
-
-    @Override
-    public ObjectChangedDTO updateAuthor(@NotNull AuthorDTO authorDTO) {
-        ObjectChangedDTO result = Optional.of(authorDTO)
-                .map(authorMapper::toAuthor)
-                .map(authorService::updateAuthor)
-                .map(a -> authorMapper.toObjectChangedDTO(a, null))
-                .orElseGet(() -> {
-                    notificationService.createReport(ReportTypeEnum.EXCEPTION, authorDTO);
-                    return null;
-                });
-        if (Objects.nonNull(result)) {
-            String message = createMessage(
-                    messageConf.getAuthorUpdatedMessage(),
-                    result.getUpdatedAt(),
-                    authorDTO.getName(),
-                    authorDTO.getSurname()
-            );
-            notificationService.sendMessage(message);
-        }
-        return result;
-    }
-
-    @Override
-    public ObjectChangedDTO deleteAuthor(@NotNull AuthorSearchReqDTO searchReqDTO) {
-        ObjectChangedDTO result = Optional.of(searchReqDTO)
-                .map(authorMapper::toSearchReq)
-                .map(authorService::deleteAuthor)
-                .map(a -> authorMapper.toObjectChangedDTO(a, Instant.now()))
-                .orElseGet(() -> {
-                    notificationService.createReport(ReportTypeEnum.EXCEPTION, buildAuthorForReport(searchReqDTO));
-                    return null;
-                });
-        if (Objects.nonNull(result)) {
-            String message = createMessage(
-                    messageConf.getAuthorDeletedMessage(),
-                    result.getDeletedAt(),
-                    searchReqDTO.getName(),
-                    searchReqDTO.getSurname()
-            );
-            notificationService.sendMessage(message);
-        }
-        return result;
-    }
-
-    @Override
-    public AuthorDTO getAuthor(@NotNull AuthorSearchReqDTO searchReqDTO) {
-        return Optional.of(searchReqDTO)
-                .map(authorMapper::toSearchReq)
-                .map(authorService::getAuthor)
-                .map(authorMapper::toAuthorDTO)
-                .orElse(null);
-    }
-
-    @Override
-    public ListForPageDTO<AuthorDTO> getAuthors(@NotNull AuthorSearchReqDTO searchReqDTO) {
-        return Optional.of(searchReqDTO)
-                .map(authorMapper::toSearchReq)
-                .map(authorService::getAuthors)
-                .map(authorMapper::toListForPageDTO)
-                .orElse(null);
-    }
-
-    private AuthorDTO buildAuthorForReport(AuthorSearchReqDTO searchReqDTO) {
+    protected AuthorDTO buildDTOForReport(AuthorSearchReqDTO searchReqDTO) {
         return AuthorDTO.builder()
                 .id(searchReqDTO.getId())
                 .name(searchReqDTO.getName())
@@ -120,9 +31,37 @@ public class AuthorFacadeImpl implements AuthorFacade {
                 .build();
     }
 
-    //TODO настроить библиотекаря
-    private String createMessage(String pattern, LocalDateTime dateTime, String name, String surname) {
-        return dateTime + " " + String.format(pattern, "", name, surname);
+    @Override
+    protected String getMessagePattern(MessageTypeEnum type) {
+        MessageConf conf = getMessageConf();
+        switch (type) {
+            case ADD -> {
+                return conf.getAuthorCreatedMessage();
+            }
+            case UPDATE -> {
+                return conf.getAuthorUpdatedMessage();
+            }
+            case DELETE -> {
+                return conf.getAuthorDeletedMessage();
+            }
+            default -> {
+                return "";
+            }
+        }
     }
 
+    @Override
+    protected String createMessage(String pattern, LocalDateTime dateTime, String... args) {
+        return dateTime + " " + String.format(pattern, "", args[0], args[1]);
+    }
+
+    @Override
+    protected String[] getArgs(AuthorDTO dto) {
+        return new String[]{dto.getName(), dto.getSurname()};
+    }
+
+    @Override
+    protected String[] getArgs(AuthorSearchReqDTO searchReqDTO) {
+        return new String[]{searchReqDTO.getName(), searchReqDTO.getSurname()};
+    }
 }

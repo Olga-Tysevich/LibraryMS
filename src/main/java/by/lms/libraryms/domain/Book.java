@@ -17,8 +17,7 @@ public class Book extends AbstractDomainClass {
     @NotNull
     private Set<ObjectId> authorIds;
     @NotNull
-    private Set<ObjectId> genreId;
+    private Set<ObjectId> genreIds;
     @NotNull
     private int year;
-    private boolean available = true;
 }

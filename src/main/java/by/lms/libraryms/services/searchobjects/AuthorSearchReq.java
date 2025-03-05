@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorReq extends SearchReq {
+public class AuthorSearchReq extends SearchReq {
     private String name;
     private String surname;
 }
