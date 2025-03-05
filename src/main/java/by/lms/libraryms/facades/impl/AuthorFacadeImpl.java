@@ -1,6 +1,5 @@
 package by.lms.libraryms.facades.impl;
 
-import by.lms.libraryms.conf.i18n.MessageConf;
 import by.lms.libraryms.conf.i18n.MessageTypeEnum;
 import by.lms.libraryms.domain.Author;
 import by.lms.libraryms.dto.req.AuthorDTO;
@@ -12,7 +11,7 @@ import by.lms.libraryms.services.searchobjects.AuthorSearchReq;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.util.Map;
 
 @Component
 @AllArgsConstructor
@@ -21,34 +20,14 @@ public class AuthorFacadeImpl extends AbstractFacadeImpl<Author, AuthorDTO,
         AuthorService, AuthorMapper>
         implements AuthorFacade {
 
-
     @Override
-    protected AuthorDTO buildDTOForReport(AuthorSearchReqDTO searchReqDTO) {
-        return AuthorDTO.builder()
-                .id(searchReqDTO.getId())
-                .name(searchReqDTO.getName())
-                .surname(searchReqDTO.getSurname())
-                .build();
+    protected Map<MessageTypeEnum, String> getMessages() {
+        return getMessageConf().getAuthorMap();
     }
 
     @Override
-    protected String getMessagePattern(MessageTypeEnum type) {
-        MessageConf conf = getMessageConf();
-        return conf.getAuthorMap().getOrDefault(type, "");
-    }
-    @Override
-    protected String[] getArgs(AuthorDTO dto) {
-        return new String[]{dto.getName(), dto.getSurname()};
-    }
-
-    @Override
-    protected String[] getArgs(AuthorSearchReqDTO searchReqDTO) {
-        return new String[]{searchReqDTO.getName(), searchReqDTO.getSurname()};
-    }
-
-    @Override
-    protected String createMessage(String pattern, LocalDateTime dateTime, String... args) {
-        return dateTime + " " + String.format(pattern, "", args[0], args[1]);
+    protected Object[] getArgs(AuthorDTO dto) {
+        return new Object[]{dto.getName(), dto.getSurname()};
     }
 
 }

@@ -11,27 +11,25 @@ import by.lms.libraryms.facades.AbstractFacade;
 import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.NotificationService;
-import by.lms.libraryms.services.ReportTypeEnum;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
-        Service extends AbstractService<Entity, SR>, Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
+        Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>, Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
         implements AbstractFacade<Entity, DTO, SR, SRD, Service, Mapper> {
-
-    private Service service;
     private Mapper mapper;
+    private Service service;
     @Getter
     private NotificationService<DTO> notificationService;
     @Getter
@@ -39,94 +37,62 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
 
 
     @Override
-    public ObjectChangedDTO add(@NotNull DTO dto) {
-        ObjectChangedDTO result = Optional.of(dto)
-                .map(mapper::toEntity)
-                .map(service::add)
-                .map(a -> mapper.toObjectChangedDTO(a, null))
-                .orElseGet(() -> {
-                    notificationService.createReport(ReportTypeEnum.EXCEPTION, dto);
-                    return null;
-                });
-
-        sendMessage(MessageTypeEnum.ADD, result, dto);
+    public ObjectChangedDTO<DTO> add(@NotNull DTO dto) {
+        ObjectChangedDTO<DTO> result = service.add(dto);
+        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.ADD, result, dto);
         return result;
     }
 
     @Override
-    public ObjectChangedDTO update(@NotNull DTO dto) {
-        ObjectChangedDTO result = Optional.of(dto)
-                .map(mapper::toEntity)
-                .map(service::update)
-                .map(a -> mapper.toObjectChangedDTO(a, null))
-                .orElseGet(() -> {
-                    notificationService.createReport(ReportTypeEnum.EXCEPTION, dto);
-                    return null;
-                });
-        sendMessage(MessageTypeEnum.UPDATE, result, dto);
+    public ObjectChangedDTO<DTO> update(@NotNull DTO dto) {
+        ObjectChangedDTO<DTO> result = service.update(dto);
+        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.UPDATE, result, dto);
         return result;
     }
 
     @Override
-    public ObjectChangedDTO delete(@NotNull SRD searchReqDTO) {
-        ObjectChangedDTO result = Optional.of(searchReqDTO)
-                .map(mapper::toSearchReq)
-                .map(service::delete)
-                .map(a -> mapper.toObjectChangedDTO(a, Instant.now()))
-                .orElseGet(() -> {
-                    notificationService.createReport(ReportTypeEnum.EXCEPTION, buildDTOForReport(searchReqDTO));
-                    return null;
-                });
-
-        sendMessage(MessageTypeEnum.DELETE, result, searchReqDTO);
-
+    public ObjectChangedDTO<DTO> delete(@NotNull SRD searchReqDTO) {
+        ObjectChangedDTO<DTO> result = service.delete(searchReqDTO);
+        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.DELETE, result, buildDTOForReport(searchReqDTO));
         return result;
     }
 
     @Override
     public DTO get(@NotNull SRD searchReqDTO) {
-        return Optional.of(searchReqDTO)
-                .map(mapper::toSearchReq)
-                .map(service::get)
-                .map(mapper::toDTO)
-                .orElse(null);
+        return service.get(searchReqDTO);
     }
 
     @Override
     public ListForPageDTO<DTO> getAll(@NotNull SRD searchReqDTO) {
-        return Optional.of(searchReqDTO)
-                .map(mapper::toSearchReq)
-                .map(service::getAll)
-                .map(mapper::toListForPageDTO)
-                .orElse(null);
+        return service.getAll(searchReqDTO);
     }
 
-    protected abstract DTO buildDTOForReport(SRD searchReqDTO);
+    protected abstract Map<MessageTypeEnum, String> getMessages();
 
-    protected abstract String getMessagePattern(MessageTypeEnum type);
+    protected abstract Object[] getArgs(DTO dto);
 
-    protected abstract String createMessage(String pattern, LocalDateTime dateTime, String... args);
-
-    protected abstract String[] getArgs(DTO dto);
-
-    protected abstract String[] getArgs(SRD searchReqDTO);
-
-    private void sendMessage(MessageTypeEnum type, ObjectChangedDTO result, DTO dto) {
-        if (Objects.nonNull(result)) {
-            String[] args = Objects.nonNull(dto) ? getArgs(dto) :  new String[0];
-            sendMessage(type, result.getUpdatedAt(), args);
-        }
+    private DTO buildDTOForReport(SRD searchReqDTO) {
+        return mapper.searchReqToDTO(searchReqDTO);
     }
 
-    private void sendMessage(MessageTypeEnum type, ObjectChangedDTO result, SRD searchReqDTO) {
+    private String getMessagePattern(MessageTypeEnum type) {
+        Map<MessageTypeEnum, String> messages = getMessages();
+        return messages.getOrDefault(type, "");
+    }
+
+    private String createMessage(String pattern, LocalDateTime dateTime, Object... args) {
+        return dateTime + " " + MessageFormat.format(pattern, args);
+    }
+
+    private void sendMessage(MessageTypeEnum type, ObjectChangedDTO<DTO> result, DTO dto) {
         if (Objects.nonNull(result)) {
-            String[] args = Objects.nonNull(searchReqDTO) ? getArgs(searchReqDTO) :  new String[0];
+            Object[] args = Objects.nonNull(dto) ? getArgs(dto) : new String[0];
             sendMessage(type, result.getUpdatedAt(), args);
         }
     }
 
     //TODO настроить библиотекаря
-    private void sendMessage(MessageTypeEnum type, LocalDateTime updatedAt, String[] args) {
+    private void sendMessage(MessageTypeEnum type, LocalDateTime updatedAt, Object[] args) {
         String message = createMessage(
                 getMessagePattern(type),
                 updatedAt,

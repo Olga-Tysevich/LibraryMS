@@ -1,22 +1,23 @@
-package by.lms.libraryms.services.searchobjects;
+package by.lms.libraryms.dto.req;
 
+import by.lms.libraryms.dto.SearchReqDTO;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 
 import java.util.Set;
 
-@SuperBuilder
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookReq extends SearchReq {
+@SuperBuilder
+public class BookSearchReqDTO extends SearchReqDTO {
     private String title;
+    private int year;
     private Set<ObjectId> authorIds;
     private Set<ObjectId> genreIds;
-    private int year;
 }

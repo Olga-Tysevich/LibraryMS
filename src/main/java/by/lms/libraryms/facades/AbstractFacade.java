@@ -12,13 +12,14 @@ import jakarta.validation.constraints.NotNull;
 
 public interface AbstractFacade<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
-        Service extends AbstractService<Entity, SR>, Mapper extends ObjectMapper<Entity, DTO, SR, SRD>> {
+        Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>,
+        Mapper extends ObjectMapper<Entity, DTO, SR, SRD>> {
 
-    ObjectChangedDTO add(@NotNull DTO dto);
+    ObjectChangedDTO<DTO> add(@NotNull DTO dto);
 
-    ObjectChangedDTO update(@NotNull DTO dto);
+    ObjectChangedDTO<DTO> update(@NotNull DTO dto);
 
-    ObjectChangedDTO delete(@NotNull SRD searchReq);
+    ObjectChangedDTO<DTO> delete(@NotNull SRD searchReq);
 
     DTO get(@NotNull SRD searchReqDTO);
 

@@ -10,7 +10,7 @@ import java.util.Objects;
 @UtilityClass
 public class ReflectionManager {
 
-    public<T> Map<String, String> getNotNullFieldsValues(T instance) {
+    public <T> Map<String, String> getNotNullFieldsValues(T instance) {
         Map<String, String> fieldsMap = new HashMap<>();
 
         Field[] fields = instance.getClass().getDeclaredFields();

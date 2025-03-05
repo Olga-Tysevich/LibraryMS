@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ObjectChangedDTO {
+public class ObjectChangedDTO<T> {
     @NotEmpty(message = Constants.EMPTY_ID_MESSAGE)
     private String id;
     @NotEmpty(message = Constants.EMPTY_OBJECT_CLASS_MESSAGE)
@@ -24,4 +24,5 @@ public class ObjectChangedDTO {
     @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+    private T object;
 }

@@ -19,31 +19,31 @@ public class AuthorController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody @Valid AuthorDTO author) {
-        ObjectChangedDTO result = authorFacade.addAuthor(author);
+        ObjectChangedDTO result = authorFacade.add(author);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PostMapping("/update")
     public ResponseEntity<?> update(@RequestBody @Valid AuthorDTO author) {
-        ObjectChangedDTO result = authorFacade.updateAuthor(author);
+        ObjectChangedDTO result = authorFacade.update(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody @Valid AuthorSearchReqDTO author) {
-        ObjectChangedDTO result = authorFacade.deleteAuthor(author);
+        ObjectChangedDTO result = authorFacade.delete(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get")
     public ResponseEntity<?> get(@RequestBody @Valid AuthorSearchReqDTO author) {
-        AuthorDTO result = authorFacade.getAuthor(author);
+        AuthorDTO result = authorFacade.get(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get/list")
     public ResponseEntity<?> getList(@RequestBody @Valid AuthorSearchReqDTO author) {
-        ListForPageDTO<AuthorDTO> result = authorFacade.getAuthors(author);
+        ListForPageDTO<AuthorDTO> result = authorFacade.getAll(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

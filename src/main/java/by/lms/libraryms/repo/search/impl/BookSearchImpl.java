@@ -2,7 +2,7 @@ package by.lms.libraryms.repo.search.impl;
 
 import by.lms.libraryms.domain.Book;
 import by.lms.libraryms.repo.search.BookSearch;
-import by.lms.libraryms.services.searchobjects.BookReq;
+import by.lms.libraryms.services.searchobjects.BookSearchReq;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import com.mongodb.client.result.DeleteResult;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class BookSearchImpl extends AbstractSearchRepo<Book, BookReq> implements BookSearch {
+public class BookSearchImpl extends AbstractSearchRepo<Book, BookSearchReq> implements BookSearch {
 
     public BookSearchImpl(MongoTemplate mongoTemplate) {
         super(mongoTemplate);
     }
 
     @Override
-    public boolean delete(BookReq searchReq) {
+    public boolean delete(BookSearchReq searchReq) {
         Query query = addParams(super.query(searchReq), searchReq);
 
         DeleteResult result = mongoTemplate().remove(query, Book.class);
@@ -30,20 +30,20 @@ public class BookSearchImpl extends AbstractSearchRepo<Book, BookReq> implements
     }
 
     @Override
-    public List<Book> find(BookReq searchReq) {
+    public List<Book> find(BookSearchReq searchReq) {
         Query query = addParams(super.query(searchReq), searchReq);
 
         return mongoTemplate().find(query, Book.class);
     }
 
     @Override
-    public ListForPageResp<Book> findList(BookReq searchReq) {
+    public ListForPageResp<Book> findList(BookSearchReq searchReq) {
         Query query = addParams(super.query(searchReq), searchReq);
 
         return findList(mongoTemplate(), query, Book.class, searchReq);
     }
 
-    private Query addParams(Query query, BookReq searchReq) {
+    private Query addParams(Query query, BookSearchReq searchReq) {
         if (Objects.nonNull(searchReq.getTitle())) {
             query.addCriteria(Criteria.where("title").regex(searchReq.getTitle()));
         }

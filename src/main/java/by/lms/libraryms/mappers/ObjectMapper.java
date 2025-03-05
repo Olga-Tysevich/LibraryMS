@@ -19,22 +19,22 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 
-public interface ObjectMapper<E extends AbstractDomainClass, D extends AbstractDTO,
+public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO> extends SearchMapper {
 
     @Mappings({
             @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapLocalDateTimeToInstant")
     })
-    E toEntity(D dto);
+    Entity toEntity(DTO dto);
 
     @Mappings({
             @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime")
     })
-    D toDTO(E entity);
+    DTO toDTO(Entity entity);
 
-    List<D> toDTOList(List<E> entities);
+    List<DTO> toDTOList(List<Entity> entities);
 
     @Mappings({
             @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
@@ -44,15 +44,18 @@ public interface ObjectMapper<E extends AbstractDomainClass, D extends AbstractD
     })
     SR toSearchReq(SRD dto);
 
+    DTO searchReqToDTO(SRD searchReqDTO);
+
     @Mappings({
             @Mapping(target = "objectClass", expression = "java(entity.getClass().getSimpleName())"),
             @Mapping(target = "createdAt", source = "entity.createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "updatedAt", source = "entity.updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime")
+            @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "object", expression = "java(toDTO(entity)")
     })
-    ObjectChangedDTO toObjectChangedDTO(E entity, Instant deletedAt);
+    ObjectChangedDTO<DTO> toObjectChangedDTO(Entity entity, Instant deletedAt);
 
-    ListForPageDTO<D> toListForPageDTO(ListForPageResp<E> list);
+    ListForPageDTO<DTO> toListForPageDTO(ListForPageResp<Entity> list);
 
     @Named("mapInstantToLocalDateTime")
     static LocalDateTime mapInstantToLocalDateTime(Instant instant) {

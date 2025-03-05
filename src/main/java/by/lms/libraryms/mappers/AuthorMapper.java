@@ -11,5 +11,4 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface AuthorMapper extends ObjectMapper<Author, AuthorDTO, AuthorSearchReq, AuthorSearchReqDTO> {
-
 }
