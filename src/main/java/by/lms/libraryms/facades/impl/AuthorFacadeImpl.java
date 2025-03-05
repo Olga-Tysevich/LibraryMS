@@ -34,27 +34,8 @@ public class AuthorFacadeImpl extends AbstractFacadeImpl<Author, AuthorDTO,
     @Override
     protected String getMessagePattern(MessageTypeEnum type) {
         MessageConf conf = getMessageConf();
-        switch (type) {
-            case ADD -> {
-                return conf.getAuthorCreatedMessage();
-            }
-            case UPDATE -> {
-                return conf.getAuthorUpdatedMessage();
-            }
-            case DELETE -> {
-                return conf.getAuthorDeletedMessage();
-            }
-            default -> {
-                return "";
-            }
-        }
+        return conf.getAuthorMap().getOrDefault(type, "");
     }
-
-    @Override
-    protected String createMessage(String pattern, LocalDateTime dateTime, String... args) {
-        return dateTime + " " + String.format(pattern, "", args[0], args[1]);
-    }
-
     @Override
     protected String[] getArgs(AuthorDTO dto) {
         return new String[]{dto.getName(), dto.getSurname()};
@@ -64,4 +45,10 @@ public class AuthorFacadeImpl extends AbstractFacadeImpl<Author, AuthorDTO,
     protected String[] getArgs(AuthorSearchReqDTO searchReqDTO) {
         return new String[]{searchReqDTO.getName(), searchReqDTO.getSurname()};
     }
+
+    @Override
+    protected String createMessage(String pattern, LocalDateTime dateTime, String... args) {
+        return dateTime + " " + String.format(pattern, "", args[0], args[1]);
+    }
+
 }
