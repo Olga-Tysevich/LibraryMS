@@ -8,22 +8,27 @@ import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.BookFacade;
 import by.lms.libraryms.mappers.BookMapper;
 import by.lms.libraryms.services.BookService;
-import by.lms.libraryms.services.messages.MessageService;
+import by.lms.libraryms.services.NotificationService;
+import by.lms.libraryms.services.messages.BookMessageService;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 
 @Component
-@AllArgsConstructor
 public class BookFacadeImpl extends AbstractFacadeImpl<Book, BookDTO,
         BookSearchReq, BookSearchReqDTO,
-        BookService, BookMapper> implements BookFacade {
-    private MessageService<BookDTO> messageService;
+        BookService, BookMessageService,
+        BookMapper> implements BookFacade {
+
+    public BookFacadeImpl(BookService service,
+                          NotificationService<BookDTO> notificationService,
+                          BookMessageService messageService) {
+        super(service, notificationService, messageService);
+    }
 
     @Override
     protected String message(MessageTypeEnum type, ObjectChangedDTO<BookDTO> result) {
-        return messageService.createMessage(type, result);
+        return getMessageService().createMessage(type, result);
     }
 
 }

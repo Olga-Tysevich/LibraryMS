@@ -15,6 +15,7 @@ import by.lms.libraryms.utils.ParamsManager;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.Instant;
@@ -25,8 +26,7 @@ import java.util.Set;
 
 import static by.lms.libraryms.utils.Constants.OBJECTS_NOT_FOUND;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public abstract class AbstractServiceImpl<
         Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
@@ -35,9 +35,9 @@ public abstract class AbstractServiceImpl<
         >
         implements AbstractService<Entity, DTO, SR, SRD, Mapper> {
 
-    private Repo repository;
-    private SRepo searchRepo;
-    private Mapper mapper;
+    private final Repo repository;
+    private final SRepo searchRepo;
+    private final Mapper mapper;
 
 
     @Override

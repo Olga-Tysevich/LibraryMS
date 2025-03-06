@@ -13,25 +13,25 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/library/author")
+@RequestMapping("api/v1/library/authors")
 public class AuthorController {
     private final AuthorFacade authorFacade;
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody @Valid AuthorDTO author) {
-        ObjectChangedDTO result = authorFacade.add(author);
+        ObjectChangedDTO<AuthorDTO> result = authorFacade.add(author);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PostMapping("/update")
     public ResponseEntity<?> update(@RequestBody @Valid AuthorDTO author) {
-        ObjectChangedDTO result = authorFacade.update(author);
+        ObjectChangedDTO<AuthorDTO> result = authorFacade.update(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody @Valid AuthorSearchReqDTO author) {
-        ObjectChangedDTO result = authorFacade.delete(author);
+        ObjectChangedDTO<AuthorDTO> result = authorFacade.delete(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

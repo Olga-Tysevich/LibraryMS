@@ -12,12 +12,17 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
 public class AuthorServiceImpl extends AbstractServiceImpl<Author, AuthorDTO,
         AuthorSearchReq, AuthorSearchReqDTO,
         AuthorRepo, AuthorSearch,
         AuthorMapper>
         implements AuthorService {
+
+    public AuthorServiceImpl(AuthorRepo repository,
+                             AuthorSearch searchRepo,
+                             AuthorMapper mapper) {
+        super(repository, searchRepo, mapper);
+    }
 
     @Override
     protected Class<Author> clazz() {

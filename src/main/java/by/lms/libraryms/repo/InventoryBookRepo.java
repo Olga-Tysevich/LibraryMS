@@ -12,4 +12,5 @@ public interface InventoryBookRepo extends MongoRepository<InventoryBook, String
     List<InventoryBook> findByBookId(@NotNull ObjectId bookId);
     Optional<InventoryBook> findInventoryBookByBookId(@NotNull ObjectId bookId);
     Optional<InventoryBook> findInventoryBookByInventoryNumberId(@NotNull ObjectId inventoryNumberId);
+    List<InventoryBook> findByAvailable(boolean available);
 }

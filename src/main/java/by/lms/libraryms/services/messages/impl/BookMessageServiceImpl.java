@@ -1,20 +1,23 @@
 package by.lms.libraryms.services.messages.impl;
 
+import by.lms.libraryms.conf.i18n.MessageConf;
 import by.lms.libraryms.conf.i18n.MessageTypeEnum;
 import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.services.AuthorService;
-import by.lms.libraryms.services.messages.MessageService;
-import lombok.AllArgsConstructor;
+import by.lms.libraryms.services.messages.BookMessageService;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-@AllArgsConstructor
-public class BookMessageService extends AbstractMessageServiceImpl<BookDTO> implements MessageService<BookDTO> {
+public class BookMessageServiceImpl extends AbstractMessageServiceImpl<BookDTO> implements BookMessageService {
     private AuthorService authorService;
+
+    public BookMessageServiceImpl(MessageConf messageConf) {
+        super(messageConf);
+    }
 
     @Override
     public String createMessage(MessageTypeEnum typeEnum, ObjectChangedDTO<BookDTO> bookDTO) {

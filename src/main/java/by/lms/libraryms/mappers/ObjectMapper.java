@@ -52,7 +52,7 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
     @Mappings({
             @Mapping(target = "objectClass", expression = "java(entity.getClass().getSimpleName())"),
             @Mapping(target = "createdAt", source = "entity.createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "updatedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "updatedAt", source = "entity.updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "object", expression = "java(toDTO(entity))")
     })

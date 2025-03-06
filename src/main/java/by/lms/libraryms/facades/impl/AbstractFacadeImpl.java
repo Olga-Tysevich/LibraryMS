@@ -10,23 +10,26 @@ import by.lms.libraryms.facades.AbstractFacade;
 import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.NotificationService;
+import by.lms.libraryms.services.messages.MessageService;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
-        Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>, Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
-        implements AbstractFacade<Entity, DTO, SR, SRD, Service, Mapper> {
-    private Service service;
+        Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>,
+        MService extends MessageService<DTO>,
+        Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
+        implements AbstractFacade<Entity, DTO, SR, SRD, Service, MService,Mapper> {
+    private final Service service;
     @Getter
-    private NotificationService<DTO> notificationService;
+    private final NotificationService<DTO> notificationService;
+    @Getter
+    private final MService messageService;
 
 
     @Override
@@ -46,7 +49,11 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
     @Override
     public ObjectChangedDTO<DTO> delete(@NotNull SRD searchReqDTO) {
         ObjectChangedDTO<DTO> result = service.delete(searchReqDTO);
-        if (Objects.nonNull(result)) sendMessage(MessageTypeEnum.DELETE, result);
+        if (Objects.nonNull(result)) {
+            result.setUpdatedAt(LocalDateTime.now());
+            result.setDeletedAt(LocalDateTime.now());
+            sendMessage(MessageTypeEnum.DELETE, result);
+        }
         return result;
     }
 

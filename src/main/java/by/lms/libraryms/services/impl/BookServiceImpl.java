@@ -8,16 +8,20 @@ import by.lms.libraryms.repo.BookRepo;
 import by.lms.libraryms.repo.search.BookSearch;
 import by.lms.libraryms.services.BookService;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class BookServiceImpl extends AbstractServiceImpl<Book, BookDTO,
         BookSearchReq, BookSearchReqDTO,
         BookRepo, BookSearch,
         BookMapper>
         implements BookService {
+
+    public BookServiceImpl(BookRepo repository,
+                           BookSearch searchRepo,
+                           BookMapper mapper) {
+        super(repository, searchRepo, mapper);
+    }
 
     @Override
     protected Class<Book> clazz() {
