@@ -22,17 +22,23 @@ public class MessageConf {
     @Getter(AccessLevel.PACKAGE)
     @Setter(AccessLevel.PACKAGE)
     private Map<String, String> book;
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
+    private Map<String, String> genre;
 
     @Getter
     private Map<MessageTypeEnum, String> authorMap;
     @Getter
     private Map<MessageTypeEnum, String> bookMap;
+    @Getter
+    private Map<MessageTypeEnum, String> genreMap;
 
 
     @PostConstruct
     public void init() {
         authorMap = convertToEnumMap(author);
         bookMap = convertToEnumMap(book);
+        genreMap = convertToEnumMap(genre);
     }
 
     private Map<MessageTypeEnum, String> convertToEnumMap(Map<String, String> source) {

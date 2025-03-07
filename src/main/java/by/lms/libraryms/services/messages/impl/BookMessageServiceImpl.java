@@ -8,37 +8,35 @@ import by.lms.libraryms.services.AuthorService;
 import by.lms.libraryms.services.messages.BookMessageService;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class BookMessageServiceImpl extends AbstractMessageServiceImpl<BookDTO> implements BookMessageService {
-    private AuthorService authorService;
+    private final AuthorService authorService;
 
-    public BookMessageServiceImpl(MessageConf messageConf) {
+    public BookMessageServiceImpl(MessageConf messageConf, AuthorService authorService) {
         super(messageConf);
+        this.authorService = authorService;
     }
 
     @Override
-    public String createMessage(MessageTypeEnum typeEnum, ObjectChangedDTO<BookDTO> bookDTO) {
-        String pattern = messageConf().getBookMap().getOrDefault(typeEnum, "");
-        Object[] result = new Object[5];
-        BookDTO book = bookDTO.getObject();
-        if (Objects.nonNull(book)) {
-            String authors = "{" + authorService.getAllByIds(book.getAuthorIds()).stream()
-                    .map(a -> a.getName() + a.getSurname())
-                    .collect(Collectors.joining(", ")) + "}";
-            //TODO добавить библиотекаря
-            result[0] = "";
-            result[1] = authors;
-            //TODO обавить жанры
+    protected void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<BookDTO> dto, List<Object> args) {
+        BookDTO book = dto.getObject();
+        String authors = "{" + authorService.getAllByIds(book.getAuthorIds()).stream()
+                .map(a -> a.getName() + a.getSurname())
+                .collect(Collectors.joining(", ")) + "}";
+        args.add(authors);
+        //TODO обавить жанры
 //        List<GenreDTO>
-            result[2] = "";
-            result[3] = book.getTitle();
-            result[4] = book.getYear();
-        }
+        args.add("");
+        args.add(book.getTitle());
+        args.add(book.getYear());
+    }
 
-        return super.createMessage(pattern, bookDTO.getUpdatedAt(), result);
+    @Override
+    protected String getPattern(MessageTypeEnum typeEnum) {
+        return messageConf().getBookMap().getOrDefault(typeEnum, "");
     }
 
 }

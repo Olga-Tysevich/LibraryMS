@@ -24,7 +24,7 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>,
         MService extends MessageService<DTO>,
         Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
-        implements AbstractFacade<Entity, DTO, SR, SRD, Service, MService,Mapper> {
+        implements AbstractFacade<Entity, DTO, SR, SRD, Service, MService, Mapper> {
     private final Service service;
     @Getter
     private final NotificationService<DTO> notificationService;
@@ -67,7 +67,9 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         return service.getAll(searchReqDTO);
     }
 
-    protected abstract String message(MessageTypeEnum type, ObjectChangedDTO<DTO> result);
+    private String message(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
+        return getMessageService().createMessage(type, result);
+    }
 
     private void sendMessage(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
         if (Objects.nonNull(result)) {
@@ -75,7 +77,6 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         }
     }
 
-    //TODO настроить библиотекаря
     private void sendMessage(String message) {
         notificationService.sendMessage(message);
     }

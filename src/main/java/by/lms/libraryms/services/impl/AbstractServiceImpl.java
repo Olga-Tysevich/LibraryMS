@@ -13,8 +13,6 @@ import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import by.lms.libraryms.utils.ParamsManager;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

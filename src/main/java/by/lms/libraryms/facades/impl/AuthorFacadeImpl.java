@@ -1,10 +1,8 @@
 package by.lms.libraryms.facades.impl;
 
-import by.lms.libraryms.conf.i18n.MessageTypeEnum;
 import by.lms.libraryms.domain.Author;
 import by.lms.libraryms.dto.req.AuthorDTO;
 import by.lms.libraryms.dto.req.AuthorSearchReqDTO;
-import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.AuthorFacade;
 import by.lms.libraryms.mappers.AuthorMapper;
 import by.lms.libraryms.services.AuthorService;
@@ -28,10 +26,4 @@ public class AuthorFacadeImpl extends AbstractFacadeImpl<
                             AuthorMessageService messageService) {
         super(service, notificationService, messageService);
     }
-
-    @Override
-    protected String message(MessageTypeEnum type, ObjectChangedDTO<AuthorDTO> result) {
-                return getMessageService().createMessage(type, result);
-    }
-
 }
