@@ -3,10 +3,12 @@ package by.lms.libraryms.domain;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
@@ -25,4 +27,8 @@ public class Book extends AbstractDomainClass {
     @NotNull
     @Size(min = 1, message = Constants.EMPTY_AUTHOR_MESSAGE)
     private int year;
+    @Indexed(unique = true)
+    @NotNull
+    @Pattern(regexp = Constants.SHA_256_PATTERN)
+    private String uniqueKey;
 }

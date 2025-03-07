@@ -18,6 +18,7 @@ public interface Constants {
     String EMPTY_GENRE_MESSAGE = "At least one genre must be specified";
     String OBJECT_LIST_IS_NULL_MESSAGE = "List of objects cannot be null";
     String DATE_IS_NULL_MESSAGE = "Date cannot be null";
+    String SHA_256_PATTERN = "^[a-f0-9]{64}$";
 
     //Exceptions
     String OBJECTS_NOT_FOUND = "%s not found!Search params:%s";

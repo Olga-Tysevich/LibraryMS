@@ -3,6 +3,7 @@ package by.lms.libraryms.services.impl;
 import by.lms.libraryms.domain.Book;
 import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.BookSearchReqDTO;
+import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.mappers.BookMapper;
 import by.lms.libraryms.repo.BookRepo;
 import by.lms.libraryms.repo.search.BookSearch;
@@ -24,7 +25,20 @@ public class BookServiceImpl extends AbstractServiceImpl<Book, BookDTO,
     }
 
     @Override
+    public ObjectChangedDTO<BookDTO> add(BookDTO dto) {
+        dto.setUniqueKey();
+        return super.add(dto);
+    }
+
+    @Override
+    public ObjectChangedDTO<BookDTO> update(BookDTO dto) {
+        dto.setUniqueKey();
+        return super.update(dto);
+    }
+
+    @Override
     protected Class<Book> clazz() {
         return Book.class;
     }
+
 }
