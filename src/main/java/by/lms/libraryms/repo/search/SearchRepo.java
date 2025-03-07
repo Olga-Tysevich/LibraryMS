@@ -8,11 +8,11 @@ import java.util.List;
 
 /**
  * Interface for deleting entities by search request
- * @param <T> the entity class
- * @param <R> the search request class
+ * @param <Entity> the entity class
+ * @param <SR> the search request class
  */
-public interface SearchRepo<T, R extends SearchReq> {
-    boolean delete(@NotNull R searchReq);
-    List<T> find(@NotNull R searchReq);
-    ListForPageResp<T> findList(@NotNull R searchReq);
+public interface SearchRepo<Entity, SR extends SearchReq> {
+    boolean delete(@NotNull SR searchReq);
+    List<Entity> find(@NotNull SR searchReq);
+    ListForPageResp<Entity> findList(@NotNull SR searchReq);
 }

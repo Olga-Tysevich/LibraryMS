@@ -3,8 +3,7 @@ package by.lms.libraryms.repo.search.impl;
 import by.lms.libraryms.domain.Author;
 import by.lms.libraryms.repo.search.AuthorSearch;
 import by.lms.libraryms.services.searchobjects.AuthorSearchReq;
-import by.lms.libraryms.services.searchobjects.ListForPageResp;
-import com.mongodb.client.result.DeleteResult;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -21,32 +20,7 @@ public class AuthorSearchImpl extends AbstractSearchRepo<Author, AuthorSearchReq
         super(mongoTemplate);
     }
 
-    @Override
-    public boolean delete(AuthorSearchReq searchReq) {
-
-        Query query = addParams(super.query(searchReq), searchReq);
-
-        DeleteResult result = mongoTemplate().remove(query, Author.class);
-
-        return result.getDeletedCount() > 0;
-    }
-
-    @Override
-    public List<Author> find(AuthorSearchReq searchReq) {
-
-        Query query = addParams(super.query(searchReq), searchReq);
-
-        return mongoTemplate().find(query, Author.class);
-    }
-
-    @Override
-    public ListForPageResp<Author> findList(AuthorSearchReq searchReq) {
-
-        Query query = addParams(super.query(searchReq), searchReq);
-
-        return findList(mongoTemplate(), query, Author.class, searchReq);
-    }
-    private Query addParams(Query query, AuthorSearchReq searchReq) {
+    protected Query addParams(@NotNull Query query, @NotNull AuthorSearchReq searchReq) {
         List<Criteria> criteriaList = new ArrayList<>();
 
         searchReq.getFullNames().stream()
@@ -76,6 +50,11 @@ public class AuthorSearchImpl extends AbstractSearchRepo<Author, AuthorSearchReq
         }
 
         return query;
+    }
+
+    @Override
+    protected Class<Author> clazz() {
+        return Author.class;
     }
 
 }

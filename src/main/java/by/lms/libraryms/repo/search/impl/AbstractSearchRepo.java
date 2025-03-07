@@ -4,6 +4,7 @@ import by.lms.libraryms.repo.search.SearchRepo;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import by.lms.libraryms.utils.Constants;
+import com.mongodb.client.result.DeleteResult;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -15,14 +16,37 @@ import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public abstract class AbstractSearchRepo<T, R extends SearchReq> implements SearchRepo<T, R> {
+public abstract class AbstractSearchRepo<Entity, SR extends SearchReq> implements SearchRepo<Entity, SR> {
     private final MongoTemplate mongoTemplate;
 
-    protected ListForPageResp<T> findList(@NotNull MongoTemplate mongoTemplate,
-                                          @NotNull Query query,
-                                          @NotNull Class<T> entityClass,
-                                          R searchReq) {
-        List<T> results = mongoTemplate.find(query, entityClass);
+
+    public boolean delete(@NotNull SR searchReq) {
+        Query query = addParams(query(searchReq), searchReq);
+
+        DeleteResult result = mongoTemplate().remove(query, clazz());
+
+        return result.getDeletedCount() > 0;
+    }
+
+
+    public List<Entity> find(@NotNull SR searchReq) {
+        Query query = addParams(query(searchReq), searchReq);
+
+        return mongoTemplate().find(query, clazz());
+    }
+
+
+    public ListForPageResp<Entity> findList(@NotNull SR searchReq) {
+        Query query = addParams(query(searchReq), searchReq);
+
+        return findList(mongoTemplate(), query, clazz(), searchReq);
+    }
+
+    protected ListForPageResp<Entity> findList(@NotNull MongoTemplate mongoTemplate,
+                                               @NotNull Query query,
+                                               @NotNull Class<Entity> entityClass,
+                                               @NotNull SR searchReq) {
+        List<Entity> results = mongoTemplate.find(query, entityClass);
         long totalElements = mongoTemplate.count(query.limit(0).skip(0), entityClass);
 
         checkRequest(searchReq);
@@ -32,7 +56,7 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         int totalPagesIndex = totalPages == 0 ? totalPages : 1;
         int previousPageIndex = searchReq.getPageNum() > 0 ? searchReq.getPageNum() - 1 : totalPagesIndex;
 
-        return ListForPageResp.<T>builder()
+        return ListForPageResp.<Entity>builder()
                 .objectsClass(entityClass.getSimpleName())
                 .list(results)
                 .totalElements(totalElements)
@@ -43,7 +67,7 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
     }
 
 
-    protected Query query(@NotNull R request) {
+    protected Query query(@NotNull SR request) {
         Query query = new Query();
         checkRequest(request);
 
@@ -72,7 +96,7 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         return query;
     }
 
-    private void checkRequest(@NotNull R request) {
+    private void checkRequest(@NotNull SR request) {
         request.setPageSize(Objects.requireNonNullElse(request.getPageSize(), Constants.DEFAULT_PAGE_SIZE));
         request.setPageNum(Objects.requireNonNullElse(request.getPageNum(), 0));
         request.setDirection(Objects.requireNonNullElse(request.getDirection(), Sort.Direction.ASC));
@@ -83,4 +107,7 @@ public abstract class AbstractSearchRepo<T, R extends SearchReq> implements Sear
         return mongoTemplate;
     }
 
+    protected abstract Query addParams(@NotNull Query query, @NotNull SR searchReq);
+
+    protected abstract Class<Entity> clazz();
 }
