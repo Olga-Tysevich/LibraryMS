@@ -1,14 +1,43 @@
 package by.lms.libraryms.repo;
 
 import by.lms.libraryms.domain.InventoryNumber;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import by.lms.libraryms.domain.InventoryPrefixEnum;
+import by.lms.libraryms.repo.search.SearchRepo;
+import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
+import by.lms.libraryms.utils.Constants;
+import org.springframework.lang.NonNull;
 
-import java.time.LocalDate;
-import java.util.List;
 
-public interface InventoryNumberRepo extends MongoRepository<InventoryNumber, String> {
-    List<InventoryNumber> findByPrefix(@NotNull Character prefix);
-    List<InventoryNumber> findByIsDisposedOf(boolean disposed);
-    List<InventoryNumber> findByDisposedDate(LocalDate disposedDate);
+/**
+ * Operations to change inventory numbers are prohibited.
+ */
+public interface InventoryNumberRepo extends SearchRepo<InventoryNumber, InventoryNumberSearchReq> {
+    InventoryNumber createNewNumber(InventoryPrefixEnum prefix);
+
+    /**
+     * The save operation is supported only for inventory numbers being written off and can be applied once.
+     */
+    @NonNull
+    <S extends InventoryNumber> S save(@NonNull S entity);
+
+    /**
+     * Delete operation is not supported!
+     */
+    default void delete(@NonNull InventoryNumber entity) {
+        throw new UnsupportedOperationException(Constants.DELETE_OPERATION_NOT_SUPPORTED);
+    }
+
+    /**
+     * Delete operation is not supported!
+     */
+    default void deleteAll() {
+        throw new UnsupportedOperationException(Constants.DELETE_OPERATION_NOT_SUPPORTED);
+    }
+
+    /**
+     * Delete operation is not supported!
+     */
+    default void deleteAll(@NonNull Iterable<? extends InventoryNumber> entities) {
+        throw new UnsupportedOperationException(Constants.DELETE_OPERATION_NOT_SUPPORTED);
+    }
 }

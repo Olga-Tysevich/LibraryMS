@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -25,4 +26,7 @@ public class InventoryBook extends AbstractDomainClass {
     private ObjectId inventoryNumberId;
     private Set<BookIOrder> bookIOrders;
     private boolean available = true;
+
+    @Version
+    private int version;
 }

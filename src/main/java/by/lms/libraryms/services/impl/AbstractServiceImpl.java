@@ -15,6 +15,7 @@ import by.lms.libraryms.utils.ParamsManager;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -38,11 +39,13 @@ public abstract class AbstractServiceImpl<
     private final Mapper mapper;
 
 
+    @Transactional
     @Override
     public ObjectChangedDTO<DTO> add(@NotNull DTO dto) {
         return save(dto);
     }
 
+    @Transactional
     @Override
     public ObjectChangedDTO<DTO> delete(SRD searchReqDTO) {
         SR searchReq = mapper.toSearchReq(searchReqDTO);
@@ -56,6 +59,7 @@ public abstract class AbstractServiceImpl<
                 .orElseThrow(ChangingObjectException::new);
     }
 
+    @Transactional
     @Override
     public ObjectChangedDTO<DTO> update(DTO dto) {
         return save(dto);

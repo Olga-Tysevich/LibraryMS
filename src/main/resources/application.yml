@@ -17,3 +17,10 @@ telegram:
       token: 7922300546:AAEhE6e6YgYWmpUbGZPaHYJuEXTSbeSWnks
       name: LibrarymsBot
       commonChannelId: -1002261464282
+
+inventory:
+  number:
+    firstVal:
+      1000
+    permissibleError:
+      7

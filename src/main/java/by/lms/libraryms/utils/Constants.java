@@ -16,9 +16,12 @@ public interface Constants {
     String EMPTY_YEAR_MESSAGE = "Year cannot be null or empty";
     String EMPTY_AUTHOR_MESSAGE = "At least one author must be specified";
     String EMPTY_GENRE_MESSAGE = "At least one genre must be specified";
+    String EMPTY_INVENTORY_NUMBER_MESSAGE = "At least one number must be specified, format XXXX";
     String OBJECT_LIST_IS_NULL_MESSAGE = "List of objects cannot be null";
     String DATE_IS_NULL_MESSAGE = "Date cannot be null";
     String SHA_256_PATTERN = "^[a-f0-9]{64}$";
+    String DELETE_OPERATION_NOT_SUPPORTED = "Delete operation is not supported";
+    String SAVE_OPERATION_NOT_SUPPORTED = "Save operation is not supported";
 
     //Exceptions
     String OBJECTS_NOT_FOUND = "%s not found!Search params:%s";

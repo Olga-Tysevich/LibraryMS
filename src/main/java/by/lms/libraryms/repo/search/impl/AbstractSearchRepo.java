@@ -76,11 +76,23 @@ public abstract class AbstractSearchRepo<Entity, SR extends SearchReq> implement
         }
 
         if (Objects.nonNull(request.getCreatedAtFrom())) {
-            query.addCriteria(Criteria.where("createdAt").gte(request.getCreatedAtFrom()));
+            if (Objects.nonNull(request.getCreatedAtTo())
+                    && request.getCreatedAtTo().isAfter(request.getCreatedAtFrom())) {
+                query.addCriteria(Criteria.where("createdAt").gte(request.getCreatedAtFrom())
+                        .and("createdAt").lt(request.getCreatedAtTo()));
+            } else {
+                query.addCriteria(Criteria.where("createdAt").gte(request.getCreatedAtFrom()));
+            }
         }
 
         if (Objects.nonNull(request.getUpdatedAtFrom())) {
-            query.addCriteria(Criteria.where("updatedAt").gte(request.getUpdatedAtFrom()));
+            if (Objects.nonNull(request.getUpdatedAtTo())
+                    && request.getCreatedAtTo().isAfter(request.getUpdatedAtFrom())) {
+                query.addCriteria(Criteria.where("updatedAt").gte(request.getUpdatedAtFrom())
+                        .and("updatedAt").lt(request.getUpdatedAtTo()));
+            } else {
+                query.addCriteria(Criteria.where("updatedAt").gte(request.getCreatedAtFrom()));
+            }
         }
 
         if (Objects.nonNull(request.getPageNum())) {
