@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "stock")
@@ -13,4 +15,5 @@ public class StockBook extends AbstractDomainClass {
     @NotNull
     private ObjectId bookId;
     private int amount;
+    private LocalDateTime dateOfReceipt;
 }

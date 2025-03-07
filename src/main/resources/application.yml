@@ -9,6 +9,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/librarymsdb
+      auto-index-creation: true
 
 telegram:
   bots:

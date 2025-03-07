@@ -18,25 +18,10 @@ public class GenreMessageServiceImpl extends AbstractMessageServiceImpl<GenreDTO
     }
 
     @Override
-    public String createMessage(MessageTypeEnum typeEnum, ObjectChangedDTO<GenreDTO> dto) {
-        String pattern = messageConf().getAuthorMap().getOrDefault(typeEnum, "");
-        GenreDTO authorDTO = dto.getObject();
-        Object[] args = new Object[2];
-        if (Objects.nonNull(authorDTO)) {
-            //TODO добавить библиотекаря
-            args[0] = "";
-            args[1] = StringUtils.defaultIfBlank(authorDTO.getName(), "");
-        }
-        return super.createMessage(pattern, dto.getUpdatedAt(), args);
-    }
-
-    @Override
     protected void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<GenreDTO> dto, List<Object> args) {
-        GenreDTO authorDTO = dto.getObject();
-        if (Objects.nonNull(authorDTO)) {
-            //TODO добавить библиотекаря
-            args.add("");
-            args.add(StringUtils.defaultIfBlank(authorDTO.getName(), ""));
+        GenreDTO genreDTO = dto.getObject();
+        if (Objects.nonNull(genreDTO)) {
+            args.add(StringUtils.defaultIfBlank(genreDTO.getName(), ""));
         }
     }
 
