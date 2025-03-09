@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface BookIssueRepo extends MongoRepository<BookOrder, Integer> {
+public interface BookIssueRepo extends MongoRepository<BookOrder, String> {
     List<BookOrder> findByUserId(@NotNull ObjectId userId);
     List<BookOrder> findByInventoryBookId(@NotNull ObjectId inventoryBookId);
     List<BookOrder> findByUserIdAndReturnDate(@NotNull ObjectId userId, LocalDate returnDate);

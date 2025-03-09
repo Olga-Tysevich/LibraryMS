@@ -7,6 +7,7 @@ import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.repo.search.impl.AbstractSearchRepo;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.utils.Constants;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber, InventoryNumberSearchReq>
@@ -105,11 +107,16 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
     }
 
     @Override
-    public InventoryNumber find(InventoryNumber example) {
+    public Optional<InventoryNumber> find(InventoryNumber example) {
         Query query = new Query();
         query.addCriteria(Criteria.byExample(example));
         List<InventoryNumber> results = mongoTemplate().find(query, clazz());
-        return results.isEmpty() ? null : results.getFirst();
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+    }
+
+    @Override
+    public Optional<InventoryNumber> findById(ObjectId id) {
+        return Optional.ofNullable(mongoTemplate().findById(id, InventoryNumber.class));
     }
 
     @Override

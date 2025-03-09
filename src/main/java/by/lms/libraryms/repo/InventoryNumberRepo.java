@@ -5,7 +5,10 @@ import by.lms.libraryms.domain.InventoryPrefixEnum;
 import by.lms.libraryms.repo.search.SearchRepo;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.utils.Constants;
+import org.bson.types.ObjectId;
 import org.springframework.lang.NonNull;
+
+import java.util.Optional;
 
 
 /**
@@ -14,7 +17,9 @@ import org.springframework.lang.NonNull;
 public interface InventoryNumberRepo extends SearchRepo<InventoryNumber, InventoryNumberSearchReq> {
     InventoryNumber createNewNumber(InventoryPrefixEnum prefix);
 
-    InventoryNumber find(InventoryNumber example);
+    Optional<InventoryNumber> find(InventoryNumber example);
+
+    Optional<InventoryNumber> findById(ObjectId id);
 
     /**
      * The save operation is supported only for inventory numbers being written off and can be applied once.

@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.lang.NonNull;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -76,6 +77,11 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
     @Named("mapObjectIdSetToStringSet")
     static Set<String> mapObjectIdSetToStringSet(Set<ObjectId> objectIds) {
         return objectIds == null ? null : objectIds.stream().map(ObjectId::toHexString).collect(Collectors.toSet());
+    }
+
+    @Named("mapStringToObjectId")
+    static ObjectId mapStringToObjectId(@NonNull String id) {
+        return new ObjectId(id);
     }
 
     static String getTimeZoneByLocale(Locale locale) {
