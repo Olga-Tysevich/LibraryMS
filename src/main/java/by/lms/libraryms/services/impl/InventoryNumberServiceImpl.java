@@ -2,6 +2,8 @@ package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.InventoryNumber;
 import by.lms.libraryms.domain.InventoryPrefixEnum;
+import by.lms.libraryms.dto.resp.InventoryNumberDTO;
+import by.lms.libraryms.mappers.InventoryNumberMapper;
 import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.services.InventoryNumberService;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
@@ -19,6 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class InventoryNumberServiceImpl implements InventoryNumberService {
     private final InventoryNumberRepo inventoryNumberRepo;
+    private final InventoryNumberMapper mapper;
     @Value("${inventory.number.permissibleError}")
     private int permissibleError;
 
@@ -48,22 +51,15 @@ public class InventoryNumberServiceImpl implements InventoryNumberService {
         return inventoryNumberRepo.save(number);
     }
 
-    //TODO сделать маппер для преобразования, принимать в виде стринга весь номер и потом разбивать его в объект и искать по нему
     @Override
-    public String get(String id) {
-        List<InventoryNumber> result = inventoryNumberRepo.find(
-                InventoryNumberSearchReq.builder()
-                        .id(List.of(id))
-                        .build()
-        );
-        return !result.isEmpty() ? result.getFirst().number() : null;
+    public InventoryNumberDTO get(String number) {
+        InventoryNumber searchEl = mapper.toInventoryNumber(number);
+        return mapper.toDTO(searchEl);
     }
 
-
-    //TODO сделать маппер для преобразования
     @Override
-    public ListForPageResp<String> getAll(InventoryNumberSearchReq searchReq) {
+    public ListForPageResp<InventoryNumberDTO> getAll(InventoryNumberSearchReq searchReq) {
         ListForPageResp<InventoryNumber> numbersForPage = inventoryNumberRepo.findList(searchReq);
-        return null;
+        return mapper.toListForPageResp(numbersForPage);
     }
 }

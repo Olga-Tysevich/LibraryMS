@@ -105,6 +105,14 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
     }
 
     @Override
+    public InventoryNumber find(InventoryNumber example) {
+        Query query = new Query();
+        query.addCriteria(Criteria.byExample(example));
+        List<InventoryNumber> results = mongoTemplate().find(query, clazz());
+        return results.isEmpty() ? null : results.getFirst();
+    }
+
+    @Override
     @NonNull
     public <S extends InventoryNumber> S save(@NonNull S entity) {
         if (entity.getIsDisposedOf() && Objects.nonNull(entity.getDisposedDate())) {
