@@ -24,7 +24,7 @@ public class InventoryBook extends AbstractDomainClass {
     @NotNull
     @Indexed(unique = true)
     private ObjectId inventoryNumberId;
-    private Set<BookIOrder> bookIOrders;
+    private Set<ObjectId> bookOrderIds;
     private boolean available = true;
 
     @Version

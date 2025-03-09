@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "book_issues")
-public class BookIOrder extends AbstractDomainClass {
+public class BookOrder extends AbstractDomainClass {
     @NotNull
     private ObjectId inventoryBookId;
     @NotNull
