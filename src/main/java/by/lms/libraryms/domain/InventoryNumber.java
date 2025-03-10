@@ -3,20 +3,19 @@ package by.lms.libraryms.domain;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Setter
+@Getter
 @EqualsAndHashCode(callSuper = true)
 @Document(collection = "inventory_numbers")
 @CompoundIndexes(
@@ -24,24 +23,27 @@ import java.util.stream.Collectors;
 )
 public final class InventoryNumber extends AbstractDomainClass {
     @NotNull
-    private final InventoryPrefixEnum prefix;
+    @Setter(AccessLevel.PACKAGE)
+    @Getter(AccessLevel.PACKAGE)
+    private InventoryPrefixEnum prefix;
     @NotNull
-    private final Character delimiter;
+    @Setter(AccessLevel.PACKAGE)
+    @Getter(AccessLevel.PACKAGE)
+    private Character delimiter;
+    @NotNull
+    @Setter(AccessLevel.PACKAGE)
     @Getter
-    @NotNull
     @Size(min = 1, message = Constants.EMPTY_INVENTORY_NUMBER_MESSAGE)
-    private final List<InventoryNumberElement> numbers;
-    @Setter
-    @Getter
+    private List<InventoryNumberElement> numbers;
     private Boolean isDisposedOf = false;
-    @Setter
-    @Getter
     private LocalDate disposedDate;
+    private boolean isRelated = false;
+    private ObjectId relatedId;
 
     @Version
     private int version;
 
-    public InventoryNumber(InventoryPrefixEnum prefix, InventoryNumberElement lastNumber, InventoryNumberElement ... numbers) {
+    public InventoryNumber(InventoryPrefixEnum prefix, InventoryNumberElement lastNumber, InventoryNumberElement... numbers) {
         this.prefix = prefix;
         this.delimiter = prefix.getDelimiter();
         this.numbers = new ArrayList<>(numbers.length + 1);
@@ -53,5 +55,12 @@ public final class InventoryNumber extends AbstractDomainClass {
         return prefix.name() + delimiter + numbers.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(delimiter.toString()));
+    }
+
+    public void setRelatedId(ObjectId relatedId) {
+        if (Objects.nonNull(this.relatedId)) {
+            throw new IllegalArgumentException("Attempt to set a new inventory number for an object: " + this + "!ObjectId: " + relatedId);
+        }
+        this.relatedId = relatedId;
     }
 }

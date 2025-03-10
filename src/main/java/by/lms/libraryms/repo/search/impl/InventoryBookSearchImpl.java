@@ -49,8 +49,8 @@ public class InventoryBookSearchImpl extends AbstractSearchRepo<InventoryBook, I
             query.addCriteria(Criteria.where("bookOrderIds").in(searchReq.getInventoryNumbers()));
         }
 
-        if (Objects.nonNull(searchReq.getAvailable())) {
-            query.addCriteria(Criteria.where("available").is(searchReq.getAvailable()));
+        if (Objects.nonNull(searchReq.getIsAvailable())) {
+            query.addCriteria(Criteria.where("available").is(searchReq.getIsAvailable()));
         }
 
         return query;

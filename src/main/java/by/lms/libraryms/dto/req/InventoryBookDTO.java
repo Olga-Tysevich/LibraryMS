@@ -18,5 +18,5 @@ public class InventoryBookDTO extends AbstractDTO {
     private BookDTO book;
     private String inventoryNumber;
     private Set<String> bookOrderIds;
-    private boolean available;
+    private boolean isAvailable;
 }

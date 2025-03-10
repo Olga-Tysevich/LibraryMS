@@ -18,14 +18,14 @@ import java.util.Set;
 @CompoundIndexes({
         @CompoundIndex(name = "unique_inventory_book_index", def = "{'bookId': 1, 'inventoryNumberId': 1}", unique = true)
 })
-public class InventoryBook extends AbstractDomainClass {
+public class InventoryBook extends AbstractDomainClass implements Inventory {
     @NotNull
     private ObjectId bookId;
     @NotNull
     @Indexed(unique = true)
     private ObjectId inventoryNumberId;
     private Set<ObjectId> bookOrderIds;
-    private boolean available = true;
+    private boolean isAvailable = true;
 
     @Version
     private int version;

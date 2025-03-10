@@ -24,5 +24,5 @@ public class InventoryBookSearchReqDTO extends SearchReqDTO {
     private Set<String> authorIds;
     private Set<String> genreIds;
     private Set<String> bookOrderIds;
-    private Boolean available;
+    private Boolean isAvailable;
 }

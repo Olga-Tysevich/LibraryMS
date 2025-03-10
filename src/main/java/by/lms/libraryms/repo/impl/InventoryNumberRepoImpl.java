@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber, InventoryNumberSearchReq>
+public final class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber, InventoryNumberSearchReq>
         implements InventoryNumberRepo {
     @Value("${inventory.number.firstVal}")
     private int firstVal;
@@ -76,14 +76,21 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
      * @return next inventory number
      */
     @Override
-    public final InventoryNumber createNewNumber(InventoryPrefixEnum prefix) {
+    public InventoryNumber createNewNumber(InventoryPrefixEnum prefix) {
+        InventoryNumber lastInventoryNumber;
+
+        Query query = new Query(Criteria.where("prefix").is(prefix).and("isRelated").is(false));
+        List<InventoryNumber> existingNumbers = mongoTemplate().find(query, InventoryNumber.class);
+
+        if (!existingNumbers.isEmpty()) return existingNumbers.getFirst();
+
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.match(Criteria.where("prefix").is(prefix)),
                 Aggregation.sort(Sort.by(Sort.Order.desc("numbers.size()"))),
                 Aggregation.limit(1)
         );
 
-        InventoryNumber lastInventoryNumber = mongoTemplate().aggregate(agg, InventoryNumber.class, InventoryNumber.class)
+        lastInventoryNumber = mongoTemplate().aggregate(agg, InventoryNumber.class, InventoryNumber.class)
                 .getUniqueMappedResult();
 
         InventoryNumber result;
@@ -121,7 +128,12 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
 
     @Override
     @NonNull
-    public <S extends InventoryNumber> S save(@NonNull S entity) {
+    public InventoryNumber save(@NonNull InventoryNumber entity) {
+
+        if (Objects.isNull(entity.getId())) {
+            return mongoTemplate().save(entity);
+        }
+
         if (entity.getIsDisposedOf() && Objects.nonNull(entity.getDisposedDate())) {
             Query query = new Query(Criteria.where("id").is(entity.getId()).and("isDisposedOf").is(true));
             boolean exists = mongoTemplate().exists(query, InventoryNumber.class);
@@ -129,7 +141,17 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
             if (!exists) {
                 return mongoTemplate().save(entity);
             }
+        } else {
+            InventoryNumber inventoryNumber = findById(new ObjectId(entity.getId())).orElseThrow();
+            if (!inventoryNumber.isRelated()) {
+                inventoryNumber.setRelated(true);
+                mongoTemplate().save(inventoryNumber);
+            }
         }
+
+
         throw new UnsupportedOperationException(Constants.SAVE_OPERATION_NOT_SUPPORTED);
     }
+
+
 }

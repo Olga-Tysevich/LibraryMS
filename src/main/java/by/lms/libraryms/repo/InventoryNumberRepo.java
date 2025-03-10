@@ -22,10 +22,10 @@ public interface InventoryNumberRepo extends SearchRepo<InventoryNumber, Invento
     Optional<InventoryNumber> findById(ObjectId id);
 
     /**
-     * The save operation is supported only for inventory numbers being written off and can be applied once.
+     * It can be applied once for an unrelated inventory number or for writing off an inventory number.
      */
     @NonNull
-    <S extends InventoryNumber> S save(@NonNull S entity);
+    InventoryNumber save(@NonNull InventoryNumber entity);
 
     /**
      * Delete operation is not supported!

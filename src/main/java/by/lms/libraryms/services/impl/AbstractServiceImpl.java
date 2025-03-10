@@ -13,6 +13,8 @@ import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import by.lms.libraryms.utils.ParamsManager;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +36,11 @@ public abstract class AbstractServiceImpl<
         >
         implements AbstractService<Entity, DTO, SR, SRD, Mapper> {
 
+    @Getter(AccessLevel.PACKAGE)
     private final Repo repository;
+    @Getter(AccessLevel.PACKAGE)
     private final SRepo searchRepo;
+    @Getter(AccessLevel.PACKAGE)
     private final Mapper mapper;
 
 

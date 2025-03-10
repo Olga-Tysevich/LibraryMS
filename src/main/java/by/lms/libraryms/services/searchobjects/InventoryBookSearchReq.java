@@ -24,5 +24,5 @@ public class InventoryBookSearchReq extends SearchReq {
     private Integer yearTo;
     private List<ObjectId> inventoryNumbers;
     private Set<ObjectId> bookOrderIds;
-    private Boolean available;
+    private Boolean isAvailable;
 }
