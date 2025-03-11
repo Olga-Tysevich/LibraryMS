@@ -5,6 +5,8 @@ import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.exceptions.BindingInventoryNumberException;
+import by.lms.libraryms.exceptions.ChangingObjectException;
+import by.lms.libraryms.exceptions.UnbindInventoryNumberException;
 import by.lms.libraryms.mappers.InventoryBookMapper;
 import by.lms.libraryms.repo.InventoryBookRepo;
 import by.lms.libraryms.repo.search.InventoryBookSearch;
@@ -50,17 +52,18 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             }
         }
 
-
+        InventoryBook result = getMapper().toEntity(dto);
         try {
             isCreated = false;
-            InventoryBook result = getMapper().toEntity(dto);
             inventoryNumberService.add(result);
             getRepository().save(result);
-            isCreated = true;
+            return getMapper().toObjectChangedDTO(result, null);
         } catch (BindingInventoryNumberException e) {
             //TODO добавить лог
             System.out.println(e.getMessage());
-
+            unbindInventoryNumber(result);
+        } finally {
+            isCreated = true;
         }
 
         return getMapper().toObjectChangedDTO(result, null);
@@ -81,7 +84,13 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
         return InventoryBook.class;
     }
 
-    private void unbindInventoryNumber() {
-
+    private void unbindInventoryNumber(InventoryBook inventoryBook) {
+        try {
+            inventoryNumberService.unbind(inventoryBook);
+        } catch (UnbindInventoryNumberException e) {
+            //TODO добавить лог
+            System.out.println(e.getMessage());
+            throw new ChangingObjectException("Failed to create inventory number for the item: " + inventoryBook);
+        }
     }
 }

@@ -1,10 +1,7 @@
 package by.lms.libraryms.repo;
 
-import by.lms.libraryms.domain.Inventory;
 import by.lms.libraryms.domain.InventoryNumber;
 import by.lms.libraryms.domain.InventoryPrefixEnum;
-import by.lms.libraryms.exceptions.BindingInventoryNumberException;
-import by.lms.libraryms.exceptions.UnbindInventoryNumberException;
 import by.lms.libraryms.repo.search.SearchRepo;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.utils.Constants;
@@ -18,7 +15,15 @@ import java.util.Optional;
  * Operations to change inventory numbers are prohibited.
  */
 public interface InventoryNumberRepo extends SearchRepo<InventoryNumber, InventoryNumberSearchReq> {
-    Inventory createNewNumber(@NonNull InventoryPrefixEnum prefix, @NonNull Inventory relatedObject) throws BindingInventoryNumberException;
+    /**
+     * Method for finding the last number with a given prefix.
+     * Filter by prefix. Sort by size of the numbers list.
+     * Take only one (first) result or not yet linked inventory number if it exists.
+     *
+     * @param prefix The prefix of inventory number.
+     * @return next inventory number
+     */
+    InventoryNumber findLastNumber(@NonNull InventoryPrefixEnum prefix);
 
     Optional<InventoryNumber> find(@NonNull InventoryNumber example);
 
@@ -29,11 +34,6 @@ public interface InventoryNumberRepo extends SearchRepo<InventoryNumber, Invento
      */
     @NonNull
     InventoryNumber save(@NonNull InventoryNumber inventoryNumber);
-
-    /**
-     * You can only unbind on the day of binding.
-     */
-    void unbind(@NonNull Inventory relatedObject) throws UnbindInventoryNumberException;
 
     /**
      * Delete operation is not supported!

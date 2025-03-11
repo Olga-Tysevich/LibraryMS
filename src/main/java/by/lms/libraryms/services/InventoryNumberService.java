@@ -10,10 +10,14 @@ import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import org.springframework.lang.NonNull;
 
 
-public interface InventoryNumberService{
+public interface InventoryNumberService {
     Inventory add(@NonNull Inventory inventory) throws BindingInventoryNumberException;
+
     void unbind(@NonNull Inventory relatedObject) throws UnbindInventoryNumberException;
+
     InventoryNumber dispose(@NonNull InventoryNumber number);
+
     InventoryNumberDTO get(@NonNull String id);
+
     ListForPageResp<InventoryNumberDTO> getAll(@NonNull InventoryNumberSearchReq searchReq);
 }

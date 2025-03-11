@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public final class InventoryNumber extends AbstractDomainClass {
     @NotNull
     @Setter(AccessLevel.PACKAGE)
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private InventoryPrefixEnum prefix;
     @NotNull
     @Setter(AccessLevel.PACKAGE)
