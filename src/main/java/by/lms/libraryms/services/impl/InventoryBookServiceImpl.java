@@ -1,18 +1,16 @@
 package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.InventoryBook;
-import by.lms.libraryms.domain.InventoryNumber;
-import by.lms.libraryms.domain.InventoryPrefixEnum;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.exceptions.BindingInventoryNumberException;
 import by.lms.libraryms.mappers.InventoryBookMapper;
 import by.lms.libraryms.repo.InventoryBookRepo;
 import by.lms.libraryms.repo.search.InventoryBookSearch;
 import by.lms.libraryms.services.InventoryBookService;
 import by.lms.libraryms.services.InventoryNumberService;
 import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,12 +50,18 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             }
         }
 
-        isCreated = false;
-        InventoryBook result = getMapper().toEntity(dto);
-        InventoryBook finalResult = result;
-        result = (InventoryBook) inventoryNumberService.setRelated(result, InventoryPrefixEnum.MIN,
-                i -> getRepository().save(finalResult));
-        isCreated = true;
+
+        try {
+            isCreated = false;
+            InventoryBook result = getMapper().toEntity(dto);
+            inventoryNumberService.add(result);
+            getRepository().save(result);
+            isCreated = true;
+        } catch (BindingInventoryNumberException e) {
+            //TODO добавить лог
+            System.out.println(e.getMessage());
+
+        }
 
         return getMapper().toObjectChangedDTO(result, null);
     }
@@ -75,5 +79,9 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     @Override
     protected Class<InventoryBook> clazz() {
         return InventoryBook.class;
+    }
+
+    private void unbindInventoryNumber() {
+
     }
 }

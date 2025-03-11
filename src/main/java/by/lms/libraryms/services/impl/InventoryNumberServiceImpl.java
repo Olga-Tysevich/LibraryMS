@@ -4,22 +4,21 @@ import by.lms.libraryms.domain.Inventory;
 import by.lms.libraryms.domain.InventoryNumber;
 import by.lms.libraryms.domain.InventoryPrefixEnum;
 import by.lms.libraryms.dto.resp.InventoryNumberDTO;
+import by.lms.libraryms.exceptions.BindingInventoryNumberException;
+import by.lms.libraryms.exceptions.UnbindInventoryNumberException;
 import by.lms.libraryms.mappers.InventoryNumberMapper;
 import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.services.InventoryNumberService;
-import by.lms.libraryms.services.inventory.SaveInventory;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -29,17 +28,20 @@ public class InventoryNumberServiceImpl implements InventoryNumberService {
     @Value("${inventory.number.permissibleError}")
     private int permissibleError;
 
+    @Transactional
+    @Override
+    public Inventory add(@NonNull Inventory relatedObject) throws BindingInventoryNumberException {
+        return inventoryNumberRepo.createNewNumber(InventoryPrefixEnum.MIN, relatedObject);
+    }
 
     @Transactional
     @Override
-    public Inventory setRelated(Inventory entity, InventoryPrefixEnum prefix, @NotNull SaveInventory saveMethod) {
-        InventoryNumber number = inventoryNumberRepo.createNewNumber(prefix);
-        entity.setInventoryNumberId(new ObjectId(number.getId()));
-        return saveMethod.save(entity);
+    public void unbind(@NonNull Inventory relatedObject) throws UnbindInventoryNumberException {
+        inventoryNumberRepo.unbind(relatedObject);
     }
 
     @Override
-    public InventoryNumber dispose(@NotNull InventoryNumber number) {
+    public InventoryNumber dispose(@NonNull InventoryNumber number) {
         if (Objects.isNull(number.getDisposedDate())) {
             throw new IllegalArgumentException(String.format(
                     "Incorrect write-off of the number: %s!The date of write-off of the inventory number must be indicated!",
@@ -59,13 +61,13 @@ public class InventoryNumberServiceImpl implements InventoryNumberService {
     }
 
     @Override
-    public InventoryNumberDTO get(@NotNull String number) {
+    public InventoryNumberDTO get(@NonNull String number) {
         InventoryNumber searchEl = mapper.toInventoryNumber(number);
         return mapper.toDTO(searchEl);
     }
 
     @Override
-    public ListForPageResp<InventoryNumberDTO> getAll(@NotNull InventoryNumberSearchReq searchReq) {
+    public ListForPageResp<InventoryNumberDTO> getAll(@NonNull InventoryNumberSearchReq searchReq) {
         ListForPageResp<InventoryNumber> numbersForPage = inventoryNumberRepo.findList(searchReq);
         return mapper.toListForPageResp(numbersForPage);
     }
