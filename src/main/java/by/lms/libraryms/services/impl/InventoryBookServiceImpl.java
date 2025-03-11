@@ -16,7 +16,6 @@ import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -27,8 +26,6 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
         InventoryBookMapper> implements InventoryBookService {
     private final InventoryNumberService inventoryNumberService;
     private final ReentrantLock lock = new ReentrantLock();
-    private final Condition lockCondition = lock.newCondition();
-    private boolean isCreated = true;
 
     public InventoryBookServiceImpl(InventoryBookRepo repository,
                                     InventoryBookSearch searchRepo,
@@ -43,18 +40,10 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     @Override
     @Transactional
     public ObjectChangedDTO<InventoryBookDTO> add(InventoryBookDTO dto) {
-        while (!isCreated) {
-            try {
-                lockCondition.await();
-            } catch (InterruptedException e) {
-                //TODO добавить лог
-                System.out.println(e.getMessage());
-            }
-        }
+        lock.lock();
 
         InventoryBook result = getMapper().toEntity(dto);
         try {
-            isCreated = false;
             inventoryNumberService.add(result);
             getRepository().save(result);
             return getMapper().toObjectChangedDTO(result, null);
@@ -63,7 +52,7 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             System.out.println(e.getMessage());
             unbindInventoryNumber(result);
         } finally {
-            isCreated = true;
+            lock.unlock();
         }
 
         return getMapper().toObjectChangedDTO(result, null);
