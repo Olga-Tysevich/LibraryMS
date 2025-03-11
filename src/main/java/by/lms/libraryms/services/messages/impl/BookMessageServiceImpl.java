@@ -26,7 +26,7 @@ public class BookMessageServiceImpl extends AbstractMessageServiceImpl<BookDTO> 
     }
 
     @Override
-    protected void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<BookDTO> dto, List<Object> args) {
+    public void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<BookDTO> dto, List<Object> args) {
         BookDTO book = dto.getObject();
         String authors = authorService.getAllByIds(book.getAuthorIds()).stream()
                 .map(a -> a.getName() + " " + a.getSurname())

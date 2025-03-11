@@ -25,6 +25,9 @@ public class MessageConf {
     @Getter(AccessLevel.PACKAGE)
     @Setter(AccessLevel.PACKAGE)
     private Map<String, String> genre;
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
+    private Map<String, String> inventoryBook;
 
     @Getter
     private Map<MessageTypeEnum, String> authorMap;
@@ -32,6 +35,8 @@ public class MessageConf {
     private Map<MessageTypeEnum, String> bookMap;
     @Getter
     private Map<MessageTypeEnum, String> genreMap;
+    @Getter
+    private Map<MessageTypeEnum, String> inventoryBookMap;
 
 
     @PostConstruct
@@ -39,6 +44,7 @@ public class MessageConf {
         authorMap = convertToEnumMap(author);
         bookMap = convertToEnumMap(book);
         genreMap = convertToEnumMap(genre);
+        inventoryBookMap = convertToEnumMap(inventoryBook);
     }
 
     private Map<MessageTypeEnum, String> convertToEnumMap(Map<String, String> source) {

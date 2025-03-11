@@ -1,6 +1,5 @@
 package by.lms.libraryms.dto.resp;
 
-import by.lms.libraryms.dto.req.AuthorDTO;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -5,6 +5,7 @@ import by.lms.libraryms.domain.InventoryNumber;
 import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
+import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.exceptions.ObjectNotFound;
 import by.lms.libraryms.repo.BookRepo;
 import by.lms.libraryms.repo.InventoryNumberRepo;
@@ -37,7 +38,8 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
             @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "book", ignore = true),
             @Mapping(target = "inventoryNumber", ignore = true),
-            @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapObjectIdSetToStringSet")
+            @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapObjectIdSetToStringSet"),
+            @Mapping(target = "isAvailable", source = "available")
     })
     InventoryBookDTO toDTO(InventoryBook entity);
 
@@ -57,6 +59,21 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
     InventoryBookSearchReq toSearchReq(InventoryBookSearchReqDTO searchReqDTO);
 
     BookSearchReq toBookSearchReq(InventoryBookSearchReq searchReq);
+
+    @Mappings({
+            @Mapping(target = "object", source = "object", qualifiedByName = "mapInventoryToBook")
+    })
+    ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<InventoryBookDTO> dto);
+
+    @Named("mapInventoryToBook")
+    @Mappings({
+            @Mapping(target = "title", source = "book.title"),
+            @Mapping(target = "year", source = "book.year"),
+            @Mapping(target = "authorIds", source = "book.authorIds"),
+            @Mapping(target = "genreIds", source = "book.genreIds"),
+            @Mapping(target = "uniqueKey", source = "book.uniqueKey"),
+    })
+    BookDTO toBookDTO(InventoryBookDTO inventoryBookDTO);
 
     @AfterMapping
     default void mapInventoryNumber(@MappingTarget InventoryBook entity, InventoryBookDTO dto,
