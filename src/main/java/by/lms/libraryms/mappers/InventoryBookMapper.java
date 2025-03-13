@@ -28,6 +28,7 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
             @Mapping(target = "bookId", source = "book.id", qualifiedByName = "mapStringToObjectId"),
             @Mapping(target = "inventoryNumberId", ignore = true),
             @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapStringSetToObjectIdSet"),
+            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapLocalDateToInstant"),
             @Mapping(target = "version", ignore = true)
     })
     InventoryBook toEntity(InventoryBookDTO dto);
@@ -39,6 +40,7 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
             @Mapping(target = "book", ignore = true),
             @Mapping(target = "inventoryNumber", ignore = true),
             @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapObjectIdSetToStringSet"),
+            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapInstantToLocalDate"),
             @Mapping(target = "isAvailable", source = "available")
     })
     InventoryBookDTO toDTO(InventoryBook entity);
@@ -54,7 +56,9 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
             @Mapping(target = "inventoryNumbers", ignore = true),
             @Mapping(target = "authorIds", source = "authorIds", qualifiedByName = "mapStringSetToObjectIdSet"),
             @Mapping(target = "genreIds", source = "genreIds", qualifiedByName = "mapStringSetToObjectIdSet"),
-            @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapStringSetToObjectIdSet")
+            @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapStringSetToObjectIdSet"),
+            @Mapping(target = "dateOfReceiptFrom", source = "dateOfReceiptFrom", qualifiedByName = "mapLocalDateToInstant"),
+            @Mapping(target = "dateOfReceiptTo", source = "dateOfReceiptTo", qualifiedByName = "mapLocalDateToInstant")
     })
     InventoryBookSearchReq toSearchReq(InventoryBookSearchReqDTO searchReqDTO);
 

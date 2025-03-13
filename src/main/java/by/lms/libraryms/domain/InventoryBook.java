@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -26,6 +27,7 @@ public class InventoryBook extends AbstractDomainClass implements Inventory {
     private ObjectId inventoryNumberId;
     private Set<ObjectId> bookOrderIds;
     private boolean isAvailable = true;
+    private Instant dateOfReceipt;
 
     @Version
     private int version;

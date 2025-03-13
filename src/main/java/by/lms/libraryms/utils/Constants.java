@@ -21,6 +21,7 @@ public interface Constants {
     String SHA_256_PATTERN = "^[a-f0-9]{64}$";
     String DELETE_OPERATION_NOT_SUPPORTED = "Delete operation is not supported";
     String SAVE_OPERATION_NOT_SUPPORTED = "Save operation is not supported";
+    String INVALID_QUANTITY_MESSAGE = "The quantity must be greater than zero!";
 
     //Exceptions
     String OBJECTS_NOT_FOUND = "%s not found!Search params:%s";

@@ -1,5 +1,6 @@
 package by.lms.libraryms.services.searchobjects;
 
+import by.lms.libraryms.domain.InventoryNumber;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Set;
 
 @SuperBuilder
@@ -15,16 +17,16 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryBookSearchReq extends SearchReq {
+public class StockBookSearchReq extends SearchReq {
     private Set<String> titles;
     private Set<ObjectId> authorIds;
     private Set<ObjectId> genreIds;
     private Set<Integer> years;
     private Integer yearFrom;
     private Integer yearTo;
-    private Set<ObjectId> inventoryNumbers;
-    private Set<ObjectId> bookOrderIds;
-    private Boolean isAvailable;
+    private Set<ObjectId> bookIds;
+    private Map<ObjectId, Integer> numberOfBooks;
+    private Set<InventoryNumber> inventoryNumbers;
     private Instant dateOfReceiptFrom;
     private Instant dateOfReceiptTo;
 }

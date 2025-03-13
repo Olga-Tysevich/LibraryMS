@@ -4,6 +4,7 @@ import org.mapstruct.*;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -16,6 +17,11 @@ public interface SearchMapper {
     @Named("mapLocalDateTimeToInstant")
     static Instant mapLocalDateTimeToInstant(LocalDateTime localDateTime) {
         return localDateTime != null ? localDateTime.toInstant(ZoneOffset.UTC) : null;
+    }
+
+    @Named("mapLocalDateToInstant")
+    static Instant mapLocalDateToInstant(LocalDate localDate) {
+        return localDate != null ? localDate.atStartOfDay(ZoneOffset.UTC).toInstant() : null;
     }
 
     @Named("mapStringToDirection")

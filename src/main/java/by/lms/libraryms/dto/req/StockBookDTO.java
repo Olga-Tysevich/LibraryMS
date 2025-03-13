@@ -1,19 +1,24 @@
-package by.lms.libraryms.domain;
+package by.lms.libraryms.dto.req;
 
+import by.lms.libraryms.dto.AbstractDTO;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @Data
-@Document(collection = "stock")
-public class StockBook extends AbstractDomainClass {
+@NoArgsConstructor
+@AllArgsConstructor
+public class StockBookDTO extends AbstractDTO {
     @NotNull(message = Constants.EMPTY_ID_MESSAGE)
     private ObjectId bookId;
     @Positive(message = Constants.INVALID_QUANTITY_MESSAGE)

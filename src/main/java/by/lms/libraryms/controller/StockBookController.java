@@ -1,10 +1,9 @@
 package by.lms.libraryms.controller;
 
-import by.lms.libraryms.dto.req.GenreDTO;
-import by.lms.libraryms.dto.req.GenreSearchReqDTO;
+import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
-import by.lms.libraryms.facades.GenreFacade;
+import by.lms.libraryms.facades.StockBookFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,37 +15,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/library/genres")
-public class GenreController {
-    private final GenreFacade genreFacade;
+@RequestMapping("api/v1/library/stock_book")
+public class StockBookController {
+    private final StockBookFacade stockBookFacade;
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody @Valid GenreDTO genre) {
-        ObjectChangedDTO<GenreDTO> result = genreFacade.add(genre);
+    public ResponseEntity<?> add(@RequestBody @Valid StockBookDTO dto) {
+        ObjectChangedDTO<StockBookDTO> result = stockBookFacade.add(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> update(@RequestBody @Valid GenreDTO genre) {
-        ObjectChangedDTO<GenreDTO> result = genreFacade.update(genre);
+    public ResponseEntity<?> update(@RequestBody @Valid StockBookDTO dto) {
+        ObjectChangedDTO<StockBookDTO> result = stockBookFacade.update(dto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody @Valid GenreSearchReqDTO genre) {
-        ObjectChangedDTO<GenreDTO> result = genreFacade.delete(genre);
+    public ResponseEntity<?> delete(@RequestBody @Valid InventoryBookSearchReqDTO book) {
+        ObjectChangedDTO<InventoryBookDTO> result = stockBookFacade.delete(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get")
-    public ResponseEntity<?> get(@RequestBody @Valid GenreSearchReqDTO genre) {
-        GenreDTO result = genreFacade.get(genre);
+    public ResponseEntity<?> get(@RequestBody @Valid InventoryBookSearchReqDTO book) {
+        InventoryBookDTO result = stockBookFacade.get(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get/list")
-    public ResponseEntity<?> getList(@RequestBody @Valid GenreSearchReqDTO genre) {
-        ListForPageDTO<GenreDTO> result = genreFacade.getAll(genre);
+    public ResponseEntity<?> getList(@RequestBody @Valid InventoryBookSearchReqDTO book) {
+        ListForPageDTO<InventoryBookDTO> result = stockBookFacade.getAll(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
 }

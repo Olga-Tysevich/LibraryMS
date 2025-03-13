@@ -16,6 +16,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.lang.NonNull;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -67,6 +68,14 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
 
         ZoneId zoneId = ZoneId.of(getTimeZoneByLocale(LocaleContextHolder.getLocale()));
         return LocalDateTime.ofInstant(instant, zoneId);
+    }
+
+    @Named("mapInstantToLocalDate")
+    static LocalDate mapInstantToLocalDate(Instant instant) {
+        if (instant == null) return null;
+
+        ZoneId zoneId = ZoneId.of(getTimeZoneByLocale(LocaleContextHolder.getLocale()));
+        return LocalDate.ofInstant(instant, zoneId);
     }
 
     @Named("mapStringSetToObjectIdSet")

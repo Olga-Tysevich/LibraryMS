@@ -33,7 +33,7 @@ public class BookController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> update(@RequestBody @Valid BookSearchReqDTO book) {
+    public ResponseEntity<?> delete(@RequestBody @Valid BookSearchReqDTO book) {
         ObjectChangedDTO<BookDTO> result = bookFacade.delete(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

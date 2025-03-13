@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,4 +20,5 @@ public class InventoryBookDTO extends AbstractDTO {
     private String inventoryNumber;
     private Set<String> bookOrderIds;
     private boolean isAvailable;
+    private LocalDate dateOfReceipt;
 }

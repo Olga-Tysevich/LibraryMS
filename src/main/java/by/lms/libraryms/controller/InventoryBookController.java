@@ -20,33 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class InventoryBookController {
     private final InventoryBookFacade inventoryBookFacade;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody @Valid InventoryBookDTO inventoryBook) {
-        ObjectChangedDTO<InventoryBookDTO> result = inventoryBookFacade.add(inventoryBook);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
-    }
-
     @PostMapping("/update")
-    public ResponseEntity<?> update(@RequestBody @Valid InventoryBookDTO inventoryBook) {
-        ObjectChangedDTO<InventoryBookDTO> result = inventoryBookFacade.update(inventoryBook);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<?> update(@RequestBody @Valid InventoryBookSearchReqDTO inventoryBook) {
-        ObjectChangedDTO<InventoryBookDTO> result = inventoryBookFacade.delete(inventoryBook);
+    public ResponseEntity<?> update(@RequestBody @Valid InventoryBookDTO book) {
+        ObjectChangedDTO<InventoryBookDTO> result = inventoryBookFacade.update(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get")
-    public ResponseEntity<?> get(@RequestBody @Valid InventoryBookSearchReqDTO inventoryBook) {
-        InventoryBookDTO result = inventoryBookFacade.get(inventoryBook);
+    public ResponseEntity<?> get(@RequestBody @Valid InventoryBookSearchReqDTO book) {
+        InventoryBookDTO result = inventoryBookFacade.get(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get/list")
-    public ResponseEntity<?> getList(@RequestBody @Valid InventoryBookSearchReqDTO inventoryBook) {
-        ListForPageDTO<InventoryBookDTO> result = inventoryBookFacade.getAll(inventoryBook);
+    public ResponseEntity<?> getList(@RequestBody @Valid InventoryBookSearchReqDTO book) {
+        ListForPageDTO<InventoryBookDTO> result = inventoryBookFacade.getAll(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
