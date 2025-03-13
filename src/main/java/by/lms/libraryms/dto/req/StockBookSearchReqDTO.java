@@ -28,4 +28,5 @@ public class StockBookSearchReqDTO extends SearchReqDTO {
     private Set<String> inventoryNumbers;
     private LocalDate dateOfReceiptFrom;
     private LocalDate dateOfReceiptTo;
+    private Boolean isDeleted;
 }

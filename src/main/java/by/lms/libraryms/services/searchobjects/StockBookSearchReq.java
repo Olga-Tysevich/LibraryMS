@@ -29,4 +29,5 @@ public class StockBookSearchReq extends SearchReq {
     private Set<InventoryNumber> inventoryNumbers;
     private Instant dateOfReceiptFrom;
     private Instant dateOfReceiptTo;
+    private Boolean isDeleted;
 }

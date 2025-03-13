@@ -65,11 +65,11 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
     BookSearchReq toBookSearchReq(InventoryBookSearchReq searchReq);
 
     @Mappings({
-            @Mapping(target = "object", source = "object", qualifiedByName = "mapInventoryToBook")
+            @Mapping(target = "object", source = "object", qualifiedByName = "mapInventoryBookToBook")
     })
     ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<InventoryBookDTO> dto);
 
-    @Named("mapInventoryToBook")
+    @Named("mapInventoryBookToBook")
     @Mappings({
             @Mapping(target = "title", source = "book.title"),
             @Mapping(target = "year", source = "book.year"),

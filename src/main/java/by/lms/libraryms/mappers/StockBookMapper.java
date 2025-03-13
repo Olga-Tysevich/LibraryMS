@@ -2,8 +2,13 @@ package by.lms.libraryms.mappers;
 
 import by.lms.libraryms.domain.InventoryNumber;
 import by.lms.libraryms.domain.StockBook;
+import by.lms.libraryms.dto.req.BookDTO;
+import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.StockBookDTO;
 import by.lms.libraryms.dto.req.StockBookSearchReqDTO;
+import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.services.searchobjects.BookSearchReq;
+import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
@@ -36,6 +41,21 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
             @Mapping(target = "dateOfReceiptTo", source = "dateOfReceiptTo", qualifiedByName = "mapLocalDateToInstant")
     })
     StockBookSearchReq toSearchReq(StockBookSearchReqDTO searchReqDTO);
+
+    @Mappings({
+            @Mapping(target = "object", source = "object", qualifiedByName = "mapInventoryToBook")
+    })
+    ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<StockBookDTO> dto);
+
+    @Named("mapStockBookToBook")
+    @Mappings({
+            @Mapping(target = "title", source = "book.title"),
+            @Mapping(target = "year", source = "book.year"),
+            @Mapping(target = "authorIds", source = "book.authorIds"),
+            @Mapping(target = "genreIds", source = "book.genreIds"),
+            @Mapping(target = "uniqueKey", source = "book.uniqueKey"),
+    })
+    BookDTO toBookDTO(StockBookDTO stockBookDTO);
 
     @AfterMapping
     default void mapInventoryNumbers(@MappingTarget StockBookSearchReq target, @NotNull StockBookSearchReqDTO source,
