@@ -1,5 +1,6 @@
 package by.lms.libraryms.domain;
 
+import by.lms.libraryms.domain.inventorynumber.Inventory;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

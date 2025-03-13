@@ -1,8 +1,8 @@
 package by.lms.libraryms.mappers;
 
-import by.lms.libraryms.domain.InventoryNumber;
-import by.lms.libraryms.domain.InventoryNumberElement;
-import by.lms.libraryms.domain.InventoryPrefixEnum;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumberElement;
+import by.lms.libraryms.domain.inventorynumber.InventoryPrefixEnum;
 import by.lms.libraryms.dto.resp.InventoryNumberDTO;
 import by.lms.libraryms.exceptions.InvalidInventoryNumberException;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;

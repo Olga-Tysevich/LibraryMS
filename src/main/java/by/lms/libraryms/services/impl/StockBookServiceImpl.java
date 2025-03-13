@@ -15,10 +15,10 @@ import by.lms.libraryms.services.InventoryNumberService;
 import by.lms.libraryms.services.StockBookService;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import by.lms.libraryms.utils.Constants;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Service
@@ -28,7 +28,6 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         StockBookMapper> implements StockBookService {
     private final InventoryBookService inventoryBookService;
     private final BookService bookService;
-    private final InventoryNumberService inventoryNumberService;
 
     public StockBookServiceImpl(StockBookRepo repository,
                                 StockBookSearch searchRepo,
@@ -38,25 +37,29 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         super(repository, searchRepo, mapper);
         this.inventoryBookService = inventoryBookService;
         this.bookService = bookService;
-        this.inventoryNumberService = inventoryNumberService;
     }
 
     @Override
     @Transactional
     public ObjectChangedDTO<StockBookDTO> add(StockBookDTO dto) {
+        if (Objects.isNull(dto.getBookId())) {
+            throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+        }
         BookDTO bookDTO = bookService.findById(dto.getBookId());
-        InventoryBookDTO inventoryBookDTO = buildInventoryBookDTO(bookDTO, dto.getDateOfReceipt());
+        InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(null, bookDTO, dto.getDateOfReceipt());
         inventoryBookService.add(inventoryBookDTO);
         return super.add(dto);
     }
 
     @Override
+    @Transactional
     public ObjectChangedDTO<StockBookDTO> update(StockBookDTO dto) {
         if (Objects.isNull(dto.getId())) {
-            throw  new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+            throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
         }
-
-        InventoryBookDTO inventoryBookDTO = buildInventoryBookDTO(bookDTO, dto.getDateOfReceipt());
+        BookDTO bookDTO = bookService.findById(dto.getBookId());
+        InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(new ObjectId(dto.getId()), bookDTO, dto.getDateOfReceipt());
+        inventoryBookService.update(inventoryBookDTO);
         return super.update(dto);
     }
 
@@ -70,10 +73,4 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         return StockBook.class;
     }
 
-    private InventoryBookDTO buildInventoryBookDTO(BookDTO bookDTO, LocalDate dateOfReceipt) {
-        return InventoryBookDTO.builder()
-                .book(bookDTO)
-                .dateOfReceipt(dateOfReceipt)
-                .build();
-    }
 }

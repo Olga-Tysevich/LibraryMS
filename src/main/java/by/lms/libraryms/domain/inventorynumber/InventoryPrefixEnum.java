@@ -1,4 +1,4 @@
-package by.lms.libraryms.domain;
+package by.lms.libraryms.domain.inventorynumber;
 
 import lombok.Getter;
 

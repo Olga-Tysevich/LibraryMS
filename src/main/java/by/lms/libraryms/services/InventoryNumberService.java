@@ -1,7 +1,7 @@
 package by.lms.libraryms.services;
 
-import by.lms.libraryms.domain.Inventory;
-import by.lms.libraryms.domain.InventoryNumber;
+import by.lms.libraryms.domain.inventorynumber.Inventory;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
 import by.lms.libraryms.dto.resp.InventoryNumberDTO;
 import by.lms.libraryms.exceptions.BindingInventoryNumberException;
 import by.lms.libraryms.exceptions.UnbindInventoryNumberException;

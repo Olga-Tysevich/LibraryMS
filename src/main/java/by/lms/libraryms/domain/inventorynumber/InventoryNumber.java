@@ -1,5 +1,6 @@
-package by.lms.libraryms.domain;
+package by.lms.libraryms.domain.inventorynumber;
 
+import by.lms.libraryms.domain.AbstractDomainClass;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

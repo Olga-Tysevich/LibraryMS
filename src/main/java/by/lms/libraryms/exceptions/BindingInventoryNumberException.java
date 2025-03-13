@@ -1,6 +1,6 @@
 package by.lms.libraryms.exceptions;
 
-import by.lms.libraryms.domain.Inventory;
+import by.lms.libraryms.domain.inventorynumber.Inventory;
 
 public class BindingInventoryNumberException extends Exception {
     public BindingInventoryNumberException(Inventory relatedObject, String exceptionMessage) {

@@ -1,7 +1,7 @@
 package by.lms.libraryms.repo;
 
-import by.lms.libraryms.domain.InventoryNumber;
-import by.lms.libraryms.domain.InventoryPrefixEnum;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
+import by.lms.libraryms.domain.inventorynumber.InventoryPrefixEnum;
 import by.lms.libraryms.repo.search.SearchRepo;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.utils.Constants;

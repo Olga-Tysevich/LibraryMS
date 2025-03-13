@@ -1,7 +1,7 @@
 package by.lms.libraryms.mappers;
 
 import by.lms.libraryms.domain.InventoryBook;
-import by.lms.libraryms.domain.InventoryNumber;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
 import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;

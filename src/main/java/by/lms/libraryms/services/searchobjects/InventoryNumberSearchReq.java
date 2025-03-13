@@ -1,7 +1,7 @@
 package by.lms.libraryms.services.searchobjects;
 
-import by.lms.libraryms.domain.InventoryNumberElement;
-import by.lms.libraryms.domain.InventoryPrefixEnum;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumberElement;
+import by.lms.libraryms.domain.inventorynumber.InventoryPrefixEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
