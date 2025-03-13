@@ -11,9 +11,13 @@ import by.lms.libraryms.repo.BookRepo;
 import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
 import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
+import jakarta.validation.constraints.NotEmpty;
 import org.bson.types.ObjectId;
 import org.mapstruct.*;
 import org.springframework.lang.NonNull;
+
+import java.time.Instant;
+import java.util.List;
 
 
 @Mapper(
@@ -68,6 +72,17 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
             @Mapping(target = "object", source = "object", qualifiedByName = "mapInventoryBookToBook")
     })
     ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<InventoryBookDTO> dto);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "objectClass", expression = "java(entity.getClass().getSimpleName())"),
+            @Mapping(target = "createdAt", expression = "java(books.get(0).getCreatedAt())"),
+            @Mapping(target = "updatedAt", expression = "java(books.get(0).getUpdatedAt())"),
+            @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "object", ignore = true),
+            @Mapping(target = "objects", source = "books", expression = "java(toDTOList(books))"),
+    })
+    ObjectChangedDTO<InventoryBookDTO> toBookChangedDTO(@NotEmpty List<InventoryBook> books, Instant deletedAt);
 
     @Named("mapInventoryBookToBook")
     @Mappings({

@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -90,8 +93,41 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     }
 
     @Override
+    @Transactional
     public ObjectChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReqDTO) {
-        return super.delete(searchReqDTO);
+        List<InventoryBook> result = getRepository().findAllById(searchReqDTO.getId());
+        if (result.isEmpty()) throw new ObjectNotFound();
+
+        List<InventoryBook> unbindingSuccessful = new ArrayList<>();
+        List<InventoryBook> unbindingFailed = new ArrayList<>();
+        for (InventoryBook book : result) {
+            try {
+                LocalDate updatedAt = LocalDate.from(book.getUpdatedAt());
+                LocalDate today = LocalDate.now();
+                if (updatedAt.isAfter(today)) {
+                    throw new IllegalArgumentException(String.format(
+                            "Deleting inventory book : %s is not possible! The allowed date for making changes has expired %s!",
+                            result, updatedAt));
+                }
+
+                lock.lock();
+                inventoryNumberService.unbind(book);
+                unbindingSuccessful.add(book);
+            } catch (UnbindInventoryNumberException e) {
+                //TODO добавить лог
+                System.out.println(e.getMessage());
+                unbindingFailed.add(book);
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        if (unbindingFailed.isEmpty()) {
+            return getMapper().toBookChangedDTO(unbindingSuccessful, Instant.now());
+        }
+
+        throw new ChangingObjectException("Failed to delete inventory numbers. You need to contact technical support! Inventory numbers: "
+        + unbindingFailed);
     }
 
     @Override

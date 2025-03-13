@@ -9,13 +9,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ObjectChangedDTO<T> {
-    @NotEmpty(message = Constants.EMPTY_ID_MESSAGE)
     private String id;
     @NotEmpty(message = Constants.EMPTY_OBJECT_CLASS_MESSAGE)
     private String objectClass;
@@ -25,4 +25,5 @@ public class ObjectChangedDTO<T> {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     private T object;
+    private List<T> objects;
 }
