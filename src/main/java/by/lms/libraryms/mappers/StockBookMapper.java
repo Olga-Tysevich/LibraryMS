@@ -1,5 +1,6 @@
 package by.lms.libraryms.mappers;
 
+import by.lms.libraryms.domain.InventoryBook;
 import by.lms.libraryms.domain.InventoryNumber;
 import by.lms.libraryms.domain.StockBook;
 import by.lms.libraryms.dto.req.BookDTO;
@@ -7,7 +8,8 @@ import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.StockBookDTO;
 import by.lms.libraryms.dto.req.StockBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
-import by.lms.libraryms.services.searchobjects.BookSearchReq;
+import by.lms.libraryms.exceptions.ObjectNotFound;
+import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +24,17 @@ import java.util.stream.Collectors;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
-        StockBookSearchReq, StockBookSearchReqDTO>  {
+        StockBookSearchReq, StockBookSearchReqDTO> {
+
+    @Override
+    @Mappings({
+            @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "inventoryBookId", ignore = true),
+            @Mapping(target = "bookOrderIds", source = "bookOrderIds", qualifiedByName = "mapStringSetToObjectIdSet"),
+            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapLocalDateToInstant")
+    })
+    StockBook toEntity(StockBookDTO dto);
 
     @Override
     @Mappings({
@@ -47,6 +59,11 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
     })
     ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<StockBookDTO> dto);
 
+    @Mappings({
+            @Mapping(target = "inventoryNumbers", ignore = true)
+    })
+    InventoryBookSearchReq toBookSearchReq(StockBookSearchReq searchReq);
+
     @Named("mapStockBookToBook")
     @Mappings({
             @Mapping(target = "title", source = "book.title"),
@@ -59,17 +76,22 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
 
     @AfterMapping
     default void mapInventoryNumbers(@MappingTarget StockBookSearchReq target, @NotNull StockBookSearchReqDTO source,
-                                     @Context InventoryNumberMapper inventoryNumberMapper) {
+                                     @Context InventoryNumberMapper inventoryNumberMapper,
+                                     @Context InventoryNumberRepo numberRepo) {
         if (source.getInventoryNumbers() == null || source.getInventoryNumbers().isEmpty()) {
             target.setInventoryNumbers(Collections.emptySet());
             return;
         }
-        Set<InventoryNumber> inventoryIds = source.getInventoryNumbers().stream()
+        Set<ObjectId> result = source.getInventoryNumbers().stream()
                 .map(inventoryNumberMapper::toInventoryNumber)
                 .filter(Objects::nonNull)
+                .map(in -> numberRepo.find(in).orElse(null))
+                .filter(Objects::nonNull)
+                .map(InventoryNumber::getId)
+                .map(ObjectId::new)
                 .collect(Collectors.toSet());
 
-        target.setInventoryNumbers(inventoryIds);
+        target.setInventoryNumbers(result);
     }
 
     @Named("mapStringIntegerMapToObjectIdIntegerMap")

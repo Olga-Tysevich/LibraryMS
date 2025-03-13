@@ -8,16 +8,16 @@ import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "stock")
 public class StockBook extends AbstractDomainClass {
     @NotNull(message = Constants.EMPTY_ID_MESSAGE)
-    private ObjectId bookId;
+    private ObjectId inventoryBookId;
     @Positive(message = Constants.INVALID_QUANTITY_MESSAGE)
     private int quantity;
     @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
-    private LocalDateTime dateOfReceipt;
+    private Instant dateOfReceipt;
 }

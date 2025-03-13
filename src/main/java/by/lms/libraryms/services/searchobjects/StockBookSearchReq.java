@@ -1,6 +1,5 @@
 package by.lms.libraryms.services.searchobjects;
 
-import by.lms.libraryms.domain.InventoryNumber;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +25,7 @@ public class StockBookSearchReq extends SearchReq {
     private Integer yearTo;
     private Set<ObjectId> bookIds;
     private Map<ObjectId, Integer> numberOfBooks;
-    private Set<InventoryNumber> inventoryNumbers;
+    private Set<ObjectId> inventoryNumbers;
     private Instant dateOfReceiptFrom;
     private Instant dateOfReceiptTo;
-    private Boolean isDeleted;
 }
