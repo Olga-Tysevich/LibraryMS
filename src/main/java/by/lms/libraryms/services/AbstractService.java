@@ -15,6 +15,9 @@ import java.util.Set;
 public interface AbstractService<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
         Mapper extends ObjectMapper<Entity, DTO, SR, SRD>> {
+
+    DTO findById(String id);
+
     ObjectChangedDTO<DTO> add(@NotNull DTO dto);
 
     ObjectChangedDTO<DTO> update(@NotNull DTO dto);

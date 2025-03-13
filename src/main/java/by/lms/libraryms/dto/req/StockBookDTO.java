@@ -9,10 +9,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.bson.types.ObjectId;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
+
+//TODO подумать как искать
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @Data
@@ -20,10 +21,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class StockBookDTO extends AbstractDTO {
     @NotNull(message = Constants.EMPTY_ID_MESSAGE)
-    private ObjectId bookId;
-    private ObjectId inventoryNumberId;
+    private String bookId;
+    private String inventoryNumberId;
     @Positive(message = Constants.INVALID_QUANTITY_MESSAGE)
     private int quantity;
     @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
-    private LocalDateTime dateOfReceipt;
+    private LocalDate dateOfReceipt;
 }
