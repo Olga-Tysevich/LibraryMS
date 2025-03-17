@@ -12,7 +12,7 @@ import java.util.Objects;
 @Data
 public abstract class AbstractDomainClass {
     @Id
-    private String  id;
+    private String id;
 
     @CreatedDate
     @Field("created_at")
@@ -32,5 +32,12 @@ public abstract class AbstractDomainClass {
     @Override
     public int hashCode() {
         return Objects.hash(id, createdAt);
+    }
+
+    @Override
+    public String toString() {
+        return "id='" + id + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt;
     }
 }

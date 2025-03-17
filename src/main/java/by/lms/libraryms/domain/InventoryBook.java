@@ -4,6 +4,7 @@ import by.lms.libraryms.domain.inventorynumber.Inventory;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 @Document(collection = "inventory_books")
 @CompoundIndexes({
