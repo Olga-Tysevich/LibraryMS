@@ -4,6 +4,7 @@ import by.lms.libraryms.domain.Book;
 import by.lms.libraryms.repo.search.BookSearch;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
 import jakarta.validation.constraints.NotNull;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -56,4 +57,11 @@ public class BookSearchImpl extends AbstractSearchRepo<Book, BookSearchReq> impl
         return Book.class;
     }
 
+    @Override
+    protected boolean hasReferences(List<ObjectId> objectIds) {
+        String relatedFieldName = "bookIds";
+        boolean hasReferencesInInventoryBooks = super.hasReferences("inventory_books", relatedFieldName, objectIds);
+        boolean hasReferencesInStockBooks = super.hasReferences("stock_books", relatedFieldName, objectIds);
+        return hasReferencesInInventoryBooks && hasReferencesInStockBooks;
+    }
 }

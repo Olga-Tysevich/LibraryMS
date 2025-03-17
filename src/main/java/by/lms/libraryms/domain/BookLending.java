@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collection = "book_issues")
+@Document(collection = "book_lendings")
 public class BookLending extends AbstractDomainClass {
     @NotNull
     private ObjectId inventoryBookId;

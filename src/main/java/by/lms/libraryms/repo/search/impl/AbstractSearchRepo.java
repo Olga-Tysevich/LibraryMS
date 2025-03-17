@@ -24,6 +24,7 @@ public abstract class AbstractSearchRepo<Entity extends AbstractDomainClass, SR 
     private final MongoTemplate mongoTemplate;
 
 
+    //TODO доработать
     public long delete(@NotNull SR searchReq) {
 
         Query query = addParams(query(searchReq), searchReq);
@@ -35,8 +36,10 @@ public abstract class AbstractSearchRepo<Entity extends AbstractDomainClass, SR 
                 .map(ObjectId::new)
                 .toList());
 
+        List<ObjectId> withReferences = new ArrayList<>(List.of(new ObjectId()));
         for (Entity entity : entities) {
-            if (hasReferences(new ObjectId(entity.getId()))) {
+            withReferences.set(0, new ObjectId(entity.getId()));
+            if (hasReferences(withReferences)) {
                 impossibleToDelete.add(entity);
                 forDelete.remove(new ObjectId(entity.getId()));
             }
@@ -147,5 +150,14 @@ public abstract class AbstractSearchRepo<Entity extends AbstractDomainClass, SR 
 
     protected abstract Class<Entity> clazz();
 
-    protected abstract boolean hasReferences(ObjectId userId);
+    protected abstract boolean hasReferences(List<ObjectId> objectIds);
+
+    protected boolean hasReferences(String relatedTableName, String relatedFieldName, List<ObjectId> objectId) {
+        Criteria criteria = objectId.size() == 1? Criteria.where(relatedFieldName).is(objectId.getFirst()) :
+                Criteria.where(relatedFieldName).in(objectId);
+        return mongoTemplate().count(
+                new Query(criteria),
+                relatedTableName
+        ) > 0;
+    }
 }

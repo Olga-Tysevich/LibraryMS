@@ -31,6 +31,11 @@ public class StockBookSearchImpl extends AbstractSearchRepo<StockBook, StockBook
     }
 
     @Override
+    protected boolean hasReferences(List<ObjectId> objectIds) {
+        return super.hasReferences("books", "bookId", objectIds);
+    }
+
+    @Override
     protected Query addParams(Query query, StockBookSearchReq searchReq) {
         InventoryBookSearchReq bookSearchReq = mapper.toBookSearchReq(searchReq);
         List<ObjectId> inventoryBookIds = inventoryBookSearch.find(bookSearchReq).stream()

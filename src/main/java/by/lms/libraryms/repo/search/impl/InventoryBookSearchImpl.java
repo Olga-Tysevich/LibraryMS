@@ -60,4 +60,12 @@ public class InventoryBookSearchImpl extends AbstractSearchRepo<InventoryBook, I
     protected Class<InventoryBook> clazz() {
         return InventoryBook.class;
     }
+
+    @Override
+    protected boolean hasReferences(List<ObjectId> objectIds) {
+        String relatedFieldName = "bookId";
+        boolean hasReferencesInInventoryBooks = super.hasReferences("inventory_books", relatedFieldName, objectIds);
+        boolean hasReferencesInStockBooks = super.hasReferences("stock_books", relatedFieldName, objectIds);
+        return hasReferencesInInventoryBooks && hasReferencesInStockBooks;
+    }
 }

@@ -4,6 +4,7 @@ import by.lms.libraryms.domain.Author;
 import by.lms.libraryms.repo.search.AuthorSearch;
 import by.lms.libraryms.services.searchobjects.AuthorSearchReq;
 import jakarta.validation.constraints.NotNull;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -57,6 +58,11 @@ public class AuthorSearchImpl extends AbstractSearchRepo<Author, AuthorSearchReq
     @Override
     protected Class<Author> clazz() {
         return Author.class;
+    }
+
+    @Override
+    protected boolean hasReferences(List<ObjectId> objectIds) {
+        return super.hasReferences("books", "authorIds", objectIds);
     }
 
 }

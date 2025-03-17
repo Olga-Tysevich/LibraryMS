@@ -2,6 +2,7 @@ package by.lms.libraryms.repo.impl;
 
 import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
 import by.lms.libraryms.domain.inventorynumber.InventoryPrefixEnum;
+import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.repo.search.impl.AbstractSearchRepo;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
@@ -133,5 +134,10 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
     @Override
     protected Class<InventoryNumber> clazz() {
         return InventoryNumber.class;
+    }
+
+    @Override
+    protected boolean hasReferences(List<ObjectId> objectIds) {
+        throw new ChangingObjectException("The inventory number cannot be deleted. Inventory number ids: " + objectIds);
     }
 }

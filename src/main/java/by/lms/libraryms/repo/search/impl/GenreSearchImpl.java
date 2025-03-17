@@ -4,6 +4,7 @@ import by.lms.libraryms.domain.Genre;
 import by.lms.libraryms.repo.search.GenreSearch;
 import by.lms.libraryms.services.searchobjects.GenreSearchReq;
 import jakarta.validation.constraints.NotNull;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,5 +35,10 @@ public class GenreSearchImpl extends AbstractSearchRepo<Genre, GenreSearchReq> i
     @Override
     protected Class<Genre> clazz() {
         return Genre.class;
+    }
+
+    @Override
+    protected boolean hasReferences(List<ObjectId> objectIds) {
+        return super.hasReferences("books", "genreIds", objectIds);
     }
 }
