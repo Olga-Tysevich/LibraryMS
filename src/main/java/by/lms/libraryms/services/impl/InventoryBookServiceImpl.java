@@ -74,6 +74,9 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     public ObjectChangedDTO<InventoryBookDTO> update(InventoryBookDTO dto) {
         InventoryBook result = getRepository().findById(dto.getId()).orElseThrow(ObjectNotFound::new);
 
+        if (!result.getBookOrderIds().isEmpty()) throw new ChangingObjectException("Unable to update previously checked out inventory book! " +
+                "Inventory book: " + result);
+
         LocalDate updatedAt = LocalDate.from(result.getUpdatedAt());
         LocalDate today = LocalDate.now();
 
@@ -101,7 +104,11 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
         List<InventoryBook> unbindingSuccessful = new ArrayList<>();
         List<InventoryBook> unbindingFailed = new ArrayList<>();
         for (InventoryBook book : result) {
+
             try {
+                if (!book.getBookOrderIds().isEmpty()) throw new ChangingObjectException("Unable to delete previously checked out inventory book! " +
+                        "Inventory book: " + book);
+
                 LocalDate updatedAt = LocalDate.from(book.getUpdatedAt());
                 LocalDate today = LocalDate.now();
                 if (updatedAt.isAfter(today)) {
@@ -122,12 +129,13 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             }
         }
 
-        if (unbindingFailed.isEmpty()) {
-            return getMapper().toBookChangedDTO(unbindingSuccessful, Instant.now());
+        if (!unbindingFailed.isEmpty()) {
+            //TODO добавить лог
+            System.out.println("Failed to delete inventory numbers. You need to contact technical support! Inventory numbers: "
+                    + unbindingFailed);
         }
 
-        throw new ChangingObjectException("Failed to delete inventory numbers. You need to contact technical support! Inventory numbers: "
-        + unbindingFailed);
+        return getMapper().toBookChangedDTO(unbindingSuccessful, Instant.now());
     }
 
     @Override

@@ -28,5 +28,5 @@ public interface AbstractService<Entity extends AbstractDomainClass, DTO extends
 
     ListForPageDTO<DTO> getAll(@NotNull SRD searchReqDTO);
 
-    List<DTO> getAllByIds(@NotNull Set<String> idList);
+    List<DTO> findAllByIds(@NotNull Set<String> idList);
 }

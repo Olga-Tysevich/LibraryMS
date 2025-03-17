@@ -22,7 +22,6 @@ import java.time.LocalDate;
 public class StockBookDTO extends AbstractDTO {
     @NotNull(message = Constants.EMPTY_ID_MESSAGE)
     private String bookId;
-    private String inventoryNumberId;
     @Positive(message = Constants.INVALID_QUANTITY_MESSAGE)
     private int quantity;
     @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)

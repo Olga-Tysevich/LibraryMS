@@ -93,6 +93,11 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
         return new ObjectId(id);
     }
 
+    @Named("mapObjectIdToString")
+    static String mapObjectIdToString(@NonNull ObjectId id) {
+        return id.toString();
+    }
+
     static String getTimeZoneByLocale(Locale locale) {
         // TODO заменить на свой источник
         if (Locale.FRANCE.equals(locale)) return "Europe/Paris";

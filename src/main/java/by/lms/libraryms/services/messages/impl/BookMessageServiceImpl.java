@@ -25,14 +25,15 @@ public class BookMessageServiceImpl extends AbstractMessageServiceImpl<BookDTO> 
         this.genreService = genreService;
     }
 
+    //TODO разобраться с обрщением к бд
     @Override
     public void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<BookDTO> dto, List<Object> args) {
         BookDTO book = dto.getObject();
-        String authors = authorService.getAllByIds(book.getAuthorIds()).stream()
+        String authors = authorService.findAllByIds(book.getAuthorIds()).stream()
                 .map(a -> a.getName() + " " + a.getSurname())
                 .collect(Collectors.joining(", "));
         args.add(authors);
-        String genres = genreService.getAllByIds(book.getGenreIds()).stream()
+        String genres = genreService.findAllByIds(book.getGenreIds()).stream()
                 .map(GenreDTO::getName)
                 .collect(Collectors.joining(", "));
         args.add(genres);

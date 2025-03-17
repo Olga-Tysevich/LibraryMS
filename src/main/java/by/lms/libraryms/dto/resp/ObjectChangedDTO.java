@@ -24,6 +24,7 @@ public class ObjectChangedDTO<T> {
     @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+    //TODO возможно оставить только лист
     private T object;
     private List<T> objects;
 }

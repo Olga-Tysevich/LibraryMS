@@ -113,7 +113,7 @@ public abstract class AbstractServiceImpl<
     }
 
     @Override
-    public List<DTO> getAllByIds(Set<String> idList) {
+    public List<DTO> findAllByIds(Set<String> idList) {
         return mapper.toDTOList(repository.findAllById(idList));
     }
 

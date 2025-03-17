@@ -1,17 +1,14 @@
 package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.StockBook;
-import by.lms.libraryms.dto.req.BookDTO;
-import by.lms.libraryms.dto.req.InventoryBookDTO;
-import by.lms.libraryms.dto.req.StockBookDTO;
-import by.lms.libraryms.dto.req.StockBookSearchReqDTO;
+import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.mappers.StockBookMapper;
 import by.lms.libraryms.repo.StockBookRepo;
 import by.lms.libraryms.repo.search.StockBookSearch;
 import by.lms.libraryms.services.BookService;
 import by.lms.libraryms.services.InventoryBookService;
-import by.lms.libraryms.services.InventoryNumberService;
 import by.lms.libraryms.services.StockBookService;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import by.lms.libraryms.utils.Constants;
@@ -19,7 +16,11 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBookDTO,
@@ -33,7 +34,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
                                 StockBookSearch searchRepo,
                                 StockBookMapper mapper,
                                 InventoryBookService inventoryBookService,
-                                BookService bookService, InventoryNumberService inventoryNumberService) {
+                                BookService bookService) {
         super(repository, searchRepo, mapper);
         this.inventoryBookService = inventoryBookService;
         this.bookService = bookService;
@@ -46,8 +47,11 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
             throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
         }
         BookDTO bookDTO = bookService.findById(dto.getBookId());
-        InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(null, bookDTO, dto.getDateOfReceipt());
-        inventoryBookService.add(inventoryBookDTO);
+        for (int i = 0; i < dto.getQuantity(); i++) {
+            InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(null, bookDTO, dto.getDateOfReceipt());
+            inventoryBookService.add(inventoryBookDTO);
+        }
+
         return super.add(dto);
     }
 
@@ -57,6 +61,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         if (Objects.isNull(dto.getId())) {
             throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
         }
+
         BookDTO bookDTO = bookService.findById(dto.getBookId());
         InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(new ObjectId(dto.getId()), bookDTO, dto.getDateOfReceipt());
         inventoryBookService.update(inventoryBookDTO);
@@ -64,8 +69,47 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     }
 
     @Override
+    @Transactional
     public ObjectChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {
-        return super.delete(searchReqDTO);
+        Set<String> inventoryBookIds = getRepository().findAllById(searchReqDTO.getId()).stream()
+                .map(StockBook::getBookId)
+                .map(ObjectId::toString)
+                .collect(Collectors.toSet());
+
+        if (inventoryBookIds.isEmpty()) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+
+        InventoryBookSearchReqDTO inventoryBooksForDelete = InventoryBookSearchReqDTO.builder()
+                .id(inventoryBookIds)
+                .build();
+
+        ObjectChangedDTO<InventoryBookDTO> unbindingBooks = inventoryBookService.delete(inventoryBooksForDelete);
+        List<ObjectId> unbindingBookIds = unbindingBooks.getObjects().stream()
+                .map(InventoryBookDTO::getBook)
+                .map(BookDTO::getId)
+                .map(ObjectId::new)
+                .toList();
+
+        if (!unbindingBookIds.isEmpty()) {
+            getRepository().deleteAllByBookIdIn(unbindingBookIds);
+        }
+
+        if (inventoryBookIds.size() != unbindingBookIds.size()) {
+            Set<ObjectId> nonRemovedInventoryBookIds = inventoryBookIds.stream()
+                    .filter(id -> unbindingBookIds.contains(new ObjectId(id)))
+                    .map(ObjectId::new)
+                    .collect(Collectors.toSet());
+            List<StockBookDTO>  nonRemovedStockBooks = getRepository().findAllByBookIdIn(nonRemovedInventoryBookIds).stream()
+                    .map(getMapper()::toDTO)
+                    .toList();
+
+            throw new ChangingObjectException("Failed to delete stock books: " + nonRemovedStockBooks);
+        }
+
+        List<StockBookDTO> result = getRepository().findAllByIdIn(searchReqDTO.getId()).stream()
+                .map(getMapper()::toDTO)
+                .toList();
+
+        return getMapper().toStockBookChangedDTO(result, Instant.now());
     }
 
     @Override
