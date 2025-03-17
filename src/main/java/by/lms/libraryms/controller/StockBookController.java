@@ -32,20 +32,20 @@ public class StockBookController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody @Valid InventoryBookSearchReqDTO book) {
-        ObjectChangedDTO<InventoryBookDTO> result = stockBookFacade.delete(book);
+    public ResponseEntity<?> delete(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
+        ObjectChangedDTO<StockBookDTO> result = stockBookFacade.delete(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get")
-    public ResponseEntity<?> get(@RequestBody @Valid InventoryBookSearchReqDTO book) {
-        InventoryBookDTO result = stockBookFacade.get(book);
+    public ResponseEntity<?> get(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
+        StockBookDTO result = stockBookFacade.get(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/get/list")
-    public ResponseEntity<?> getList(@RequestBody @Valid InventoryBookSearchReqDTO book) {
-        ListForPageDTO<InventoryBookDTO> result = stockBookFacade.getAll(book);
+    public ResponseEntity<?> getList(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
+        ListForPageDTO<StockBookDTO> result = stockBookFacade.getAll(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

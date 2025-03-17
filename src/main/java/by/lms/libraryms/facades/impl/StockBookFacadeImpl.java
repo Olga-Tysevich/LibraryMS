@@ -1,40 +1,25 @@
 package by.lms.libraryms.facades.impl;
 
-import by.lms.libraryms.dto.req.InventoryBookDTO;
-import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
+import by.lms.libraryms.domain.StockBook;
 import by.lms.libraryms.dto.req.StockBookDTO;
-import by.lms.libraryms.dto.resp.ListForPageDTO;
-import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.req.StockBookSearchReqDTO;
 import by.lms.libraryms.facades.StockBookFacade;
-import lombok.RequiredArgsConstructor;
+import by.lms.libraryms.mappers.StockBookMapper;
+import by.lms.libraryms.services.NotificationService;
+import by.lms.libraryms.services.StockBookService;
+import by.lms.libraryms.services.messages.StockBookMessageService;
+import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class StockBookFacadeImpl implements StockBookFacade {
+public class StockBookFacadeImpl extends AbstractFacadeImpl<StockBook, StockBookDTO,
+        StockBookSearchReq, StockBookSearchReqDTO,
+        StockBookService, StockBookMessageService,
+        StockBookMapper> implements StockBookFacade {
 
-    @Override
-    public ObjectChangedDTO<InventoryBookDTO> add(StockBookDTO dto) {
-        return null;
-    }
-
-    @Override
-    public ObjectChangedDTO<InventoryBookDTO> update(StockBookDTO dto) {
-        return null;
-    }
-
-    @Override
-    public ObjectChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReq) {
-        return null;
-    }
-
-    @Override
-    public InventoryBookDTO get(InventoryBookSearchReqDTO searchReqDTO) {
-        return null;
-    }
-
-    @Override
-    public ListForPageDTO<InventoryBookDTO> getAll(InventoryBookSearchReqDTO searchReqDTO) {
-        return null;
+    public StockBookFacadeImpl(StockBookService service,
+                               NotificationService<StockBookDTO> notificationService,
+                               StockBookMessageService messageService) {
+        super(service, notificationService, messageService);
     }
 }
