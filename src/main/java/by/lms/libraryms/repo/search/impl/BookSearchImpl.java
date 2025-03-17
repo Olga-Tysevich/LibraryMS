@@ -22,7 +22,7 @@ public class BookSearchImpl extends AbstractSearchRepo<Book, BookSearchReq> impl
 
     protected Query addParams(@NotNull Query query, @NotNull BookSearchReq searchReq) {
 
-        if (!searchReq.getTitles().isEmpty()) {
+        if (Objects.nonNull(searchReq.getTitles()) && !searchReq.getTitles().isEmpty()) {
             List<Criteria> regexCriteria = searchReq.getTitles().stream()
                     .map(title -> Criteria.where("title").regex(title, "i"))
                     .toList();
@@ -38,7 +38,7 @@ public class BookSearchImpl extends AbstractSearchRepo<Book, BookSearchReq> impl
             query.addCriteria(Criteria.where("genreIds").in(searchReq.getGenreIds()));
         }
 
-        if (!searchReq.getYears().isEmpty()) {
+        if (Objects.nonNull(searchReq.getYears()) && !searchReq.getYears().isEmpty()) {
             query.addCriteria(Criteria.where("year").in(searchReq.getYears()));
         }
 

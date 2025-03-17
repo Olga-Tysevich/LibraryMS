@@ -12,6 +12,7 @@ import by.lms.libraryms.services.messages.StockBookMessageService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class StockBookMessageServiceImpl extends AbstractMessageServiceImpl<StockBookDTO> implements StockBookMessageService {
@@ -31,11 +32,11 @@ public class StockBookMessageServiceImpl extends AbstractMessageServiceImpl<Stoc
     //TODO разобраться с обрщением к бд
     @Override
     protected void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<StockBookDTO> dto, List<Object> args) {
-        List<BookDTO> bookDTOList = dto.getObjects().stream()
+        BookDTO bookDTO = Optional.ofNullable(dto.getObject())
                 .map(StockBookDTO::getBookId)
                 .map(bookService::findById)
-                .toList();
-        ObjectChangedDTO<BookDTO> bookChangedDTO = stockBookMapper.toBookChangedDTO(dto, bookDTOList);
+                .orElse(null);
+        ObjectChangedDTO<BookDTO> bookChangedDTO = stockBookMapper.toBookChangedDTO(dto, bookDTO);
         bookMessageService.addSpecific(typeEnum, bookChangedDTO, args);
         StockBookDTO stockBookDTO = dto.getObject();
         args.add(stockBookDTO.getQuantity());

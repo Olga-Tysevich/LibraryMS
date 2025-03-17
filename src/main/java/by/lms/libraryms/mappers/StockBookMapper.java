@@ -7,12 +7,10 @@ import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.mapstruct.*;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,9 +59,12 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
     StockBookSearchReq toSearchReq(StockBookSearchReqDTO searchReqDTO);
 
     @Mappings({
-            @Mapping(target = "objects", source = "bookDTOList")
+            @Mapping(target = "object", source = "bookDTO"),
+            @Mapping(target = "id", source = "bookDTO.id"),
+            @Mapping(target = "createdAt", source = "bookDTO.createdAt"),
+            @Mapping(target = "updatedAt", source = "bookDTO.updatedAt"),
     })
-    ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<StockBookDTO> dto, List<BookDTO> bookDTOList);
+    ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<StockBookDTO> dto, BookDTO bookDTO);
 
     @Mappings({
             @Mapping(target = "inventoryNumbers", ignore = true)
@@ -76,17 +77,6 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
             @Mapping(target = "dateOfReceipt", source = "dateOfReceipt")
     })
     InventoryBookDTO toInventoryBookDTO(ObjectId id, BookDTO bookDTO, LocalDate dateOfReceipt);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "objectClass", expression = "java(books.get(0).getClass().getSimpleName())"),
-            @Mapping(target = "createdAt", expression = "java(books.get(0).getCreatedAt())"),
-            @Mapping(target = "updatedAt", expression = "java(books.get(0).getUpdatedAt())"),
-            @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "object", ignore = true),
-            @Mapping(target = "objects", source = "books"),
-    })
-    ObjectChangedDTO<StockBookDTO> toStockBookChangedDTO(@NotEmpty List<StockBookDTO> books, Instant deletedAt);
 
     @AfterMapping
     default void mapInventoryNumbers(@MappingTarget StockBookSearchReq target, @NotNull StockBookSearchReqDTO source,

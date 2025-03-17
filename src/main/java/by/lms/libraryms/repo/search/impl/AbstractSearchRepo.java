@@ -1,5 +1,7 @@
 package by.lms.libraryms.repo.search.impl;
 
+import by.lms.libraryms.domain.AbstractDomainClass;
+import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.repo.search.SearchRepo;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.services.searchobjects.SearchReq;
@@ -7,23 +9,45 @@ import by.lms.libraryms.utils.Constants;
 import com.mongodb.client.result.DeleteResult;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public abstract class AbstractSearchRepo<Entity, SR extends SearchReq> implements SearchRepo<Entity, SR> {
+public abstract class AbstractSearchRepo<Entity extends AbstractDomainClass, SR extends SearchReq> implements SearchRepo<Entity, SR> {
     private final MongoTemplate mongoTemplate;
 
 
     public long delete(@NotNull SR searchReq) {
+
         Query query = addParams(query(searchReq), searchReq);
 
+        List<Entity> entities = mongoTemplate().find(query, clazz());
+        List<Entity> impossibleToDelete = new ArrayList<>();
+        List<ObjectId> forDelete = new ArrayList<>(entities.stream()
+                .map(Entity::getId)
+                .map(ObjectId::new)
+                .toList());
+
+        for (Entity entity : entities) {
+            if (hasReferences(new ObjectId(entity.getId()))) {
+                impossibleToDelete.add(entity);
+                forDelete.remove(new ObjectId(entity.getId()));
+            }
+        }
+
+        query = new Query(Criteria.where("_id").in(forDelete));
         DeleteResult result = mongoTemplate().remove(query, clazz());
+
+        if (!impossibleToDelete.isEmpty()) {
+            throw new ChangingObjectException("Impossible to delete objects: " + impossibleToDelete + ". Need to remove related objects!");
+        }
 
         return result.getDeletedCount();
     }
@@ -71,8 +95,8 @@ public abstract class AbstractSearchRepo<Entity, SR extends SearchReq> implement
         Query query = new Query();
         checkRequest(request);
 
-        if (Objects.nonNull(request.getId())) {
-            query.addCriteria(Criteria.where("id").is(request.getId()));
+        if (Objects.nonNull(request.getIds())) {
+            query.addCriteria(Criteria.where("id").is(request.getIds()));
         }
 
         if (Objects.nonNull(request.getCreatedAtFrom())) {
@@ -122,4 +146,6 @@ public abstract class AbstractSearchRepo<Entity, SR extends SearchReq> implement
     protected abstract Query addParams(@NotNull Query query, @NotNull SR searchReq);
 
     protected abstract Class<Entity> clazz();
+
+    protected abstract boolean hasReferences(ObjectId userId);
 }

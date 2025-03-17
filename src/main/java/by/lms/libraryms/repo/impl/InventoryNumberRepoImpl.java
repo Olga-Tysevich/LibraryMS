@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public final class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber, InventoryNumberSearchReq>
+public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber, InventoryNumberSearchReq>
         implements InventoryNumberRepo {
 
     public InventoryNumberRepoImpl(MongoTemplate mongoTemplate) {
@@ -38,7 +38,7 @@ public final class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryN
      * @return next inventory number
      */
     @Override
-    public InventoryNumber findLastNumber(@NonNull InventoryPrefixEnum prefix) {
+    public final InventoryNumber findLastNumber(@NonNull InventoryPrefixEnum prefix) {
         InventoryNumber result;
 
         Query query = new Query(Criteria.where("prefix").is(prefix).and("isRelated").is(false));
@@ -61,7 +61,7 @@ public final class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryN
     }
 
     @Override
-    public Optional<InventoryNumber> find(@NonNull InventoryNumber example) {
+    public final Optional<InventoryNumber> find(@NonNull InventoryNumber example) {
         Query query = new Query();
         query.addCriteria(Criteria.byExample(example));
         List<InventoryNumber> results = mongoTemplate().find(query, clazz());
@@ -69,13 +69,13 @@ public final class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryN
     }
 
     @Override
-    public Optional<InventoryNumber> findById(@NonNull ObjectId id) {
+    public final Optional<InventoryNumber> findById(@NonNull ObjectId id) {
         return Optional.ofNullable(mongoTemplate().findById(id, InventoryNumber.class));
     }
 
     @Override
     @NonNull
-    public InventoryNumber save(@NonNull InventoryNumber entity) {
+    public final InventoryNumber save(@NonNull InventoryNumber entity) {
 
         if (Objects.isNull(entity.getId())) {
             return mongoTemplate().save(entity);

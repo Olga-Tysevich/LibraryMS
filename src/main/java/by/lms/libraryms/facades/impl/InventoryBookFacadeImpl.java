@@ -4,6 +4,7 @@ import by.lms.libraryms.domain.InventoryBook;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.ActionProhibitedException;
 import by.lms.libraryms.facades.InventoryBookFacade;
 import by.lms.libraryms.mappers.InventoryBookMapper;
@@ -27,7 +28,7 @@ public class InventoryBookFacadeImpl extends AbstractFacadeImpl<InventoryBook, I
 
     //TODO добавить данные про аккаунт библиотекаря
     @Override
-    public ObjectChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReqDTO) {
+    public ObjectListChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReqDTO) {
         throw new ActionProhibitedException(String.format("Deleting inventory books is prohibited! Account: %s Inventory book: %s",
                 "", searchReqDTO));
     }

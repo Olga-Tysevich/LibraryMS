@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class GenreSearchImpl extends AbstractSearchRepo<Genre, GenreSearchReq> implements GenreSearch {
@@ -20,6 +21,8 @@ public class GenreSearchImpl extends AbstractSearchRepo<Genre, GenreSearchReq> i
 
     @Override
     protected Query addParams(@NotNull Query query, @NotNull GenreSearchReq searchReq) {
+
+        if (Objects.isNull(searchReq.getNames())) return query;
         List<Criteria> criteriaList = searchReq.getNames().stream()
                 .map(name -> Criteria.where("name").is(name))
                 .toList();

@@ -79,8 +79,7 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
             @Mapping(target = "createdAt", expression = "java(ObjectMapper.mapInstantToLocalDateTime(books.get(0).getCreatedAt()))"),
             @Mapping(target = "updatedAt", expression = "java(ObjectMapper.mapInstantToLocalDateTime(books.get(0).getUpdatedAt()))"),
             @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "object", ignore = true),
-            @Mapping(target = "objects", expression = "java(toDTOList(books))"),
+            @Mapping(target = "object", ignore = true)
     })
     ObjectChangedDTO<InventoryBookDTO> toBookChangedDTO(@NotEmpty List<InventoryBook> books, Instant deletedAt);
 

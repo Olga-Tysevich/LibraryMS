@@ -4,6 +4,7 @@ import by.lms.libraryms.domain.InventoryBook;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.BindingInventoryNumberException;
 import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.exceptions.ObjectNotFound;
@@ -97,12 +98,12 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
 
     @Override
     @Transactional
-    public ObjectChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReqDTO) {
-        List<InventoryBook> result = getRepository().findAllById(searchReqDTO.getId());
+    public ObjectListChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReqDTO) {
+        List<InventoryBook> result = getRepository().findAllById(searchReqDTO.getIds());
         if (result.isEmpty()) throw new ObjectNotFound();
 
-        List<InventoryBook> unbindingSuccessful = new ArrayList<>();
-        List<InventoryBook> unbindingFailed = new ArrayList<>();
+        List<ObjectChangedDTO<InventoryBookDTO>> unbindingSuccessful = new ArrayList<>();
+        List<ObjectChangedDTO<InventoryBookDTO>> unbindingFailed = new ArrayList<>();
         for (InventoryBook book : result) {
 
             try {
@@ -119,11 +120,11 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
 
                 lock.lock();
                 inventoryNumberService.unbind(book);
-                unbindingSuccessful.add(book);
+                unbindingSuccessful.add(getMapper().toObjectChangedDTO(book, Instant.now()));
             } catch (UnbindInventoryNumberException e) {
                 //TODO добавить лог
                 System.out.println(e.getMessage());
-                unbindingFailed.add(book);
+                unbindingFailed.add(getMapper().toObjectChangedDTO(book, null));
             } finally {
                 lock.unlock();
             }
@@ -135,7 +136,7 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
                     + unbindingFailed);
         }
 
-        return getMapper().toBookChangedDTO(unbindingSuccessful, Instant.now());
+        return new ObjectListChangedDTO<>(unbindingSuccessful);
     }
 
     @Override

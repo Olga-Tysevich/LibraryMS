@@ -3,6 +3,7 @@ package by.lms.libraryms.services.impl;
 import by.lms.libraryms.domain.StockBook;
 import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.mappers.StockBookMapper;
 import by.lms.libraryms.repo.StockBookRepo;
@@ -70,8 +71,8 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
 
     @Override
     @Transactional
-    public ObjectChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {
-        Set<String> inventoryBookIds = getRepository().findAllById(searchReqDTO.getId()).stream()
+    public ObjectListChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {
+        Set<String> inventoryBookIds = getRepository().findAllById(searchReqDTO.getIds()).stream()
                 .map(StockBook::getBookId)
                 .map(ObjectId::toString)
                 .collect(Collectors.toSet());
@@ -79,11 +80,12 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         if (inventoryBookIds.isEmpty()) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
 
         InventoryBookSearchReqDTO inventoryBooksForDelete = InventoryBookSearchReqDTO.builder()
-                .id(inventoryBookIds)
+                .ids(inventoryBookIds)
                 .build();
 
-        ObjectChangedDTO<InventoryBookDTO> unbindingBooks = inventoryBookService.delete(inventoryBooksForDelete);
+        ObjectListChangedDTO<InventoryBookDTO> unbindingBooks = inventoryBookService.delete(inventoryBooksForDelete);
         List<ObjectId> unbindingBookIds = unbindingBooks.getObjects().stream()
+                .map(ObjectChangedDTO::getObject)
                 .map(InventoryBookDTO::getBook)
                 .map(BookDTO::getId)
                 .map(ObjectId::new)
@@ -105,11 +107,11 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
             throw new ChangingObjectException("Failed to delete stock books: " + nonRemovedStockBooks);
         }
 
-        List<StockBookDTO> result = getRepository().findAllByIdIn(searchReqDTO.getId()).stream()
-                .map(getMapper()::toDTO)
+        List<ObjectChangedDTO<StockBookDTO>> result = getRepository().findAllByIdIn(searchReqDTO.getIds()).stream()
+                .map(e -> getMapper().toObjectChangedDTO(e, Instant.now()))
                 .toList();
 
-        return getMapper().toStockBookChangedDTO(result, Instant.now());
+        return new ObjectListChangedDTO<>(result);
     }
 
     @Override

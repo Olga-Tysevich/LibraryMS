@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public abstract class SearchReqDTO {
-    private Set<String> id;
+    private Set<String> ids;
     private LocalDateTime createdAtFrom;
     private LocalDateTime createdAtTo;
     private LocalDateTime updatedAtFrom;

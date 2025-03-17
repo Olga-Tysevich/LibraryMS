@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class AuthorSearchImpl extends AbstractSearchRepo<Author, AuthorSearchReq> implements AuthorSearch {
@@ -23,6 +24,7 @@ public class AuthorSearchImpl extends AbstractSearchRepo<Author, AuthorSearchReq
     protected Query addParams(@NotNull Query query, @NotNull AuthorSearchReq searchReq) {
         List<Criteria> criteriaList = new ArrayList<>();
 
+        if (Objects.isNull(searchReq.getFullNames())) return query;
         searchReq.getFullNames().stream()
                 .filter(name -> !name.isBlank())
                 .map(name -> Arrays.asList(name.trim().split("\\s+")))

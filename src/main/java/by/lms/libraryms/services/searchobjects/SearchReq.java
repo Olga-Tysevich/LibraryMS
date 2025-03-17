@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class SearchReq {
-    private List<String> id;
+    private List<String> ids;
     private Instant createdAtFrom;
     private Instant createdAtTo;
     private Instant updatedAtFrom;
