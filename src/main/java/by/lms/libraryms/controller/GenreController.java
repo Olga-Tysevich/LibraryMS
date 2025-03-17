@@ -4,6 +4,7 @@ import by.lms.libraryms.dto.req.GenreDTO;
 import by.lms.libraryms.dto.req.GenreSearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.facades.GenreFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class GenreController {
 
     @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody @Valid GenreSearchReqDTO genre) {
-        ObjectChangedDTO<GenreDTO> result = genreFacade.delete(genre);
+        ObjectListChangedDTO<GenreDTO> result = genreFacade.delete(genre);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

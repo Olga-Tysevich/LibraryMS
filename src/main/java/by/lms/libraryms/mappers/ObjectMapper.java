@@ -6,6 +6,7 @@ import by.lms.libraryms.dto.AbstractDTO;
 import by.lms.libraryms.dto.SearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import org.bson.types.ObjectId;

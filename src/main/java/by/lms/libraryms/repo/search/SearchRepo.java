@@ -12,7 +12,7 @@ import java.util.List;
  * @param <SR> the search request class
  */
 public interface SearchRepo<Entity, SR extends SearchReq> {
-    boolean delete(@NotNull SR searchReq);
+    long delete(@NotNull SR searchReq);
     List<Entity> find(@NotNull SR searchReq);
     ListForPageResp<Entity> findList(@NotNull SR searchReq);
 }

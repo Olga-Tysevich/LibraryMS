@@ -4,6 +4,7 @@ import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.BookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.facades.BookFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class BookController {
 
     @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody @Valid BookSearchReqDTO book) {
-        ObjectChangedDTO<BookDTO> result = bookFacade.delete(book);
+        ObjectListChangedDTO<BookDTO> result = bookFacade.delete(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

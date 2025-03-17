@@ -20,12 +20,12 @@ public abstract class AbstractSearchRepo<Entity, SR extends SearchReq> implement
     private final MongoTemplate mongoTemplate;
 
 
-    public boolean delete(@NotNull SR searchReq) {
+    public long delete(@NotNull SR searchReq) {
         Query query = addParams(query(searchReq), searchReq);
 
         DeleteResult result = mongoTemplate().remove(query, clazz());
 
-        return result.getDeletedCount() > 0;
+        return result.getDeletedCount();
     }
 
 

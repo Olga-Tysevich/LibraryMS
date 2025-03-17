@@ -6,6 +6,7 @@ import by.lms.libraryms.dto.AbstractDTO;
 import by.lms.libraryms.dto.SearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.facades.AbstractFacade;
 import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.services.AbstractService;
@@ -15,7 +16,6 @@ import by.lms.libraryms.services.searchobjects.SearchReq;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -47,11 +47,9 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
     }
 
     @Override
-    public ObjectChangedDTO<DTO> delete(@NotNull SRD searchReqDTO) {
-        ObjectChangedDTO<DTO> result = service.delete(searchReqDTO);
+    public ObjectListChangedDTO<DTO> delete(@NotNull SRD searchReqDTO) {
+        ObjectListChangedDTO<DTO> result = service.delete(searchReqDTO);
         if (Objects.nonNull(result)) {
-            result.setUpdatedAt(LocalDateTime.now());
-            result.setDeletedAt(LocalDateTime.now());
             sendMessage(MessageTypeEnum.DELETE, result);
         }
         return result;
@@ -74,6 +72,13 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
     private void sendMessage(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
         if (Objects.nonNull(result)) {
             sendMessage(message(type, result));
+        }
+    }
+
+    private void sendMessage(MessageTypeEnum type, ObjectListChangedDTO<DTO> result) {
+        if (Objects.nonNull(result)) {
+            messageService.createMessages(type, result)
+                    .forEach(this::sendMessage);
         }
     }
 

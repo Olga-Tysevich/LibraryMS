@@ -84,7 +84,7 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
             @Mapping(target = "updatedAt", expression = "java(books.get(0).getUpdatedAt())"),
             @Mapping(target = "deletedAt", source = "deletedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "object", ignore = true),
-            @Mapping(target = "objects", source = "books)"),
+            @Mapping(target = "objects", source = "books"),
     })
     ObjectChangedDTO<StockBookDTO> toStockBookChangedDTO(@NotEmpty List<StockBookDTO> books, Instant deletedAt);
 

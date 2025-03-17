@@ -5,6 +5,7 @@ import by.lms.libraryms.dto.AbstractDTO;
 import by.lms.libraryms.dto.SearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.exceptions.ObjectNotFound;
 import by.lms.libraryms.mappers.ObjectMapper;
@@ -20,10 +21,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static by.lms.libraryms.utils.Constants.OBJECTS_NOT_FOUND;
 
@@ -59,16 +57,21 @@ public abstract class AbstractServiceImpl<
 
     @Transactional
     @Override
-    public ObjectChangedDTO<DTO> delete(SRD searchReqDTO) {
+    public ObjectListChangedDTO<DTO> delete(SRD searchReqDTO) {
         SR searchReq = mapper.toSearchReq(searchReqDTO);
-        Entity result = find(searchReq);
-        boolean isDeleted = searchRepo.delete(searchReq);
-        if (!isDeleted) {
-            throw new ChangingObjectException();
+        List<Entity> result = find(searchReq);
+        long isDeleted = searchRepo.delete(searchReq);
+
+        if (result.size() != isDeleted) {
+            List<Entity> notDeleted = find(searchReq);
+            throw new ChangingObjectException("Failed to delete objects: " + notDeleted);
         }
-        return Optional.of(result)
+
+        List<ObjectChangedDTO<DTO>> list = result.stream()
                 .map(entity -> mapper.toObjectChangedDTO(entity, Instant.now()))
-                .orElseThrow(ChangingObjectException::new);
+                .toList();
+
+        return new ObjectListChangedDTO<>(list);
     }
 
     @Transactional
@@ -80,7 +83,7 @@ public abstract class AbstractServiceImpl<
     @Override
     public DTO get(SRD searchReqDTO) {
         SR searchReq = mapper.toSearchReq(searchReqDTO);
-        return mapper.toDTO(find(searchReq));
+        return mapper.toDTO(find(searchReq).getFirst());
     }
 
     @Override
@@ -97,8 +100,8 @@ public abstract class AbstractServiceImpl<
                 .orElseThrow(ChangingObjectException::new);
     }
 
-    private Entity find(SR searchReq) {
-        Entity result = searchRepo.find(searchReq).getFirst();
+    private List<Entity> find(SR searchReq) {
+        List<Entity> result = searchRepo.find(searchReq);
 
         if (Objects.isNull(result)) {
             throw new ObjectNotFound(

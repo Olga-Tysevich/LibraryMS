@@ -4,6 +4,7 @@ import by.lms.libraryms.dto.req.AuthorDTO;
 import by.lms.libraryms.dto.req.AuthorSearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.facades.AuthorFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class AuthorController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody @Valid AuthorSearchReqDTO author) {
-        ObjectChangedDTO<AuthorDTO> result = authorFacade.delete(author);
+        ObjectListChangedDTO<AuthorDTO> result = authorFacade.delete(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

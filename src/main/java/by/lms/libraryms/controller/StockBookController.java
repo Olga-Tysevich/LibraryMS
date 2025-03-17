@@ -3,6 +3,7 @@ package by.lms.libraryms.controller;
 import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.facades.StockBookFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class StockBookController {
 
     @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
-        ObjectChangedDTO<StockBookDTO> result = stockBookFacade.delete(stockBook);
+        ObjectListChangedDTO<StockBookDTO> result = stockBookFacade.delete(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
