@@ -7,6 +7,7 @@ import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.repo.search.impl.AbstractSearchRepo;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.utils.Constants;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -50,7 +51,8 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
         } else {
             Aggregation agg = Aggregation.newAggregation(
                     Aggregation.match(Criteria.where("prefix").is(prefix)),
-                    Aggregation.sort(Sort.by(Sort.Order.desc("numbers.size()"))),
+                    Aggregation.addFields().addField("maxNumber").withValue(new Document("$max", "$numbers")).build(),
+                    Aggregation.sort(Sort.by(Sort.Order.desc("maxNumber"))),
                     Aggregation.limit(1)
             );
 
@@ -94,7 +96,7 @@ public class InventoryNumberRepoImpl extends AbstractSearchRepo<InventoryNumber,
             LocalDate updateDate = inventoryNumber.getUpdatedAt().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate now = LocalDate.now(ZoneId.systemDefault());
             if (!inventoryNumber.isRelated() || updateDate.isEqual(now)) {
-                mongoTemplate().save(entity);
+                return mongoTemplate().save(entity);
             }
         }
 

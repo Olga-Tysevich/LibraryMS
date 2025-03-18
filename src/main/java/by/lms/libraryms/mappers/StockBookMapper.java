@@ -78,6 +78,14 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
     })
     InventoryBookDTO toInventoryBookDTO(ObjectId id, BookDTO bookDTO, LocalDate dateOfReceipt);
 
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "book", source = "bookDTO"),
+            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt"),
+            @Mapping(target = "isAvailable", expression = "java(true)")
+    })
+    InventoryBookDTO toInventoryBookDTO(BookDTO bookDTO, LocalDate dateOfReceipt);
+
     @AfterMapping
     default void mapInventoryNumbers(@MappingTarget StockBookSearchReq target, @NotNull StockBookSearchReqDTO source,
                                      @Context InventoryNumberMapper inventoryNumberMapper,

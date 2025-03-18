@@ -1,6 +1,7 @@
 package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.InventoryBook;
+import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
@@ -56,13 +57,16 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
 
         InventoryBook result = getMapper().toEntity(dto);
         try {
-            inventoryNumberService.add(result);
+            InventoryNumber inventoryNumber = inventoryNumberService.getLastNumber();
+            result.setInventoryNumberId(new ObjectId(inventoryNumber.getId()));
             getRepository().save(result);
+            inventoryNumberService.bind(result);
             return getMapper().toObjectChangedDTO(result, null);
         } catch (BindingInventoryNumberException e) {
             //TODO добавить лог
             System.out.println(e.getMessage());
             unbindInventoryNumber(result);
+            getRepository().delete(result);
         } finally {
             lock.unlock();
         }

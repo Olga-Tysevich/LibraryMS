@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,21 +36,31 @@ public class InventoryNumberServiceImpl implements InventoryNumberService {
     @Value("${inventory.number.firstVal}")
     private int firstVal;
 
+
     @Transactional
     @Override
-    public Inventory add(@NonNull Inventory relatedObject) throws BindingInventoryNumberException {
+    public InventoryNumber getLastNumber() {
+        InventoryPrefixEnum prefix = InventoryPrefixEnum.MIN;
+        InventoryNumber result = inventoryNumberRepo.findLastNumber(prefix);
+
+        if (Objects.isNull(result)) {
+            InventoryNumberElement number = new InventoryNumberElement(firstVal);
+            result = new InventoryNumber(prefix, List.of(number));
+            inventoryNumberRepo.save(result);
+        } else if (Objects.nonNull(result.getRelatedId())) {
+            result = createNewNumber(result);
+        }
+
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public Inventory bind(@NonNull Inventory relatedObject) throws BindingInventoryNumberException {
         try {
-            InventoryPrefixEnum prefix = InventoryPrefixEnum.MIN;
-            InventoryNumber result = inventoryNumberRepo.findLastNumber(prefix);
-
-            if (Objects.isNull(result)) {
-                InventoryNumberElement number = new InventoryNumberElement(firstVal);
-                result = new InventoryNumber(prefix, number);
-            } else if (Objects.nonNull(result.getRelatedId())){
-                result = createNewNumber(result);
-            }
-
+            InventoryNumber result = inventoryNumberRepo.findById(relatedObject.getInventoryNumberId()).orElseThrow();
             result.setRelatedId(new ObjectId(relatedObject.getId()));
+            result.setRelated(true);
             relatedObject.setInventoryNumberId(new ObjectId(result.getId()));
             inventoryNumberRepo.save(result);
             return relatedObject;
@@ -119,11 +130,17 @@ public class InventoryNumberServiceImpl implements InventoryNumberService {
 
     private InventoryNumber createNewNumber(InventoryNumber lastNumber) {
         List<InventoryNumberElement> numbers = lastNumber.getNumbers();
-        InventoryNumberElement nextNumber = new InventoryNumberElement(numbers.getLast().number() + 1);
+        InventoryNumberElement nextNumber;
+        try {
+             nextNumber = new InventoryNumberElement(numbers.getLast().number() + 1);
+        } catch (IllegalArgumentException e) {
+            //TODO добавить лог
+            nextNumber = new InventoryNumberElement(firstVal);
+        }
         List<InventoryNumberElement> newNumbersList = new ArrayList<>(numbers);
-        newNumbersList.removeLast();
-        newNumbersList.addLast(nextNumber);
-        InventoryNumberElement[] newNumbers = newNumbersList.toArray(new InventoryNumberElement[0]);
-        return new InventoryNumber(lastNumber.getPrefix(), nextNumber, newNumbers);
+        newNumbersList.set(numbers.size() - 1,  nextNumber);
+        InventoryNumber result = new InventoryNumber(lastNumber.getPrefix(), Collections.unmodifiableList(newNumbersList));
+
+        return inventoryNumberRepo.save(result);
     }
 }

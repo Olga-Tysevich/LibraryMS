@@ -2,6 +2,7 @@ package by.lms.libraryms.domain.inventorynumber;
 
 import by.lms.libraryms.domain.AbstractDomainClass;
 import by.lms.libraryms.utils.Constants;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Document(collection = "inventory_numbers")
 @CompoundIndexes(
@@ -44,12 +46,10 @@ public final class InventoryNumber extends AbstractDomainClass {
     @Version
     private int version;
 
-    public InventoryNumber(InventoryPrefixEnum prefix, InventoryNumberElement lastNumber, InventoryNumberElement... numbers) {
+    public InventoryNumber(@NotNull InventoryPrefixEnum prefix, @NotEmpty List<InventoryNumberElement> numbers) {
         this.prefix = prefix;
         this.delimiter = prefix.getDelimiter();
-        this.numbers = new ArrayList<>(numbers.length + 1);
-        this.numbers.addAll(Arrays.asList(numbers));
-        this.numbers.addLast(lastNumber);
+        this.numbers = numbers;
     }
 
     public String number() {
@@ -58,7 +58,7 @@ public final class InventoryNumber extends AbstractDomainClass {
                 .collect(Collectors.joining(delimiter.toString()));
     }
 
-    public void setRelatedId(ObjectId relatedId) {
+    public void setRelatedId(@NotNull ObjectId relatedId) {
         if (Objects.nonNull(this.relatedId)) {
             throw new IllegalArgumentException("Attempt to set a new inventory number for an object: " + this + "!ObjectId: " + relatedId);
         }

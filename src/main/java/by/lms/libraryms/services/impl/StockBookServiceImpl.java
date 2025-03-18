@@ -49,7 +49,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         }
         BookDTO bookDTO = bookService.findById(dto.getBookId());
         for (int i = 0; i < dto.getQuantity(); i++) {
-            InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(null, bookDTO, dto.getDateOfReceipt());
+            InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(bookDTO, dto.getDateOfReceipt());
             inventoryBookService.add(inventoryBookDTO);
         }
 

@@ -34,9 +34,7 @@ public interface InventoryNumberMapper {
                    .map(Integer::valueOf)
                    .map(InventoryNumberElement::new)
                    .toList();
-           InventoryNumberElement last = numbers.getLast();
-           numbers.removeLast();
-           return new InventoryNumber(prefix, last, numbers.toArray(new InventoryNumberElement[0]));
+           return new InventoryNumber(prefix, numbers);
 
        } catch (IllegalArgumentException e) {
            throw new InvalidInventoryNumberException(number);

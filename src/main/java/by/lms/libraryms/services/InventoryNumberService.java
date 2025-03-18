@@ -11,7 +11,8 @@ import org.springframework.lang.NonNull;
 
 
 public interface InventoryNumberService {
-    Inventory add(@NonNull Inventory inventory) throws BindingInventoryNumberException;
+    InventoryNumber getLastNumber();
+    Inventory bind(@NonNull Inventory inventory) throws BindingInventoryNumberException;
 
     void unbind(@NonNull Inventory relatedObject) throws UnbindInventoryNumberException;
 
