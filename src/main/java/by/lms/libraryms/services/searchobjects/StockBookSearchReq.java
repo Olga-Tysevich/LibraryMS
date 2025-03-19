@@ -17,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockBookSearchReq extends SearchReq {
+    private Set<ObjectId> inventoryBookIds;
     private Set<String> titles;
     private Set<ObjectId> authorIds;
     private Set<ObjectId> genreIds;

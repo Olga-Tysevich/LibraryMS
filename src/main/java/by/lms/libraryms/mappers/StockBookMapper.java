@@ -44,6 +44,7 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
 
     @Override
     @Mappings({
+            @Mapping(target = "ids", source = "ids", qualifiedByName = "mapStringSetToObjectIdSet"),
             @Mapping(target = "createdAtFrom", source = "createdAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "createdAtTo", source = "createdAtTo", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "updatedAtFrom", source = "updatedAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
@@ -70,19 +71,17 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
     ObjectChangedDTO<BookDTO> toBookChangedDTO(ObjectChangedDTO<StockBookDTO> dto, BookDTO bookDTO);
 
     @Mappings({
-            @Mapping(target = "inventoryNumbers", ignore = true)
+            @Mapping(target = "inventoryNumbers", ignore = true),
+            @Mapping(target = "ids", source = "inventoryBookIds"),
+            @Mapping(target = "bookOrderIds", ignore = true),
+            @Mapping(target = "isAvailable", ignore = true),
     })
     InventoryBookSearchReq toBookSearchReq(StockBookSearchReq searchReq);
 
     @Mappings({
-            @Mapping(target = "id", source = "id", qualifiedByName = "mapObjectIdToString"),
-            @Mapping(target = "book", source = "bookDTO"),
-            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt")
-    })
-    InventoryBookDTO toInventoryBookDTO(ObjectId id, BookDTO bookDTO, LocalDate dateOfReceipt);
-
-    @Mappings({
             @Mapping(target = "id", ignore = true),
+            @Mapping(target = "inventoryNumber", ignore = true),
+            @Mapping(target = "bookOrderIds", ignore = true),
             @Mapping(target = "book", source = "bookDTO"),
             @Mapping(target = "dateOfReceipt", source = "dateOfReceipt"),
             @Mapping(target = "isAvailable", expression = "java(true)")

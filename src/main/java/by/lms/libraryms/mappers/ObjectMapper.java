@@ -6,7 +6,6 @@ import by.lms.libraryms.dto.AbstractDTO;
 import by.lms.libraryms.dto.SearchReqDTO;
 import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
-import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import org.bson.types.ObjectId;
@@ -43,6 +42,7 @@ public interface ObjectMapper<Entity extends AbstractDomainClass, DTO extends Ab
     List<DTO> toDTOList(List<Entity> entities);
 
     @Mappings({
+            @Mapping(target = "ids", source = "ids", qualifiedByName = "mapStringSetToObjectIdSet"),
             @Mapping(target = "createdAtFrom", source = "createdAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "createdAtTo", source = "createdAtTo", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "updatedAtFrom", source = "updatedAtFrom", qualifiedByName = "mapLocalDateTimeToInstant"),

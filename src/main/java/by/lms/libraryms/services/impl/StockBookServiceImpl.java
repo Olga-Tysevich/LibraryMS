@@ -6,6 +6,7 @@ import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.exceptions.ObjectDoesNotExistException;
+import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.mappers.StockBookMapper;
 import by.lms.libraryms.repo.StockBookRepo;
 import by.lms.libraryms.repo.search.StockBookSearch;
@@ -56,9 +57,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
 
         StockBook currentStockBook = getRepository().findById(dto.getId()).orElseThrow();
         List<String> currentInventoryBookSet = inventoryBookService.findAllByIds(
-                        currentStockBook.getInventoryBookIds().stream()
-                                .map(ObjectId::toString)
-                                .collect(Collectors.toSet())
+                        ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds())
                 ).stream()
                 .map(InventoryBookDTO::getId)
                 .collect(Collectors.toList());
@@ -91,16 +90,14 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     public ObjectListChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {
         List<StockBook> stockBook = getSearchRepo().find(
                 StockBookSearchReq.builder()
-                .ids(searchReqDTO.getIds())
+                .ids(ObjectMapper.mapStringSetToObjectIdSet(searchReqDTO.getIds()))
                 .build()
         );
         if (stockBook.isEmpty()) throw new ObjectDoesNotExistException(StockBook.class.getSimpleName());
 
         List<ObjectChangedDTO<StockBookDTO>> result = new ArrayList<>();
         for (StockBook s : stockBook) {
-            Set<String> forDelete = s.getInventoryBookIds().stream()
-                    .map(ObjectId::toString)
-                    .collect(Collectors.toSet());
+            Set<String> forDelete = ObjectMapper.mapObjectIdSetToStringSet(s.getInventoryBookIds());
 
             Set<String> inventoryBookIds = inventoryBookService.findAllByIds(forDelete).stream()
                     .map(InventoryBookDTO::getId)
