@@ -17,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockBookSearchReqDTO extends SearchReqDTO {
+    private Set<String> inventoryBookIds;
     private Set<String> titles;
     private Set<String> authorIds;
     private Set<String> genreIds;

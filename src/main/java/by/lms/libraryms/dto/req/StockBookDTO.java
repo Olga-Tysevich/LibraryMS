@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 
 //TODO подумать как искать
@@ -26,4 +27,5 @@ public class StockBookDTO extends AbstractDTO {
     private int quantity;
     @NotNull(message = Constants.DATE_IS_NULL_MESSAGE)
     private LocalDate dateOfReceipt;
+    private Set<String> inventoryBookIds;
 }

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.util.Set;
 
 @SuperBuilder
 @Getter
@@ -14,5 +14,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GenreSearchReq extends SearchReq {
-    private List<String> names;
+    private Set<String> names;
 }

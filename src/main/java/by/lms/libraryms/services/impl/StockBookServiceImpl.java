@@ -5,6 +5,7 @@ import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.ChangingObjectException;
+import by.lms.libraryms.exceptions.ObjectDoesNotExistException;
 import by.lms.libraryms.mappers.StockBookMapper;
 import by.lms.libraryms.repo.StockBookRepo;
 import by.lms.libraryms.repo.search.StockBookSearch;
@@ -18,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,72 +43,104 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     @Override
     @Transactional
     public ObjectChangedDTO<StockBookDTO> add(StockBookDTO dto) {
-        if (Objects.isNull(dto.getBookId())) {
-            throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
-        }
-        BookDTO bookDTO = bookService.findById(dto.getBookId());
-        for (int i = 0; i < dto.getQuantity(); i++) {
-            InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(bookDTO, dto.getDateOfReceipt());
-            inventoryBookService.add(inventoryBookDTO);
-        }
-
+        Set<String> savedInventoryBookIds = addInventoryBooks(dto);
+        dto.setInventoryBookIds(savedInventoryBookIds);
         return super.add(dto);
     }
 
+    //TODO переделать когда будет добален приход книг
     @Override
     @Transactional
     public ObjectChangedDTO<StockBookDTO> update(StockBookDTO dto) {
-        if (Objects.isNull(dto.getId())) {
-            throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
-        }
+        if (Objects.isNull(dto.getId())) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
 
-        BookDTO bookDTO = bookService.findById(dto.getBookId());
-        InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(new ObjectId(dto.getId()), bookDTO, dto.getDateOfReceipt());
-        inventoryBookService.update(inventoryBookDTO);
+        StockBook currentStockBook = getRepository().findById(dto.getId()).orElseThrow();
+        List<String> currentInventoryBookSet = inventoryBookService.findAllByIds(
+                        currentStockBook.getInventoryBookIds().stream()
+                                .map(ObjectId::toString)
+                                .collect(Collectors.toSet())
+                ).stream()
+                .map(InventoryBookDTO::getId)
+                .collect(Collectors.toList());
+
+        if (!currentInventoryBookSet.getFirst().equals(dto.getBookId())) {
+            inventoryBookService.delete(buildReq(dto.getInventoryBookIds()));
+            Set<String> savedInventoryBookIds = addInventoryBooks(dto);
+            dto.setInventoryBookIds(savedInventoryBookIds);
+
+        } else if (currentInventoryBookSet.size() < dto.getQuantity()) {
+            int quantity = dto.getQuantity() - currentInventoryBookSet.size();
+            dto.setQuantity(quantity);
+            Set<String> savedInventoryBookIds = addInventoryBooks(dto);
+            savedInventoryBookIds.addAll(currentInventoryBookSet);
+            dto.setInventoryBookIds(savedInventoryBookIds);
+
+        } else if (currentInventoryBookSet.size() > dto.getQuantity()) {
+            int position = currentInventoryBookSet.size() - 1 - dto.getQuantity();
+            List<String> forDelete = currentInventoryBookSet.subList(currentInventoryBookSet.size() - 1, position);
+            inventoryBookService.delete(buildReq(new HashSet<>(forDelete)));
+            currentInventoryBookSet.removeAll(forDelete);
+            dto.setInventoryBookIds(new HashSet<>(currentInventoryBookSet));
+        }
         return super.update(dto);
     }
 
+    //TODO переделать когда будет добален приход книг
     @Override
     @Transactional
     public ObjectListChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {
-        Set<String> inventoryBookIds = getRepository().findAllById(searchReqDTO.getIds()).stream()
-                .map(StockBook::getBookId)
-                .map(ObjectId::toString)
-                .collect(Collectors.toSet());
+        List<StockBook> stockBook = getSearchRepo().find(
+                StockBookSearchReq.builder()
+                .ids(searchReqDTO.getIds())
+                .build()
+        );
+        if (stockBook.isEmpty()) throw new ObjectDoesNotExistException(StockBook.class.getSimpleName());
 
-        if (inventoryBookIds.isEmpty()) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
-
-        InventoryBookSearchReqDTO inventoryBooksForDelete = InventoryBookSearchReqDTO.builder()
-                .ids(inventoryBookIds)
-                .build();
-
-        ObjectListChangedDTO<InventoryBookDTO> unbindingBooks = inventoryBookService.delete(inventoryBooksForDelete);
-        List<ObjectId> unbindingBookIds = unbindingBooks.getObjects().stream()
-                .map(ObjectChangedDTO::getObject)
-                .map(InventoryBookDTO::getBook)
-                .map(BookDTO::getId)
-                .map(ObjectId::new)
-                .toList();
-
-        if (!unbindingBookIds.isEmpty()) {
-            getRepository().deleteAllByBookIdIn(unbindingBookIds);
-        }
-
-        if (inventoryBookIds.size() != unbindingBookIds.size()) {
-            Set<ObjectId> nonRemovedInventoryBookIds = inventoryBookIds.stream()
-                    .filter(id -> unbindingBookIds.contains(new ObjectId(id)))
-                    .map(ObjectId::new)
+        List<ObjectChangedDTO<StockBookDTO>> result = new ArrayList<>();
+        for (StockBook s : stockBook) {
+            Set<String> forDelete = s.getInventoryBookIds().stream()
+                    .map(ObjectId::toString)
                     .collect(Collectors.toSet());
-            List<StockBookDTO>  nonRemovedStockBooks = getRepository().findAllByBookIdIn(nonRemovedInventoryBookIds).stream()
-                    .map(getMapper()::toDTO)
+
+            Set<String> inventoryBookIds = inventoryBookService.findAllByIds(forDelete).stream()
+                    .map(InventoryBookDTO::getId)
+                    .collect(Collectors.toSet());
+
+            if (inventoryBookIds.isEmpty()) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+
+            InventoryBookSearchReqDTO inventoryBooksForDelete = InventoryBookSearchReqDTO.builder()
+                    .ids(inventoryBookIds)
+                    .build();
+
+            ObjectListChangedDTO<InventoryBookDTO> unbindingBooks = inventoryBookService.delete(inventoryBooksForDelete);
+            List<ObjectId> unbindingBookIds = unbindingBooks.getObjects().stream()
+                    .map(ObjectChangedDTO::getObject)
+                    .map(InventoryBookDTO::getBook)
+                    .map(BookDTO::getId)
+                    .map(ObjectId::new)
                     .toList();
 
-            throw new ChangingObjectException("Failed to delete stock books: " + nonRemovedStockBooks);
-        }
+            if (!unbindingBookIds.isEmpty()) {
+                s.setQuantity(unbindingBookIds.size());
+                unbindingBookIds.forEach(s.getInventoryBookIds()::remove);
+                getRepository().save(s);
+            }
 
-        List<ObjectChangedDTO<StockBookDTO>> result = getRepository().findAllByIdIn(searchReqDTO.getIds()).stream()
-                .map(e -> getMapper().toObjectChangedDTO(e, Instant.now()))
-                .toList();
+            if (inventoryBookIds.size() != unbindingBookIds.size()) {
+                Set<ObjectId> nonRemovedInventoryBookIds = inventoryBookIds.stream()
+                        .filter(id -> unbindingBookIds.contains(new ObjectId(id)))
+                        .map(ObjectId::new)
+                        .collect(Collectors.toSet());
+
+                throw new ChangingObjectException("Failed to delete inventory books with ids: " + nonRemovedInventoryBookIds);
+            }
+
+            result.addAll(getRepository()
+                    .findAllByIdIn(searchReqDTO.getIds())
+                    .stream()
+                    .map(e -> getMapper().toObjectChangedDTO(e, Instant.now()))
+                    .toList());
+        }
 
         return new ObjectListChangedDTO<>(result);
     }
@@ -117,6 +148,32 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     @Override
     protected Class<StockBook> clazz() {
         return StockBook.class;
+    }
+
+    private Set<String> addInventoryBooks(StockBookDTO dto) {
+        if (Objects.isNull(dto.getBookId())) {
+            throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+        }
+        BookDTO bookDTO = bookService.findById(dto.getBookId());
+        Set<String> savedInventoryBookIds = new HashSet<>(dto.getQuantity());
+        for (int i = 0; i < dto.getQuantity(); i++) {
+            InventoryBookDTO inventoryBookDTO = getMapper().toInventoryBookDTO(bookDTO, dto.getDateOfReceipt());
+            try {
+                ObjectChangedDTO<InventoryBookDTO> result = inventoryBookService.add(inventoryBookDTO);
+                savedInventoryBookIds.add(result.getObject().getId());
+            } catch (ChangingObjectException e) {
+                InventoryBookSearchReqDTO forDelete = buildReq(savedInventoryBookIds);
+                inventoryBookService.delete(forDelete);
+                throw e;
+            }
+        }
+        return savedInventoryBookIds;
+    }
+
+    private InventoryBookSearchReqDTO buildReq(Set<String> inventoryBookIds) {
+        return InventoryBookSearchReqDTO.builder()
+                .ids(inventoryBookIds)
+                .build();
     }
 
 }

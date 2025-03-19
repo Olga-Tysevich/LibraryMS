@@ -7,11 +7,12 @@ import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.ChangingObjectException;
-import by.lms.libraryms.exceptions.ObjectNotFound;
+import by.lms.libraryms.exceptions.ObjectDoesNotExistException;
 import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.repo.search.SearchRepo;
 import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.searchobjects.SearchReq;
+import by.lms.libraryms.utils.Constants;
 import by.lms.libraryms.utils.ParamsManager;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -39,7 +40,7 @@ public abstract class AbstractServiceImpl<
 
     @Override
     public DTO findById(String id) {
-        Entity entity = repository.findById(id).orElseThrow(ObjectNotFound::new);
+        Entity entity = repository.findById(id).orElseThrow(ObjectDoesNotExistException::new);
         return mapper.toDTO(entity);
     }
 
@@ -58,6 +59,9 @@ public abstract class AbstractServiceImpl<
     @Transactional
     @Override
     public ObjectListChangedDTO<DTO> delete(SRD searchReqDTO) {
+        if (Objects.isNull(searchReqDTO.getIds())
+                || searchReqDTO.getIds().isEmpty()) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+
         SR searchReq = mapper.toSearchReq(searchReqDTO);
         List<Entity> result = find(searchReq);
         long isDeleted = searchRepo.delete(searchReq);
@@ -104,7 +108,7 @@ public abstract class AbstractServiceImpl<
         List<Entity> result = searchRepo.find(searchReq);
 
         if (Objects.isNull(result)) {
-            throw new ObjectNotFound(
+            throw new ObjectDoesNotExistException(
                     String.format(OBJECTS_NOT_FOUND,
                             clazz().getSimpleName(),
                             ParamsManager.getParamsAsString(searchReq)

@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @SuperBuilder
 @Getter
@@ -17,8 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventoryNumberSearchReq extends SearchReq {
-    private List<InventoryPrefixEnum> prefixes;
-    private List<InventoryNumberElement> numbers;
+    private Set<InventoryPrefixEnum> prefixes;
+    private Set<InventoryNumberElement> numbers;
     private Boolean isDisposedOf;
     private LocalDate disposedDateFrom;
     private LocalDate disposedDateTo;

@@ -27,7 +27,8 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
             @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapLocalDateTimeToInstant"),
             @Mapping(target = "bookId", source = "bookId", qualifiedByName = "mapStringToObjectId"),
-            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapLocalDateToInstant")
+            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapLocalDateToInstant"),
+            @Mapping(target = "inventoryBookIds", source = "inventoryBookIds", qualifiedByName = "mapStringSetToObjectIdSet")
     })
     StockBook toEntity(StockBookDTO dto);
 
@@ -36,7 +37,8 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
             @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
             @Mapping(target = "bookId", source = "bookId", qualifiedByName = "mapObjectIdToString"),
-            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapInstantToLocalDate")
+            @Mapping(target = "dateOfReceipt", source = "dateOfReceipt", qualifiedByName = "mapInstantToLocalDate"),
+            @Mapping(target = "inventoryBookIds", source = "inventoryBookIds", qualifiedByName = "mapObjectIdSetToStringSet")
     })
     StockBookDTO toDTO(StockBook entity);
 
@@ -54,7 +56,8 @@ public interface StockBookMapper extends ObjectMapper<StockBook, StockBookDTO,
             @Mapping(target = "numberOfBooks", source = "numberOfBooks", qualifiedByName = "mapStringIntegerMapToObjectIdIntegerMap"),
             @Mapping(target = "inventoryNumbers", ignore = true),
             @Mapping(target = "dateOfReceiptFrom", source = "dateOfReceiptFrom", qualifiedByName = "mapLocalDateToInstant"),
-            @Mapping(target = "dateOfReceiptTo", source = "dateOfReceiptTo", qualifiedByName = "mapLocalDateToInstant")
+            @Mapping(target = "dateOfReceiptTo", source = "dateOfReceiptTo", qualifiedByName = "mapLocalDateToInstant"),
+            @Mapping(target = "inventoryBookIds", source = "inventoryBookIds", qualifiedByName = "mapStringSetToObjectIdSet")
     })
     StockBookSearchReq toSearchReq(StockBookSearchReqDTO searchReqDTO);
 

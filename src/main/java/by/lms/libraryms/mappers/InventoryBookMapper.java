@@ -6,7 +6,7 @@ import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
-import by.lms.libraryms.exceptions.ObjectNotFound;
+import by.lms.libraryms.exceptions.ObjectDoesNotExistException;
 import by.lms.libraryms.repo.BookRepo;
 import by.lms.libraryms.repo.InventoryNumberRepo;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
@@ -99,7 +99,7 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
                                     @Context InventoryNumberRepo numberRepo) {
         if (dto.getInventoryNumber() != null) {
             InventoryNumber example = inventoryNumberMapper.toInventoryNumber(dto.getInventoryNumber());
-            InventoryNumber result = numberRepo.find(example).orElseThrow(ObjectNotFound::new);
+            InventoryNumber result = numberRepo.find(example).orElseThrow(ObjectDoesNotExistException::new);
             entity.setInventoryNumberId(new ObjectId(result.getId()));
         }
     }
@@ -109,7 +109,7 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
                                     @Context BookRepo bookRepo, @Context BookMapper bookMapper) {
         BookDTO book = bookRepo.findById(id.toString())
                 .map(bookMapper::toDTO)
-                .orElseThrow(ObjectNotFound::new);
+                .orElseThrow(ObjectDoesNotExistException::new);
         dto.setBook(book);
     }
 
@@ -118,7 +118,7 @@ public interface InventoryBookMapper extends ObjectMapper<InventoryBook, Invento
                                                        @Context InventoryNumberRepo numberRepo) {
         String inventoryNumber = numberRepo.findById(id)
                 .map(InventoryNumber::number)
-                .orElseThrow(ObjectNotFound::new);
+                .orElseThrow(ObjectDoesNotExistException::new);
         dto.setInventoryNumber(inventoryNumber);
     }
 }

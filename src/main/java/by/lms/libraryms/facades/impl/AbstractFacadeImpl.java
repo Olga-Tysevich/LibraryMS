@@ -13,6 +13,7 @@ import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.messages.MessageService;
 import by.lms.libraryms.services.searchobjects.SearchReq;
+import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -48,6 +49,9 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
 
     @Override
     public ObjectListChangedDTO<DTO> delete(@NotNull SRD searchReqDTO) {
+        if (Objects.isNull(searchReqDTO.getIds())
+                || searchReqDTO.getIds().isEmpty()) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
+
         ObjectListChangedDTO<DTO> result = service.delete(searchReqDTO);
         if (Objects.nonNull(result)) {
             sendMessage(MessageTypeEnum.DELETE, result);

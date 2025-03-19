@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 @SuperBuilder
 @Setter
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class SearchReq {
-    private List<String> ids;
+    private Set<String> ids;
     private Instant createdAtFrom;
     private Instant createdAtTo;
     private Instant updatedAtFrom;

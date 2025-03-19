@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,5 +15,5 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 public class GenreSearchReqDTO extends SearchReqDTO {
-    private List<String> names;
+    private Set<String> names;
 }

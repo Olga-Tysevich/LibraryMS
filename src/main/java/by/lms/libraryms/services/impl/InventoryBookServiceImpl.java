@@ -8,7 +8,7 @@ import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.BindingInventoryNumberException;
 import by.lms.libraryms.exceptions.ChangingObjectException;
-import by.lms.libraryms.exceptions.ObjectNotFound;
+import by.lms.libraryms.exceptions.ObjectDoesNotExistException;
 import by.lms.libraryms.exceptions.UnbindInventoryNumberException;
 import by.lms.libraryms.mappers.InventoryBookMapper;
 import by.lms.libraryms.repo.InventoryBookRepo;
@@ -67,20 +67,20 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             System.out.println(e.getMessage());
             unbindInventoryNumber(result);
             getRepository().delete(result);
+            throw new ChangingObjectException("Failed to create inventory book: " + dto + ". Cause: " + e.getMessage());
         } finally {
             lock.unlock();
         }
-
-        return getMapper().toObjectChangedDTO(result, null);
     }
 
     @Override
     @Transactional
     public ObjectChangedDTO<InventoryBookDTO> update(InventoryBookDTO dto) {
-        InventoryBook result = getRepository().findById(dto.getId()).orElseThrow(ObjectNotFound::new);
+        InventoryBook result = getRepository().findById(dto.getId()).orElseThrow(ObjectDoesNotExistException::new);
 
-        if (!result.getBookOrderIds().isEmpty()) throw new ChangingObjectException("Unable to update previously checked out inventory book! " +
-                "Inventory book: " + result);
+        if (!result.getBookOrderIds().isEmpty())
+            throw new ChangingObjectException("Unable to update previously checked out inventory book! " +
+                    "Inventory book: " + result);
 
         LocalDate updatedAt = LocalDate.from(result.getUpdatedAt());
         LocalDate today = LocalDate.now();
@@ -104,15 +104,16 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     @Transactional
     public ObjectListChangedDTO<InventoryBookDTO> delete(InventoryBookSearchReqDTO searchReqDTO) {
         List<InventoryBook> result = getRepository().findAllById(searchReqDTO.getIds());
-        if (result.isEmpty()) throw new ObjectNotFound();
+        if (result.isEmpty()) throw new ObjectDoesNotExistException();
 
         List<ObjectChangedDTO<InventoryBookDTO>> unbindingSuccessful = new ArrayList<>();
         List<ObjectChangedDTO<InventoryBookDTO>> unbindingFailed = new ArrayList<>();
         for (InventoryBook book : result) {
 
             try {
-                if (!book.getBookOrderIds().isEmpty()) throw new ChangingObjectException("Unable to delete previously checked out inventory book! " +
-                        "Inventory book: " + book);
+                if (!book.getBookOrderIds().isEmpty())
+                    throw new ChangingObjectException("Unable to delete previously checked out inventory book! " +
+                            "Inventory book: " + book);
 
                 LocalDate updatedAt = LocalDate.from(book.getUpdatedAt());
                 LocalDate today = LocalDate.now();
@@ -158,4 +159,5 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
                     + ". You need to contact technical support!");
         }
     }
+
 }
