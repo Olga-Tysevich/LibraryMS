@@ -2,7 +2,6 @@ package by.lms.libraryms.filters;
 
 import by.lms.libraryms.conf.auth.JwtProvider;
 import by.lms.libraryms.exceptions.UnauthorizedException;
-import by.lms.libraryms.utils.Constants;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     /**
      * UserDetailsService bean.
-     * @see UserDetailsServiceImpl
+     * @see by.lms.libraryms.services.impl.UserDetailsServiceImpl
      */
     private final UserDetailsService userDetailsService;
 
@@ -87,7 +86,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             } else {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                 if (!auth.getPrincipal().equals(email)) {
-                    throw new JwtException(Constants.TOKEN_WAS_STOLEN_MESSAGE);
+                    throw new JwtException("Unauthorized");
                 }
             }
 

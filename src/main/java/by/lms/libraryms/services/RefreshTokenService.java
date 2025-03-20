@@ -2,6 +2,8 @@ package by.lms.libraryms.services;
 
 import by.lms.libraryms.domain.auth.User;
 
+import java.util.Set;
+
 /**
  * The interface for managing JWT refresh tokens.
  */
@@ -17,12 +19,22 @@ public interface RefreshTokenService {
     void save(String token, String userId);
 
     /**
-     * Method to block all refresh tokens for a given user id.
+     * Method to remove all refresh tokens for a given user id.
      *
      * @param userId The User id of the token owner.
      * @see User
      * @see by.lms.libraryms.domain.auth.RefreshToken
      */
     void removeUserRefreshTokens(String userId);
+
+    /**
+     * Method to remove refresh tokens for a given  id.
+     *
+     * @param token The token id.
+     * @see by.lms.libraryms.domain.auth.RefreshToken
+     */
+    void removeRefreshToken(String token);
+
+    Set<String> getUserRefreshTokens(String userId);
 
 }

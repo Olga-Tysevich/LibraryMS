@@ -7,12 +7,16 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RefreshTokenRepo extends MongoRepository<RefreshToken, String> {
 
     RefreshToken findByTokenValue(@NotNull(message = Constants.EMPTY_TOKEN_MESSAGE) String tokenValue);
+    void deleteByTokenValue(@NotNull(message = Constants.EMPTY_TOKEN_MESSAGE) String tokenValue);
 
     RefreshToken findByUserId(@NotNull(message = Constants.EMPTY_ID_MESSAGE) ObjectId userId);
+    List<RefreshToken> findAllByUserId(@NotNull(message = Constants.EMPTY_ID_MESSAGE) ObjectId userId);
 
     void deleteByUserId(@NotNull(message = Constants.EMPTY_ID_MESSAGE) ObjectId userId);
 

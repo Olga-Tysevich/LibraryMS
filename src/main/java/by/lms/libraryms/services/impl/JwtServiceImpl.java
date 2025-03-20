@@ -8,12 +8,15 @@ import by.lms.libraryms.services.JwtService;
 import by.lms.libraryms.services.RefreshTokenService;
 import by.lms.libraryms.services.UserService;
 import by.lms.libraryms.utils.Constants;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 
 /**
@@ -74,6 +77,9 @@ public class JwtServiceImpl implements JwtService {
         }
         String email = jwtProvider.getRefreshClaims(refreshToken).getSubject();
         UserDTO user = userService.findByEmail(email);
+        Set<String> tokens = refreshTokenService.getUserRefreshTokens(user.getId());
+        if (!tokens.contains(refreshToken)) throw new JwtException(Constants.TOKEN_WAS_STOLEN_MESSAGE);
+        refreshTokenService.removeRefreshToken(refreshToken);
         return generatePairOfTokens(user);
     }
 
