@@ -120,8 +120,8 @@ public abstract class AbstractServiceImpl<
     }
 
     @Override
-    public List<DTO> findAllByIds(Set<String> idList) {
-        return mapper.toDTOList(repository.findAllById(idList));
+    public List<DTO> findAllByIds(Set<String> idSet) {
+        return mapper.toDTOList(repository.findAllById(idSet));
     }
 
     protected abstract Class<Entity> clazz();

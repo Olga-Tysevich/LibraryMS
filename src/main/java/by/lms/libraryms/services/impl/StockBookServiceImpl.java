@@ -1,5 +1,6 @@
 package by.lms.libraryms.services.impl;
 
+import by.lms.libraryms.domain.InventoryBook;
 import by.lms.libraryms.domain.StockBook;
 import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
@@ -56,6 +57,10 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         if (Objects.isNull(dto.getId())) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
 
         StockBook currentStockBook = getRepository().findById(dto.getId()).orElseThrow();
+        Set<String> o = ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds());
+        List<InventoryBookDTO> t = inventoryBookService.findAllByIds(
+                ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds())
+        );
         List<String> currentInventoryBookSet = inventoryBookService.findAllByIds(
                         ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds())
                 ).stream()

@@ -2,8 +2,11 @@ package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.InventoryBook;
 import by.lms.libraryms.domain.inventorynumber.InventoryNumber;
+import by.lms.libraryms.dto.req.BookDTO;
 import by.lms.libraryms.dto.req.InventoryBookDTO;
 import by.lms.libraryms.dto.req.InventoryBookSearchReqDTO;
+import by.lms.libraryms.dto.resp.InventoryNumberDTO;
+import by.lms.libraryms.dto.resp.ListForPageDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.exceptions.BindingInventoryNumberException;
@@ -11,11 +14,14 @@ import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.exceptions.ObjectDoesNotExistException;
 import by.lms.libraryms.exceptions.UnbindInventoryNumberException;
 import by.lms.libraryms.mappers.InventoryBookMapper;
+import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.repo.InventoryBookRepo;
 import by.lms.libraryms.repo.search.InventoryBookSearch;
+import by.lms.libraryms.services.BookService;
 import by.lms.libraryms.services.InventoryBookService;
 import by.lms.libraryms.services.InventoryNumberService;
 import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
+import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.utils.Constants;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +33,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -39,13 +46,21 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     private int permissibleError;
     private final InventoryNumberService inventoryNumberService;
     private final ReentrantLock lock = new ReentrantLock();
+    private final BookService bookService;
 
     public InventoryBookServiceImpl(InventoryBookRepo repository,
                                     InventoryBookSearch searchRepo,
                                     InventoryBookMapper mapper,
-                                    InventoryNumberService inventoryNumberService) {
+                                    InventoryNumberService inventoryNumberService, BookService bookService) {
         super(repository, searchRepo, mapper);
         this.inventoryNumberService = inventoryNumberService;
+        this.bookService = bookService;
+    }
+
+    @Override
+    public InventoryBookDTO findById(String id) {
+        InventoryBook result = getRepository().findById(id).orElseThrow();
+        return addNestedObjects(result);
     }
 
     //TODO добавить логику извлечения города из аккаунта библиотекаря и определения префикса по городу
@@ -98,6 +113,38 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
         result.setBookId(new ObjectId(dto.getId()));
         getRepository().save(result);
         return getMapper().toObjectChangedDTO(result, null);
+    }
+
+    @Override
+    public InventoryBookDTO get(InventoryBookSearchReqDTO searchReqDTO) {
+        List<InventoryBook> inventoryBookList = getSearchRepo().findList(getMapper().toSearchReq(searchReqDTO)).getList();
+        if (inventoryBookList.isEmpty()) throw new ObjectDoesNotExistException();
+        InventoryBook result = inventoryBookList.getFirst();
+        return addNestedObjects(result);
+    }
+
+    @Override
+    public ListForPageDTO<InventoryBookDTO> getAll(InventoryBookSearchReqDTO searchReqDTO) {
+        ListForPageResp<InventoryBook> listForPage = getSearchRepo().findList(getMapper().toSearchReq(searchReqDTO));
+        List<InventoryBook> inventoryBookList = listForPage.getList();
+        if (inventoryBookList.isEmpty()) return getMapper().toListForPageDTO(listForPage);
+        List<InventoryBookDTO> resultList = new ArrayList<>();
+        for (InventoryBook inventoryBook : inventoryBookList) {
+            resultList.add(addNestedObjects(inventoryBook));
+        }
+        ListForPageDTO<InventoryBookDTO> result = getMapper().toListForPageDTO(listForPage);
+        result.setList(resultList);
+        return result;
+    }
+
+    @Override
+    public List<InventoryBookDTO> findAllByIds(Set<String> idSet) {
+        List<InventoryBook> inventoryBookList = getRepository().findAllById(idSet);
+        List<InventoryBookDTO> result = new ArrayList<>();
+        for (InventoryBook inventoryBook : inventoryBookList) {
+            result.add(addNestedObjects(inventoryBook));
+        }
+        return result;
     }
 
     @Override
@@ -158,6 +205,15 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             throw new ChangingObjectException("Failed to create inventory number for the item: " + inventoryBook
                     + ". You need to contact technical support!");
         }
+    }
+
+    private InventoryBookDTO addNestedObjects(InventoryBook result) {
+        InventoryBookDTO dto = getMapper().toDTO(result);
+        BookDTO bookDTO = bookService.findById(ObjectMapper.mapObjectIdToString(result.getBookId()));
+        InventoryNumberDTO inventoryNumber = inventoryNumberService.get(ObjectMapper.mapObjectIdToString(result.getInventoryNumberId()));
+        dto.setInventoryNumber(inventoryNumber.getNumber());
+        dto.setBook(bookDTO);
+        return dto;
     }
 
 }
