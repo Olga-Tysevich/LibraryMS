@@ -1,7 +1,5 @@
 package by.lms.libraryms.controller;
 
-import by.lms.libraryms.domain.User;
-import by.lms.libraryms.facades.UserFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

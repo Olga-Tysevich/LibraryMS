@@ -1,7 +1,7 @@
 package by.lms.libraryms.repo;
 
 import by.lms.libraryms.domain.RoleEnum;
-import by.lms.libraryms.domain.User;
+import by.lms.libraryms.domain.auth.User;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

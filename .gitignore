@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/java/by/lms/libraryms/utils/for_example/AESKeyGenerator.java
+/src/main/resources/aes/aes.key

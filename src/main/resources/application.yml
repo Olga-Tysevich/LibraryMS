@@ -1,6 +1,18 @@
 spring:
   application:
     name: LibraryMS
+    security:
+      jwt:
+        access-key:
+          secret:
+            ${JWT_ACCESS_KEY_SECRET}
+          expiration-time:
+            ${JWT_ACCESS_KEY_EXPIRATION_TIME}
+        refresh-key:
+          secret:
+            ${JWT_REFRESH_KEY_SECRET}
+          expiration-time:
+            ${JWT_REFRESH_KEY_EXPIRATION_TIME}
 
   messages:
     basename: by/lms/libraryms/i18n
@@ -24,3 +36,7 @@ inventory:
       1000
     permissibleError:
       7
+
+aes:
+  key:
+    path: src/main/resources/aes/aes.key
