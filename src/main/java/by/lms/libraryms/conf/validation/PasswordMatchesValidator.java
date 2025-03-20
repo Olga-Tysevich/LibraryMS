@@ -1,7 +1,6 @@
 package by.lms.libraryms.conf.validation;
 
-
-import by.lms.libraryms.dto.common.UserDTO;
+import by.lms.libraryms.dto.req.CreateUserDTO;
 import by.lms.libraryms.exceptions.UnsupportedDTOException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -32,7 +31,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
      */
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
-        if (obj instanceof UserDTO userDTO) {
+        if (obj instanceof CreateUserDTO userDTO) {
             if (Objects.nonNull(userDTO.getPassword())) {
                 return userDTO.getPassword().equals(userDTO.getPasswordConfirmation());
             }

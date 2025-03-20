@@ -4,10 +4,12 @@ import by.lms.libraryms.domain.Address;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
+@Repository
 public interface AddressRepo extends MongoRepository<Address, String> {
     List<Address> findByCity(String city);
     List<Address> findByStreet(String street);

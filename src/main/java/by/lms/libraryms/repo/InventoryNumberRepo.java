@@ -7,6 +7,7 @@ import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.utils.Constants;
 import org.bson.types.ObjectId;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
 /**
  * Operations to change inventory numbers are prohibited.
  */
+@Repository
 public interface InventoryNumberRepo extends SearchRepo<InventoryNumber, InventoryNumberSearchReq> {
     /**
      * Method for finding the last number with a given prefix.

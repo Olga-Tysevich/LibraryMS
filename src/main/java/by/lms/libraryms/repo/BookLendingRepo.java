@@ -4,10 +4,12 @@ import by.lms.libraryms.domain.BookLending;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface BookLendingRepo extends MongoRepository<BookLending, String> {
     List<BookLending> findByUserId(@NotNull ObjectId userId);
     List<BookLending> findByInventoryBookId(@NotNull ObjectId inventoryBookId);

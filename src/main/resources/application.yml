@@ -13,6 +13,18 @@ spring:
             ${JWT_REFRESH_KEY_SECRET}
           expiration-time:
             ${JWT_REFRESH_KEY_EXPIRATION_TIME}
+      admin:
+        urls:
+          ${ADMIN_URLS}
+      user:
+        urls:
+          ${USER_URLS}
+      reader:
+        urls:
+          ${READER_URLS}
+      librarian:
+        urls:
+          ${LIBRARIAN_URLS}
 
   messages:
     basename: by/lms/libraryms/i18n

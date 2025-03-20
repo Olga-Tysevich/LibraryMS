@@ -4,10 +4,12 @@ import by.lms.libraryms.domain.Book;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
+@Repository
 public interface BookRepo extends MongoRepository<Book, String> {
     List<Book> findByAuthorIds(@NotNull Set<ObjectId> authorIds);
     List<Book> findByGenreIds(@NotNull Set<ObjectId> genreId);

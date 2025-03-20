@@ -12,8 +12,14 @@ import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static by.lms.libraryms.utils.Constants.*;
 
@@ -21,7 +27,7 @@ import static by.lms.libraryms.utils.Constants.*;
 @ToString(callSuper = true)
 @Data
 @Document(collection = "users")
-public class User extends AbstractDomainClass {
+public class User extends AbstractDomainClass implements UserDetails {
     @Pattern(regexp = USERNAME_REGEX, message = INVALID_USERNAME_MESSAGE)
     @Indexed(unique = true)
     private String username;
@@ -33,7 +39,7 @@ public class User extends AbstractDomainClass {
     private String firstName;
     @NotBlank(message = EMPTY_SURNAME_MESSAGE)
     private String lastName;
-    @ValidPhoneSet(message = INVALID_PHONE_NUMBER_SET)
+    @ValidPhoneSet(message = INVALID_PHONE_NUMBER_SET_MESSAGE)
     private Set<String> phone;
     @NotEmpty(message = EMPTY_ADDER_ID_SET_MESSAGE)
     private Set<ObjectId> addressIds;
@@ -43,4 +49,43 @@ public class User extends AbstractDomainClass {
     private String locale;
     @Indexed(unique = true)
     private long telegramChatId;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(r -> new SimpleGrantedAuthority(r.name()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public boolean hasRole(RoleEnum role) {
+        return roles.stream()
+                .anyMatch(r -> r == role);
+    }
+
 }

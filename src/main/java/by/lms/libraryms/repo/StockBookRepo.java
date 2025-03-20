@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
 
+@Repository
 public interface StockBookRepo extends MongoRepository<StockBook, String> {
     List<StockBook> findByBookId(@NotNull ObjectId bookId);
 

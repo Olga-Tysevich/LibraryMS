@@ -7,8 +7,8 @@ public interface Constants {
     String REFRESH_TOKEN_KEY = "refresh-token";
     String TOKEN_TYPE = "Bearer ";
     String TOKEN_HEADER = "Authorization";
-    String TOKEN_WAS_STOLEN_MESSAGE = "Token was stolen!";
     String FORBIDDEN_KEY = "Forbidden";
+    String[] IGNORE_URLS = {"/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**"};
 
     //Telegram
     String TELEGRAM_PATH_TEMPLATE = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s";
@@ -52,7 +52,10 @@ public interface Constants {
             Contain at least one special character (!@#$%^&*)
             Contain at least one lowercase letter (a-z)
             Contain at least one uppercase letter (A-Z)""";
-    String INVALID_PHONE_NUMBER_SET = "One or more phone numbers are invalid.";
+    String INVALID_PHONE_NUMBER_SET_MESSAGE = "One or more phone numbers are invalid.";
+    String USER_IS_NOT_AUTHORIZED_MESSAGE = "User is not authorized!";
+    String TOKEN_WAS_STOLEN_MESSAGE = "Token was stolen!";
+    String INVALID_REFRESH_TOKEN = "Invalid refresh token!";
 
     //Exceptions
     String OBJECTS_NOT_FOUND = "%s not found!Search params:%s";

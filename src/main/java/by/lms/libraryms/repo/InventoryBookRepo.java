@@ -4,10 +4,12 @@ import by.lms.libraryms.domain.InventoryBook;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface InventoryBookRepo extends MongoRepository<InventoryBook, String> {
     List<InventoryBook> findByBookId(@NotNull ObjectId bookId);
     Optional<InventoryBook> findInventoryBookByBookId(@NotNull ObjectId bookId);
