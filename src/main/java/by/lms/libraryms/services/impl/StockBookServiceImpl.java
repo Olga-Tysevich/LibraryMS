@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
                 .collect(Collectors.toList());
 
         if (!currentInventoryBookSet.getFirst().getBook().getId().equals(dto.getBookId())) {
-            inventoryBookService.delete(buildReq(dto.getInventoryBookIds()));
+            deleteInventoryBooks(currentInventoryBookIdsSet);
             Set<String> savedInventoryBookIds = addInventoryBooks(dto);
             dto.setInventoryBookIds(savedInventoryBookIds);
 
@@ -87,7 +88,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         } else if (currentInventoryBookSet.size() > dto.getQuantity()) {
             int position = currentInventoryBookSet.size() - 1 - dto.getQuantity();
             List<String> forDelete = currentInventoryBookIdsSet.subList(currentInventoryBookIdsSet.size() - 1, position);
-            inventoryBookService.delete(buildReq(new HashSet<>(forDelete)));
+            deleteInventoryBooks(forDelete);
             currentInventoryBookIdsSet.removeAll(forDelete);
             dto.setInventoryBookIds(new HashSet<>(currentInventoryBookIdsSet));
         }
@@ -157,6 +158,14 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         return StockBook.class;
     }
 
+    private void deleteInventoryBooks(List<String> currentInventoryBookIdsSet) {
+        ObjectListChangedDTO<InventoryBookDTO> unbindObjects = inventoryBookService.delete(buildReq(new HashSet<>(currentInventoryBookIdsSet)));
+        int unbindInventoryBooksQuantity = unbindObjects.getObjects().size();
+        if (unbindInventoryBooksQuantity < currentInventoryBookIdsSet.size())
+            throw new ChangingObjectException("Not all inventory books were deleted. The following inventory books were deleted:: "
+                    + unbindObjects.getObjects());
+    }
+
     private Set<String> addInventoryBooks(StockBookDTO dto) {
 
         checkIfChangeIsPossible(dto);
@@ -189,7 +198,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     private void checkIfChangeIsPossible(StockBookDTO dto) {
         if (Objects.nonNull(dto.getId())) {
             StockBook stockBook = getRepository().findById(dto.getId()).orElseThrow();
-            LocalDate updatedAt = LocalDate.from(stockBook.getUpdatedAt());
+            LocalDate updatedAt = LocalDate.ofInstant(stockBook.getUpdatedAt(), ZoneId.systemDefault());
             LocalDate today = LocalDate.now();
 
             if (updatedAt.isBefore(today.minusDays(permissibleError))) {

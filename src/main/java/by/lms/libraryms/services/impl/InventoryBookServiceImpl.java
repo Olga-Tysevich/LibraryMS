@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,11 +94,11 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     public ObjectChangedDTO<InventoryBookDTO> update(InventoryBookDTO dto) {
         InventoryBook result = getRepository().findById(dto.getId()).orElseThrow(ObjectDoesNotExistException::new);
 
-        if (!result.getBookOrderIds().isEmpty())
+        if (Objects.nonNull(result.getBookOrderIds()) && !result.getBookOrderIds().isEmpty())
             throw new ChangingObjectException("Unable to update previously checked out inventory book! " +
                     "Inventory book: " + result);
 
-        LocalDate updatedAt = LocalDate.from(result.getUpdatedAt());
+        LocalDate updatedAt = LocalDate.ofInstant(result.getUpdatedAt(), ZoneId.systemDefault());
         LocalDate today = LocalDate.now();
 
         if (updatedAt.isBefore(today.minusDays(permissibleError))) {
@@ -110,8 +111,10 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
             throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
         }
 
+        lock.lock();
         result.setBookId(new ObjectId(dto.getId()));
         getRepository().save(result);
+        lock.unlock();
         return getMapper().toObjectChangedDTO(result, null);
     }
 
@@ -156,13 +159,12 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
         List<ObjectChangedDTO<InventoryBookDTO>> unbindingSuccessful = new ArrayList<>();
         List<ObjectChangedDTO<InventoryBookDTO>> unbindingFailed = new ArrayList<>();
         for (InventoryBook book : result) {
-
             try {
-                if (!book.getBookOrderIds().isEmpty())
+                if (Objects.nonNull(book.getBookOrderIds()) && !book.getBookOrderIds().isEmpty())
                     throw new ChangingObjectException("Unable to delete previously checked out inventory book! " +
                             "Inventory book: " + book);
 
-                LocalDate updatedAt = LocalDate.from(book.getUpdatedAt());
+                LocalDate updatedAt = LocalDate.ofInstant(book.getUpdatedAt(), ZoneId.systemDefault());
                 LocalDate today = LocalDate.now();
                 if (updatedAt.isAfter(today)) {
                     throw new IllegalArgumentException(String.format(
@@ -178,13 +180,13 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
                 System.out.println(e.getMessage());
                 unbindingFailed.add(getMapper().toObjectChangedDTO(book, null));
             } finally {
-                lock.unlock();
+                if (lock.isLocked()) lock.unlock();
             }
         }
 
         if (!unbindingFailed.isEmpty()) {
             //TODO добавить лог
-            System.out.println("Failed to delete inventory numbers. You need to contact technical support! Inventory numbers: "
+            System.out.println("Failed to delete inventory numbers. Inventory numbers: "
                     + unbindingFailed);
         }
 
