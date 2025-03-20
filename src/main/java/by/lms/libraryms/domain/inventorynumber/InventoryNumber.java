@@ -54,6 +54,7 @@ public final class InventoryNumber extends AbstractDomainClass {
 
     public String number() {
         return prefix.name() + delimiter + numbers.stream()
+                .map(InventoryNumberElement::number)
                 .map(String::valueOf)
                 .collect(Collectors.joining(delimiter.toString()));
     }

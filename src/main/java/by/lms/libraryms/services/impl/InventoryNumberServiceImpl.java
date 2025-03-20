@@ -123,6 +123,12 @@ public class InventoryNumberServiceImpl implements InventoryNumberService {
     }
 
     @Override
+    public InventoryNumberDTO getById(@NonNull String id) {
+        InventoryNumber searchEl = inventoryNumberRepo.findById(new ObjectId(id)).orElseThrow();
+        return mapper.toDTO(searchEl);
+    }
+
+    @Override
     public ListForPageResp<InventoryNumberDTO> getAll(@NonNull InventoryNumberSearchReq searchReq) {
         ListForPageResp<InventoryNumber> numbersForPage = inventoryNumberRepo.findList(searchReq);
         return mapper.toListForPageResp(numbersForPage);

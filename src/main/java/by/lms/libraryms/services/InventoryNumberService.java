@@ -19,6 +19,7 @@ public interface InventoryNumberService {
     InventoryNumber dispose(@NonNull InventoryNumber number);
 
     InventoryNumberDTO get(@NonNull String id);
+    InventoryNumberDTO getById(@NonNull String id);
 
     ListForPageResp<InventoryNumberDTO> getAll(@NonNull InventoryNumberSearchReq searchReq);
 }

@@ -1,6 +1,5 @@
 package by.lms.libraryms.services.impl;
 
-import by.lms.libraryms.domain.InventoryBook;
 import by.lms.libraryms.domain.StockBook;
 import by.lms.libraryms.dto.req.*;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
@@ -17,10 +16,12 @@ import by.lms.libraryms.services.StockBookService;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import by.lms.libraryms.utils.Constants;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,8 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         StockBookMapper> implements StockBookService {
     private final InventoryBookService inventoryBookService;
     private final BookService bookService;
+    @Value("${inventory.number.permissibleError}")
+    private int permissibleError;
 
     public StockBookServiceImpl(StockBookRepo repository,
                                 StockBookSearch searchRepo,
@@ -50,41 +53,43 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         return super.add(dto);
     }
 
-    //TODO переделать когда будет добален приход книг
+    //TODO переделать когда будет добавлен приход книг
     @Override
     @Transactional
     public ObjectChangedDTO<StockBookDTO> update(StockBookDTO dto) {
         if (Objects.isNull(dto.getId())) throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
 
         StockBook currentStockBook = getRepository().findById(dto.getId()).orElseThrow();
-        Set<String> o = ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds());
-        List<InventoryBookDTO> t = inventoryBookService.findAllByIds(
-                ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds())
-        );
-        List<String> currentInventoryBookSet = inventoryBookService.findAllByIds(
+
+
+        List<InventoryBookDTO> currentInventoryBookSet = inventoryBookService.findAllByIds(
                         ObjectMapper.mapObjectIdSetToStringSet(currentStockBook.getInventoryBookIds())
-                ).stream()
+                );
+
+        List<String> currentInventoryBookIdsSet = currentInventoryBookSet.stream()
                 .map(InventoryBookDTO::getId)
                 .collect(Collectors.toList());
 
-        if (!currentInventoryBookSet.getFirst().equals(dto.getBookId())) {
+        if (!currentInventoryBookSet.getFirst().getBook().getId().equals(dto.getBookId())) {
             inventoryBookService.delete(buildReq(dto.getInventoryBookIds()));
             Set<String> savedInventoryBookIds = addInventoryBooks(dto);
             dto.setInventoryBookIds(savedInventoryBookIds);
 
         } else if (currentInventoryBookSet.size() < dto.getQuantity()) {
-            int quantity = dto.getQuantity() - currentInventoryBookSet.size();
-            dto.setQuantity(quantity);
+            int quantity = dto.getQuantity();
+            int quantityForCreate = dto.getQuantity() - currentInventoryBookSet.size();
+            dto.setQuantity(quantityForCreate + currentInventoryBookSet.size());
             Set<String> savedInventoryBookIds = addInventoryBooks(dto);
-            savedInventoryBookIds.addAll(currentInventoryBookSet);
+            savedInventoryBookIds.addAll(currentInventoryBookIdsSet);
+            dto.setQuantity(quantity);
             dto.setInventoryBookIds(savedInventoryBookIds);
 
         } else if (currentInventoryBookSet.size() > dto.getQuantity()) {
             int position = currentInventoryBookSet.size() - 1 - dto.getQuantity();
-            List<String> forDelete = currentInventoryBookSet.subList(currentInventoryBookSet.size() - 1, position);
+            List<String> forDelete = currentInventoryBookIdsSet.subList(currentInventoryBookIdsSet.size() - 1, position);
             inventoryBookService.delete(buildReq(new HashSet<>(forDelete)));
-            currentInventoryBookSet.removeAll(forDelete);
-            dto.setInventoryBookIds(new HashSet<>(currentInventoryBookSet));
+            currentInventoryBookIdsSet.removeAll(forDelete);
+            dto.setInventoryBookIds(new HashSet<>(currentInventoryBookIdsSet));
         }
         return super.update(dto);
     }
@@ -95,8 +100,8 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     public ObjectListChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {
         List<StockBook> stockBook = getSearchRepo().find(
                 StockBookSearchReq.builder()
-                .ids(ObjectMapper.mapStringSetToObjectIdSet(searchReqDTO.getIds()))
-                .build()
+                        .ids(ObjectMapper.mapStringSetToObjectIdSet(searchReqDTO.getIds()))
+                        .build()
         );
         if (stockBook.isEmpty()) throw new ObjectDoesNotExistException(StockBook.class.getSimpleName());
 
@@ -153,6 +158,9 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     }
 
     private Set<String> addInventoryBooks(StockBookDTO dto) {
+
+        checkIfChangeIsPossible(dto);
+
         if (Objects.isNull(dto.getBookId())) {
             throw new IllegalArgumentException(Constants.EMPTY_ID_MESSAGE);
         }
@@ -176,6 +184,20 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         return InventoryBookSearchReqDTO.builder()
                 .ids(inventoryBookIds)
                 .build();
+    }
+
+    private void checkIfChangeIsPossible(StockBookDTO dto) {
+        if (Objects.nonNull(dto.getId())) {
+            StockBook stockBook = getRepository().findById(dto.getId()).orElseThrow();
+            LocalDate updatedAt = LocalDate.from(stockBook.getUpdatedAt());
+            LocalDate today = LocalDate.now();
+
+            if (updatedAt.isBefore(today.minusDays(permissibleError))) {
+                throw new IllegalArgumentException(String.format(
+                        "Updating stock book : %s is not possible! The allowed date for making changes has expired %s!",
+                        stockBook, updatedAt.plusDays(permissibleError)));
+            }
+        }
     }
 
 }

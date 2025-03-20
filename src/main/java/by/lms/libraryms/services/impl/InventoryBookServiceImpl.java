@@ -210,7 +210,7 @@ public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook,
     private InventoryBookDTO addNestedObjects(InventoryBook result) {
         InventoryBookDTO dto = getMapper().toDTO(result);
         BookDTO bookDTO = bookService.findById(ObjectMapper.mapObjectIdToString(result.getBookId()));
-        InventoryNumberDTO inventoryNumber = inventoryNumberService.get(ObjectMapper.mapObjectIdToString(result.getInventoryNumberId()));
+        InventoryNumberDTO inventoryNumber = inventoryNumberService.getById(ObjectMapper.mapObjectIdToString(result.getInventoryNumberId()));
         dto.setInventoryNumber(inventoryNumber.getNumber());
         dto.setBook(bookDTO);
         return dto;
