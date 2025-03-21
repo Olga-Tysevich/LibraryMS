@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotEmpty;
 
 public interface UserService {
 
-    UserDTO findById(@NotEmpty String id);
-
-    UserDTO findByEmail(@NotEmpty String id);
+    UserDTO findByEmail(@NotEmpty String email);
 
 }

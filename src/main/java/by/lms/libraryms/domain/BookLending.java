@@ -17,7 +17,7 @@ public class BookLending extends AbstractDomainClass {
     @NotNull
     private ObjectId inventoryBookId;
     @NotNull
-    private ObjectId userId;
+    private ObjectId readerId;
     @NotNull
     private ObjectId librarianId;
     @NotNull

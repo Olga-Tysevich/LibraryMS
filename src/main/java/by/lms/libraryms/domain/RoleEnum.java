@@ -14,4 +14,8 @@ public enum RoleEnum {
     private final int id;
     private final String roleName;
 
+    public static RoleEnum fromId(int id) {
+        return RoleEnum.values()[id];
+    }
+
 }
