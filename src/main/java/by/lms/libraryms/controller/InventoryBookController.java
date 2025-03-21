@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class InventoryBookController {
     private final InventoryBookFacade inventoryBookFacade;
 
-    @PostMapping("/update")
+    @PostMapping("/update/librarian")
     public ResponseEntity<?> update(@RequestBody @Valid InventoryBookDTO book) {
         ObjectChangedDTO<InventoryBookDTO> result = inventoryBookFacade.update(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PostMapping("/get")
+    @PostMapping("/get/librarian")
     public ResponseEntity<?> get(@RequestBody @Valid InventoryBookSearchReqDTO book) {
         InventoryBookDTO result = inventoryBookFacade.get(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);

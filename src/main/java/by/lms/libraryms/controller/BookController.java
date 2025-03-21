@@ -21,19 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookController {
     private final BookFacade bookFacade;
 
-    @PostMapping("/add")
+    @PostMapping("/add/librarian")
     public ResponseEntity<?> add(@RequestBody @Valid BookDTO book) {
         ObjectChangedDTO<BookDTO> result = bookFacade.add(book);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/librarian")
     public ResponseEntity<?> update(@RequestBody @Valid BookDTO book) {
         ObjectChangedDTO<BookDTO> result = bookFacade.update(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/delete/librarian")
     public ResponseEntity<?> delete(@RequestBody @Valid BookSearchReqDTO book) {
         ObjectListChangedDTO<BookDTO> result = bookFacade.delete(book);
         return ResponseEntity.status(HttpStatus.OK).body(result);

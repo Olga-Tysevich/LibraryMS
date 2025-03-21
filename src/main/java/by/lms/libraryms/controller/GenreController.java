@@ -21,19 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class GenreController {
     private final GenreFacade genreFacade;
 
-    @PostMapping("/add")
+    @PostMapping("/add/librarian")
     public ResponseEntity<?> add(@RequestBody @Valid GenreDTO genre) {
         ObjectChangedDTO<GenreDTO> result = genreFacade.add(genre);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/librarian")
     public ResponseEntity<?> update(@RequestBody @Valid GenreDTO genre) {
         ObjectChangedDTO<GenreDTO> result = genreFacade.update(genre);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/delete/librarian")
     public ResponseEntity<?> delete(@RequestBody @Valid GenreSearchReqDTO genre) {
         ObjectListChangedDTO<GenreDTO> result = genreFacade.delete(genre);
         return ResponseEntity.status(HttpStatus.OK).body(result);

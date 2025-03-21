@@ -34,13 +34,27 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/librarymsdb
       auto-index-creation: true
-
+#Заменить когда добавятся библиотеки
 telegram:
   bots:
     libraryMsBot:
       token: 7922300546:AAEhE6e6YgYWmpUbGZPaHYJuEXTSbeSWnks
       name: LibrarymsBot
       commonChannelId: -1002261464282
+    libraryMsGroup:
+      groupId: -1002652367883
+      topics:
+        notifications_message_thread_id: 19
+        errors_message_thread_id: 17
+        book_leading_message_thread_id: 15
+        genres_message_thread_id: 13
+        authors_message_thread_id: 11
+        stock_books_message_thread_id: 2
+        readers_message_thread_id: 4
+        librarians_message_thread_id: 6
+        21s_message_thread_id: 21
+
+
 
 inventory:
   number:

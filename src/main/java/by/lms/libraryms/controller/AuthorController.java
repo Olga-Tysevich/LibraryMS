@@ -18,19 +18,19 @@ import org.springframework.web.bind.annotation.*;
 public class AuthorController {
     private final AuthorFacade authorFacade;
 
-    @PostMapping("/add")
+    @PostMapping("/add/librarian")
     public ResponseEntity<?> add(@RequestBody @Valid AuthorDTO author) {
         ObjectChangedDTO<AuthorDTO> result = authorFacade.add(author);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/librarian")
     public ResponseEntity<?> update(@RequestBody @Valid AuthorDTO author) {
         ObjectChangedDTO<AuthorDTO> result = authorFacade.update(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/librarian")
     public ResponseEntity<?> delete(@RequestBody @Valid AuthorSearchReqDTO author) {
         ObjectListChangedDTO<AuthorDTO> result = authorFacade.delete(author);
         return ResponseEntity.status(HttpStatus.OK).body(result);

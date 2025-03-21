@@ -12,19 +12,18 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
 //    private final UserFacade userFacade;
     private final LocaleResolver localeResolver;
 
     // Получение доступных локалей
-    @GetMapping("/locales")
+    @GetMapping("account/locales")
     public ResponseEntity<List<String>> getAvailableLocales() {
         List<String> availableLocales = Arrays.asList("en", "ru", "fr", "de", "es"); // Пример доступных локалей
         return ResponseEntity.ok(availableLocales);
     }
 
     // Метод для изменения локали
-    @PostMapping("/change-locale")
+    @PostMapping("account/change-locale")
     public ResponseEntity<String> changeLocale(@RequestParam String username, @RequestParam String locale) {
 //        User user = userFacade.changeUserLocale(username, locale); // Сохраняем выбранную локаль в БД
 //        return ResponseEntity.ok("Locale updated to: " + user.getLocale());

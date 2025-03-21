@@ -20,31 +20,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockBookController {
     private final StockBookFacade stockBookFacade;
 
-    @PostMapping("/add")
+    @PostMapping("/add/librarian")
     public ResponseEntity<?> add(@RequestBody @Valid StockBookDTO dto) {
         ObjectChangedDTO<StockBookDTO> result = stockBookFacade.add(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/librarian")
     public ResponseEntity<?> update(@RequestBody @Valid StockBookDTO dto) {
         ObjectChangedDTO<StockBookDTO> result = stockBookFacade.update(dto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/delete/librarian")
     public ResponseEntity<?> delete(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
         ObjectListChangedDTO<StockBookDTO> result = stockBookFacade.delete(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PostMapping("/get")
+    @PostMapping("/get/librarian")
     public ResponseEntity<?> get(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
         StockBookDTO result = stockBookFacade.get(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PostMapping("/get/list")
+    @PostMapping("/get/list/librarian")
     public ResponseEntity<?> getList(@RequestBody @Valid StockBookSearchReqDTO stockBook) {
         ListForPageDTO<StockBookDTO> result = stockBookFacade.getAll(stockBook);
         return ResponseEntity.status(HttpStatus.OK).body(result);

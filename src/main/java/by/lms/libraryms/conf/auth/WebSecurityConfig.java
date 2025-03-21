@@ -43,7 +43,7 @@ public class WebSecurityConfig {
     /**
      * User loader bean.
      *
-     * @see cUserDetailsServiceImpl
+     * @see by.lms.libraryms.services.impl.UserDetailsServiceImpl
      */
     private final UserDetailsService userDetailsService;
     @Value("spring.application.security.admin.urls")
