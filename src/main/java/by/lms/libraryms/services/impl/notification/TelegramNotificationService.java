@@ -1,15 +1,16 @@
-package by.lms.libraryms.services.impl;
+package by.lms.libraryms.services.impl.notification;
 
 import by.lms.libraryms.conf.bots.TelegramBotConf;
 import by.lms.libraryms.conf.bots.TelegramGroupMessageConfig;
 import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.ReportTypeEnum;
+import by.lms.libraryms.services.messages.Message;
 import by.lms.libraryms.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+@Service("telegramNotificationService")
 @RequiredArgsConstructor
 public class TelegramNotificationService<T> implements NotificationService<T> {
     private final TelegramBotConf config;
@@ -18,16 +19,16 @@ public class TelegramNotificationService<T> implements NotificationService<T> {
     private final Class<T> clazz;
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(Message message) {
 
         String url = String.format(Constants.TELEGRAM_PATH_TEMPLATE,
-                config.getBotToken(), config.getCommonChannelId(), message);
+                config.getBotToken(), config.getCommonChannelId(), message.getText());
 
         String messageThreadId = groupMessageConfig.getGroupIdForClass(clazz);
 
         if (!messageThreadId.isBlank()) {
             String urlForGroup = String.format(Constants.TELEGRAM_PATH_TEMPLATE,
-                    config.getBotToken(), groupMessageConfig.getGroupId(), message) + "&message_thread_id=" + messageThreadId;
+                    config.getBotToken(), groupMessageConfig.getGroupId(), message.getText()) + "&message_thread_id=" + messageThreadId;
 
             restTemplate.getForObject(urlForGroup, String.class);
         }

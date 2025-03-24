@@ -11,15 +11,16 @@ import by.lms.libraryms.facades.AbstractFacade;
 import by.lms.libraryms.mappers.ObjectMapper;
 import by.lms.libraryms.services.AbstractService;
 import by.lms.libraryms.services.NotificationService;
+import by.lms.libraryms.services.messages.Message;
 import by.lms.libraryms.services.messages.MessageService;
 import by.lms.libraryms.services.searchobjects.SearchReq;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Objects;
 
-@RequiredArgsConstructor
 public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
         Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>,
@@ -31,6 +32,14 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
     private final NotificationService<DTO> notificationService;
     @Getter
     private final MService messageService;
+
+    public AbstractFacadeImpl(Service service,
+                              @Qualifier("telegramNotificationService") NotificationService<DTO> notificationService,
+                              MService messageService) {
+        this.service = service;
+        this.notificationService = notificationService;
+        this.messageService = messageService;
+    }
 
 
     @Override
@@ -69,24 +78,26 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         return service.getAll(searchReqDTO);
     }
 
-    private String message(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
+    private Message message(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
         return getMessageService().createMessage(type, result);
     }
 
     private void sendMessage(MessageTypeEnum type, ObjectChangedDTO<DTO> result) {
         if (Objects.nonNull(result)) {
-            sendMessage(message(type, result));
+            Message message = message(type, result);
+            if (Objects.nonNull(message) && !message.getText().isEmpty()) sendMessage(message(type, result));
         }
     }
 
     private void sendMessage(MessageTypeEnum type, ObjectListChangedDTO<DTO> result) {
         if (Objects.nonNull(result)) {
-            messageService.createMessages(type, result)
+            messageService.createMessages(type, result).stream()
+                    .filter(Objects::nonNull)
                     .forEach(this::sendMessage);
         }
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(Message message) {
         notificationService.sendMessage(message);
     }
 }

@@ -1,5 +1,6 @@
 package by.lms.libraryms.conf.validation;
 
+import by.lms.libraryms.conf.validation.impl.PasswordMatchesValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -4,6 +4,7 @@ import by.lms.libraryms.conf.i18n.MessageConf;
 import by.lms.libraryms.conf.i18n.MessageTypeEnum;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
+import by.lms.libraryms.services.messages.Message;
 import by.lms.libraryms.services.messages.MessageService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -21,13 +22,15 @@ import java.util.stream.Collectors;
 public abstract class AbstractMessageServiceImpl<T > implements MessageService<T> {
     private final MessageConf messageConf;
 
-    public String createMessage(@NotNull String pattern, @NotNull LocalDateTime dateTime, @NotNull Object... args) {
-        return dateTime + " " + MessageFormat.format(pattern, args);
+    public Message createMessage(@NotNull String pattern, @NotNull LocalDateTime dateTime, @NotNull Object... args) {
+        return Message.builder()
+                .text(dateTime + " " + MessageFormat.format(pattern, args))
+                .build();
     }
 
 
     @Override
-    public List<String> createMessages(MessageTypeEnum typeEnum, ObjectListChangedDTO<T> objects) {
+    public List<Message> createMessages(MessageTypeEnum typeEnum, ObjectListChangedDTO<T> objects) {
               List<ObjectChangedDTO<T>> objectList = objects.getObjects();
         if (Objects.nonNull(objectList)) {
             return objectList.stream()
@@ -37,7 +40,7 @@ public abstract class AbstractMessageServiceImpl<T > implements MessageService<T
         return List.of();
     }
 
-    public String createMessage(@NotNull MessageTypeEnum typeEnum, @NotNull ObjectChangedDTO<T> dto) {
+    public Message createMessage(@NotNull MessageTypeEnum typeEnum, @NotNull ObjectChangedDTO<T> dto) {
         String pattern = getPattern(typeEnum);
         T object = dto.getObject();
         List<Object> args = new ArrayList<>();

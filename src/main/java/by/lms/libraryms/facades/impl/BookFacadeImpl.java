@@ -9,6 +9,7 @@ import by.lms.libraryms.services.BookService;
 import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.messages.BookMessageService;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 
@@ -19,7 +20,7 @@ public class BookFacadeImpl extends AbstractFacadeImpl<Book, BookDTO,
         BookMapper> implements BookFacade {
 
     public BookFacadeImpl(BookService service,
-                          NotificationService<BookDTO> notificationService,
+                          @Qualifier("telegramNotificationService") NotificationService<BookDTO> notificationService,
                           BookMessageService messageService) {
         super(service, notificationService, messageService);
     }

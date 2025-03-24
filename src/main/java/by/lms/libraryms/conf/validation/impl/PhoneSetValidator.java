@@ -1,5 +1,6 @@
-package by.lms.libraryms.conf.validation;
+package by.lms.libraryms.conf.validation.impl;
 
+import by.lms.libraryms.conf.validation.ValidPhoneSet;
 import by.lms.libraryms.utils.Constants;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

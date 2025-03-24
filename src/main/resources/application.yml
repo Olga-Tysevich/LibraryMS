@@ -25,6 +25,19 @@ spring:
       librarian:
         urls:
           ${LIBRARIAN_URLS}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${LIBRARY_MS_GMAIL_USERNAME}
+    password: ${LIBRARY_MS_GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    code:
+      length: 6
 
   messages:
     basename: by/lms/libraryms/i18n
@@ -53,8 +66,6 @@ telegram:
         readers_message_thread_id: 4
         librarians_message_thread_id: 6
         21s_message_thread_id: 21
-
-
 
 inventory:
   number:

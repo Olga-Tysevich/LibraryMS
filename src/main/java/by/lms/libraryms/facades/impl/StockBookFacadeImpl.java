@@ -9,6 +9,7 @@ import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.StockBookService;
 import by.lms.libraryms.services.messages.StockBookMessageService;
 import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +19,7 @@ public class StockBookFacadeImpl extends AbstractFacadeImpl<StockBook, StockBook
         StockBookMapper> implements StockBookFacade {
 
     public StockBookFacadeImpl(StockBookService service,
-                               NotificationService<StockBookDTO> notificationService,
+                               @Qualifier("telegramNotificationService") NotificationService<StockBookDTO> notificationService,
                                StockBookMessageService messageService) {
         super(service, notificationService, messageService);
     }

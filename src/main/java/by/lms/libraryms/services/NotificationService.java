@@ -1,7 +1,8 @@
 package by.lms.libraryms.services;
 
-public interface NotificationService<T> {
-    void sendMessage(String message);
-    void createReport(ReportTypeEnum type, T object);
+import by.lms.libraryms.services.messages.Message;
 
+public interface NotificationService<T> {
+    void sendMessage(Message message);
+    void createReport(ReportTypeEnum type, T object);
 }

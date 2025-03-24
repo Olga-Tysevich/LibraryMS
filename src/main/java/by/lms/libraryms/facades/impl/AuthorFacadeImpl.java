@@ -9,6 +9,7 @@ import by.lms.libraryms.services.AuthorService;
 import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.messages.AuthorMessageService;
 import by.lms.libraryms.services.searchobjects.AuthorSearchReq;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 
@@ -22,7 +23,7 @@ public class AuthorFacadeImpl extends AbstractFacadeImpl<
 
 
     public AuthorFacadeImpl(AuthorService service,
-                            NotificationService<AuthorDTO> notificationService,
+                            @Qualifier("telegramNotificationService") NotificationService<AuthorDTO> notificationService,
                             AuthorMessageService messageService) {
         super(service, notificationService, messageService);
     }

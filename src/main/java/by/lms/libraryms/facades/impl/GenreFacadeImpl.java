@@ -9,6 +9,7 @@ import by.lms.libraryms.services.GenreService;
 import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.messages.GenreMessageService;
 import by.lms.libraryms.services.searchobjects.GenreSearchReq;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +18,9 @@ public class GenreFacadeImpl extends AbstractFacadeImpl<Genre, GenreDTO,
         GenreService, GenreMessageService,
         GenreMapper> implements GenreFacade{
 
-    public GenreFacadeImpl(GenreService service, NotificationService<GenreDTO> notificationService, GenreMessageService messageService) {
+    public GenreFacadeImpl(GenreService service,
+                           @Qualifier("telegramNotificationService") NotificationService<GenreDTO> notificationService,
+                           GenreMessageService messageService) {
         super(service, notificationService, messageService);
     }
 

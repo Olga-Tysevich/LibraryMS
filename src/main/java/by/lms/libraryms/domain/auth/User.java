@@ -26,7 +26,7 @@ import static by.lms.libraryms.utils.Constants.*;
 @ToString(callSuper = true)
 @Data
 @Document(collection = "users")
-public class User extends AbstractDomainClass implements UserDetails {
+public class User extends AbstractDomainClass implements UserDetails{
     @Pattern(regexp = USERNAME_REGEX, message = INVALID_USERNAME_MESSAGE)
     @Indexed(unique = true)
     private String username;
@@ -48,12 +48,13 @@ public class User extends AbstractDomainClass implements UserDetails {
     private String locale;
     @Indexed(unique = true)
     private long telegramChatId;
+    private boolean isConfirmed;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(r -> new SimpleGrantedAuthority(r.name()))
+                .map(r -> new SimpleGrantedAuthority(r.getRoleName()))
                 .collect(Collectors.toSet());
     }
 

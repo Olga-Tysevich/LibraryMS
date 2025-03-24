@@ -3,14 +3,12 @@ package by.lms.libraryms.mappers;
 import by.lms.libraryms.domain.RoleEnum;
 import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.common.UserDTO;
+import by.lms.libraryms.dto.req.CreateUserDTO;
 import by.lms.libraryms.dto.req.UserSearchReqDTO;
 import by.lms.libraryms.services.searchobjects.UserSearchReq;
 import org.mapstruct.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mapper(
@@ -18,6 +16,33 @@ import java.util.stream.Collectors;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface UserMapper extends ObjectMapper<User, UserDTO, UserSearchReq, UserSearchReqDTO> {
+
+    @Override
+    @Mappings({
+            @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapSetIntegerToRolesSet"),
+            @Mapping(target = "telegramChatId", ignore = true),
+            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "authorities", ignore = true)
+    })
+    User toEntity(UserDTO dto);
+
+    @Mappings({
+            @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapLocalDateTimeToInstant"),
+            @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapSetIntegerToRolesSet"),
+            @Mapping(target = "telegramChatId", ignore = true),
+            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "authorities", ignore = true)
+    })
+    User toEntity(CreateUserDTO dto);
+
+    @Mappings({
+            @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime")
+    })
+    UserDTO toDTO(User entity);
 
     @Override
     @Mappings({
@@ -29,7 +54,7 @@ public interface UserMapper extends ObjectMapper<User, UserDTO, UserSearchReq, U
             @Mapping(target = "direction", source = "direction", qualifiedByName = "mapStringToDirection"),
             @Mapping(target = "orderBy", source = "orderBy", qualifiedByName = "mapStringToOrder"),
             @Mapping(target = "fullNames", source = "fullNames", qualifiedByName = "mapSetFullNamesToMapFullNames"),
-            @Mapping(target = "roles", source = "roles", qualifiedByName = "mapSetFullNamesToMapFullNames"),
+            @Mapping(target = "roles", source = "roles", qualifiedByName = "mapSetIntegerToRolesSet"),
             @Mapping(target = "addressIds", ignore = true)
     })
     UserSearchReq toSearchReq(UserSearchReqDTO searchReqDTO);
@@ -51,7 +76,8 @@ public interface UserMapper extends ObjectMapper<User, UserDTO, UserSearchReq, U
     }
 
     @Named("mapSetIntegerToRolesSet")
-    static Set<RoleEnum> mapSetIntegerToRolesSet(Set<Integer> roles) {
-        return roles.stream().map(RoleEnum::fromId).collect(Collectors.toSet());
+    static EnumSet<RoleEnum> mapSetIntegerToRolesSet(Set<Integer> roles) {
+        if (Objects.isNull(roles)) return null;
+        return roles.stream().map(RoleEnum::fromId).collect(Collectors.toCollection(() -> EnumSet.noneOf(RoleEnum.class)));
     }
 }

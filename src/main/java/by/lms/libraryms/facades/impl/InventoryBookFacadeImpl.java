@@ -12,6 +12,7 @@ import by.lms.libraryms.services.InventoryBookService;
 import by.lms.libraryms.services.NotificationService;
 import by.lms.libraryms.services.messages.InventoryBookMessageService;
 import by.lms.libraryms.services.searchobjects.InventoryBookSearchReq;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +22,7 @@ public class InventoryBookFacadeImpl extends AbstractFacadeImpl<InventoryBook, I
         InventoryBookMapper> implements InventoryBookFacade {
 
     public InventoryBookFacadeImpl(InventoryBookService service,
-                                   NotificationService<InventoryBookDTO> notificationService,
+                                   @Qualifier("telegramNotificationService") NotificationService<InventoryBookDTO> notificationService,
                                    InventoryBookMessageService messageService) {
         super(service, notificationService, messageService);
     }

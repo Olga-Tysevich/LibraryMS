@@ -1,10 +1,12 @@
-package by.lms.libraryms.conf.validation;
+package by.lms.libraryms.conf.validation.impl;
 
+import by.lms.libraryms.conf.validation.PasswordMatches;
 import by.lms.libraryms.dto.req.CreateUserDTO;
 import by.lms.libraryms.exceptions.UnsupportedDTOException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -33,7 +35,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
         if (obj instanceof CreateUserDTO userDTO) {
             if (Objects.nonNull(userDTO.getPassword())) {
-                return userDTO.getPassword().equals(userDTO.getPasswordConfirmation());
+                return Arrays.equals(userDTO.getPassword(), userDTO.getPasswordConfirmation());
             }
         }
         throw new UnsupportedDTOException();

@@ -37,18 +37,17 @@ public abstract class AbstractServiceImpl<
 
     @Getter(AccessLevel.PACKAGE)
     private final Repo repository;
+    @Getter(AccessLevel.PACKAGE)
+    private final SRepo searchRepo;
+    @Getter(AccessLevel.PACKAGE)
+    private final Mapper mapper;
+
 
     @Override
     public DTO findById(String id) {
         Entity entity = repository.findById(id).orElseThrow(ObjectDoesNotExistException::new);
         return mapper.toDTO(entity);
     }
-
-    @Getter(AccessLevel.PACKAGE)
-    private final SRepo searchRepo;
-    @Getter(AccessLevel.PACKAGE)
-    private final Mapper mapper;
-
 
     @Transactional
     @Override
