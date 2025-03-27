@@ -24,7 +24,8 @@ public interface UserMapper extends ObjectMapper<User, UserDTO, UserSearchReq, U
             @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapSetIntegerToRolesSet"),
             @Mapping(target = "telegramChatId", ignore = true),
             @Mapping(target = "password", ignore = true),
-            @Mapping(target = "authorities", ignore = true)
+            @Mapping(target = "authorities", ignore = true),
+            @Mapping(target = "confirmed", source = "confirmed")
     })
     User toEntity(UserDTO dto);
 
@@ -34,13 +35,16 @@ public interface UserMapper extends ObjectMapper<User, UserDTO, UserSearchReq, U
             @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapSetIntegerToRolesSet"),
             @Mapping(target = "telegramChatId", ignore = true),
             @Mapping(target = "password", ignore = true),
-            @Mapping(target = "authorities", ignore = true)
+            @Mapping(target = "authorities", ignore = true),
+            @Mapping(target = "confirmed", ignore = true)
     })
     User toEntity(CreateUserDTO dto);
 
     @Mappings({
             @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "mapInstantToLocalDateTime"),
-            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime")
+            @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapInstantToLocalDateTime"),
+            @Mapping(target = "roleIds", source = "roles", qualifiedByName = "mapRolesSetToIntegerSet"),
+            @Mapping(target = "isConfirmed", source = "confirmed")
     })
     UserDTO toDTO(User entity);
 
@@ -79,5 +83,11 @@ public interface UserMapper extends ObjectMapper<User, UserDTO, UserSearchReq, U
     static EnumSet<RoleEnum> mapSetIntegerToRolesSet(Set<Integer> roles) {
         if (Objects.isNull(roles)) return null;
         return roles.stream().map(RoleEnum::fromId).collect(Collectors.toCollection(() -> EnumSet.noneOf(RoleEnum.class)));
+    }
+
+    @Named("mapRolesSetToIntegerSet")
+    static Set<Integer> mapRolesSetToIntegerSet(EnumSet<RoleEnum> roles) {
+        if (Objects.isNull(roles)) return null;
+        return roles.stream().map(RoleEnum::getId).collect(Collectors.toSet());
     }
 }

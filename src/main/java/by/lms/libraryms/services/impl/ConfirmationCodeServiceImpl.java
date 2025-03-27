@@ -1,9 +1,11 @@
 package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.ConfirmationCode;
+import by.lms.libraryms.exceptions.ConfirmationCodeExpired;
 import by.lms.libraryms.repo.ConfirmationCodeRepo;
 import by.lms.libraryms.services.ConfirmationCodeService;
 import by.lms.libraryms.utils.ConfirmationCodeGenerator;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +25,7 @@ public class ConfirmationCodeServiceImpl implements ConfirmationCodeService {
 
     @Override
     @Transactional
-    public ConfirmationCode createConfirmationCode(String userId) {
+    public ConfirmationCode createConfirmationCode(@NotBlank String userId) {
         String code = ConfirmationCodeGenerator.generateCode(codeLength);
         ConfirmationCode result = ConfirmationCode.builder()
                 .code(code)
@@ -32,6 +34,16 @@ public class ConfirmationCodeServiceImpl implements ConfirmationCodeService {
                 .build();
         confirmationCodeRepo.deleteAllByExpiresAtLessThan(Instant.now());
         return confirmationCodeRepo.save(result);
+    }
+
+    @Override
+    public ConfirmationCode validateConfirmationCode(@NotBlank String confirmationCode) {
+        ConfirmationCode code = confirmationCodeRepo.findByCode(confirmationCode).orElseThrow();
+        if (code.getExpiresAt().isAfter(Instant.now()))
+            throw new ConfirmationCodeExpired(confirmationCode, code.getUserId().toString());
+        confirmationCodeRepo.deleteAllByExpiresAtLessThan(Instant.now());
+        confirmationCodeRepo.deleteById(code.getId());
+        return code;
     }
 
 

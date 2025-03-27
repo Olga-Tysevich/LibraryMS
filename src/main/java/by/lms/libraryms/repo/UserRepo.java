@@ -3,9 +3,12 @@ package by.lms.libraryms.repo;
 import by.lms.libraryms.domain.RoleEnum;
 import by.lms.libraryms.domain.auth.User;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,5 +28,7 @@ public interface UserRepo extends MongoRepository<User, String> {
     List<User> findByAddressIdsIn(Collection<Set<ObjectId>> addressIds);
 
     List<User> findByRolesIn(Collection<Set<RoleEnum>> roles);
+
+    Page<User> findByConfirmedFalseAndCreatedAtBefore(Instant expiredDate, Pageable pageable);
 
 }

@@ -25,6 +25,7 @@ spring:
       librarian:
         urls:
           ${LIBRARIAN_URLS}
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -46,10 +47,17 @@ spring:
     basename: by/lms/libraryms/i18n
     encoding: UTF-8
 
+  batch:
+    job:
+      enabled: true
+
   data:
     mongodb:
       uri: mongodb://localhost:27017/librarymsdb
       auto-index-creation: true
+      delete:
+        delay:
+          604800
 #Заменить когда добавятся библиотеки
 telegram:
   bots:

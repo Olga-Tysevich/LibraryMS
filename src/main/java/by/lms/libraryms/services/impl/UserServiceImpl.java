@@ -19,6 +19,7 @@ import by.lms.libraryms.services.searchobjects.UserSearchReq;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -52,6 +53,23 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
                 .findByEmail(email)
                 .map(getMapper()::toDTO)
                 .orElseThrow();
+    }
+
+    @Override
+    @Transactional
+    public ObjectChangedDTO<UserDTO> activateByCode(String confirmationCode) {
+        ConfirmationCode code = confirmationCodeService.validateConfirmationCode(confirmationCode);
+        User user = getRepository().findById(String.valueOf(code.getUserId())).orElseThrow();
+        if (!user.isConfirmed()) {
+            user.setConfirmed(true);
+            getRepository().save(user);
+        }
+        return getMapper().toObjectChangedDTO(user, null);
+    }
+
+    @Override
+    public ObjectChangedDTO<UserDTO> activate(String id) {
+        return null;
     }
 
     @Override

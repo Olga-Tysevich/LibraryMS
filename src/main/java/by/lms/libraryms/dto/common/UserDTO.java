@@ -36,4 +36,5 @@ public class UserDTO extends AbstractDTO {
     private Set<Integer> roleIds;
     @NotBlank(message = EMPTY_LOCALE_MESSAGE)
     private String locale;
+    private boolean isConfirmed;
 }

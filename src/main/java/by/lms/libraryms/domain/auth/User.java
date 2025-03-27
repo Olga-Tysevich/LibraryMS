@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,7 @@ public class User extends AbstractDomainClass implements UserDetails{
     @NotEmpty(message = EMPTY_ADDER_ID_SET_MESSAGE)
     private Set<ObjectId> addressIds;
     @NotEmpty(message = EMPTY_ROLE_SET_MESSAGE)
-    private Set<RoleEnum> roles;
+    private EnumSet<RoleEnum> roles;
     @NotBlank(message = EMPTY_LOCALE_MESSAGE)
     private String locale;
     @Indexed(unique = true)
