@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/account/email/confirm/{code}")
     public ResponseEntity<?> confirmEmail(@PathVariable("code") String code) {
         String userId = userFacade.confirmEmail(code);
-        return ResponseEntity.ok(isConfirmed);
+        return ResponseEntity.ok(userId);
     }
 
 

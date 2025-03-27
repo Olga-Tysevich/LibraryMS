@@ -47,7 +47,7 @@ public class User extends AbstractDomainClass implements UserDetails{
     @NotBlank(message = EMPTY_LOCALE_MESSAGE)
     private String locale;
     @Indexed(unique = true)
-    private long telegramChatId;
+    private Long telegramChatId;
     private boolean isConfirmed;
 
 

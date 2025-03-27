@@ -15,7 +15,6 @@ public class ConfirmationCodeGenerator {
         for (int i = 0; i < length; i++) {
             code.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
         }
-
         return code.toString();
     }
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
@@ -15,7 +16,8 @@ import java.util.Set;
 @Document(collection = "readers")
 public class Reader extends AbstractDomainClass {
     @NotNull
+    @Indexed(unique = true)
     private ObjectId userId;
-    private Set<String> inventoryBookIds;
+    private Set<String> inventoryBookLendingIds;
     private boolean hasDebt = false;
 }

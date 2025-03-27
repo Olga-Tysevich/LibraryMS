@@ -38,6 +38,9 @@ spring:
             enable: true
     code:
       length: 6
+      timeToLive: 300
+      confirmation:
+        url: ${EMAIL_CONFIRMATION_URL}
 
   messages:
     basename: by/lms/libraryms/i18n
