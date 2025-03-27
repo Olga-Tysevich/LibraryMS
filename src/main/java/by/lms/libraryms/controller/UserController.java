@@ -1,6 +1,7 @@
 package by.lms.libraryms.controller;
 
 import by.lms.libraryms.dto.common.UserDTO;
+import by.lms.libraryms.dto.req.ChangePasswordDTO;
 import by.lms.libraryms.dto.req.CreateUserDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.UserFacade;
@@ -28,10 +29,21 @@ public class UserController {
 
     @GetMapping("/account/email/confirm/{code}")
     public ResponseEntity<?> confirmEmail(@PathVariable("code") String code) {
-        String userId = userFacade.confirmEmail(code);
-        return ResponseEntity.ok(userId);
+        ObjectChangedDTO<UserDTO> user = userFacade.confirmEmail(code);
+        return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/account/email/confirm/send/{id}")
+    public ResponseEntity<?> sendEmailConfirmationCode(@PathVariable("id") String id) {
+        userFacade.sendEmailConfirmationCode(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/account/password/change")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        ObjectChangedDTO<UserDTO> user = userFacade.changePassword(changePasswordDTO);
+        return ResponseEntity.ok(user);
+    }
 
     // Получение доступных локалей
     @GetMapping("account/locales")

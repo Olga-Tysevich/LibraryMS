@@ -2,6 +2,7 @@ package by.lms.libraryms.facades.impl;
 
 import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.common.UserDTO;
+import by.lms.libraryms.dto.req.ChangePasswordDTO;
 import by.lms.libraryms.dto.req.UserSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.facades.UserFacade;
@@ -26,12 +27,27 @@ public class UserFacadeImpl extends AbstractFacadeImpl<User, UserDTO,
     }
 
     @Override
+    public ObjectChangedDTO<UserDTO> add(UserDTO dto) {
+        return super.add(dto);
+    }
+
+    @Override
     public ObjectChangedDTO<UserDTO> update(UserDTO dto) {
         throw new UnsupportedOperationException("User update is prohibited! User id: " + dto.getId());
     }
 
     @Override
-    public String confirmEmail(String code) {
-        return "";
+    public ObjectChangedDTO<UserDTO> confirmEmail(String code) {
+        return getService().activateByCode(code);
+    }
+
+    @Override
+    public void sendEmailConfirmationCode(String id) {
+        getService().sendActivationCode(id);
+    }
+
+    @Override
+    public ObjectChangedDTO<UserDTO> changePassword(ChangePasswordDTO changePasswordDTO) {
+        return null;
     }
 }

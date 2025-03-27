@@ -9,6 +9,7 @@ import by.lms.libraryms.repo.BookRepo;
 import by.lms.libraryms.repo.search.BookSearch;
 import by.lms.libraryms.services.BookService;
 import by.lms.libraryms.services.searchobjects.BookSearchReq;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,12 +25,14 @@ public class BookServiceImpl extends AbstractServiceImpl<Book, BookDTO,
         super(repository, searchRepo, mapper);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Override
     public ObjectChangedDTO<BookDTO> add(BookDTO dto) {
         dto.setUniqueKey();
         return super.add(dto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Override
     public ObjectChangedDTO<BookDTO> update(BookDTO dto) {
         dto.setUniqueKey();

@@ -3,10 +3,12 @@ package by.lms.libraryms.services.impl;
 import by.lms.libraryms.domain.ConfirmationCode;
 import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.common.UserDTO;
+import by.lms.libraryms.dto.req.ChangePasswordDTO;
 import by.lms.libraryms.dto.req.CreateUserDTO;
 import by.lms.libraryms.dto.req.UserSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.exceptions.ChangingObjectException;
+import by.lms.libraryms.exceptions.InvalidOldPasswordException;
 import by.lms.libraryms.mappers.UserMapper;
 import by.lms.libraryms.repo.UserRepo;
 import by.lms.libraryms.repo.search.UserSearch;
@@ -17,6 +19,7 @@ import by.lms.libraryms.services.messages.ConfirmationMessageService;
 import by.lms.libraryms.services.messages.Message;
 import by.lms.libraryms.services.searchobjects.UserSearchReq;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,11 +51,30 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public UserDTO findByEmail(String email) {
         return getRepository()
                 .findByEmail(email)
                 .map(getMapper()::toDTO)
                 .orElseThrow();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public ObjectChangedDTO<UserDTO> add(UserDTO dto) {
+        CreateUserDTO userDTO = (CreateUserDTO) dto;
+        char[] password = userDTO.getPassword();
+        User user = getMapper().toEntity(userDTO);
+        setEncodedPassword(password, user);
+
+        ObjectChangedDTO<UserDTO> result = Optional.of(user)
+                .map(getRepository()::save)
+                .map(entity -> getMapper().toObjectChangedDTO(entity, null))
+                .orElseThrow(ChangingObjectException::new);
+
+        UserDTO userResult = result.getObject();
+        sendEmailConfirmationMessage(userResult.getId(), userResult.getEmail());
+        return result;
     }
 
     @Override
@@ -68,24 +90,25 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
     }
 
     @Override
-    public ObjectChangedDTO<UserDTO> activate(String id) {
-        return null;
+    public void sendActivationCode(String id) {
+        User user = getRepository().findById(id).orElseThrow();
+        sendEmailConfirmationMessage(user.getId(), user.getEmail());
     }
 
     @Override
-    public ObjectChangedDTO<UserDTO> add(UserDTO dto) {
-        CreateUserDTO userDTO = (CreateUserDTO) dto;
-        char[] password = userDTO.getPassword();
-        User user = getMapper().toEntity(userDTO);
-        encodePassword(password, user);
+    public ObjectChangedDTO<UserDTO> changePassword(ChangePasswordDTO changePasswordDTO) {
+        User user = getRepository().findById(changePasswordDTO.getUserId()).orElseThrow();
 
-        ObjectChangedDTO<UserDTO> result = Optional.of(user)
-                .map(getRepository()::save)
-                .map(entity -> getMapper().toObjectChangedDTO(entity, null))
-                .orElseThrow(ChangingObjectException::new);
+        if (!user.isConfirmed()) throw new ChangingObjectException("User with id: " + user.getId() + " is not confirmed!");
 
-        sendEmailConfirmationMessage(result.getObject());
-        return result;
+        String oldEncodedPassword = encodePassword(changePasswordDTO.getOldPassword());
+
+        if (!passwordEncoder.matches(user.getPassword(), oldEncodedPassword))
+            throw new InvalidOldPasswordException(user.getEmail());
+
+        setEncodedPassword(changePasswordDTO.getPassword(), user);
+        getRepository().save(user);
+        return getMapper().toObjectChangedDTO(user, null);
     }
 
     @Override
@@ -99,15 +122,20 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
         return User.class;
     }
 
-    private void encodePassword(char[] password, User user) {
-        String encodedPassword = passwordEncoder.encode(new String(password));
+    private void setEncodedPassword(char[] password, User user) {
+        String encodedPassword = encodePassword(password);
         user.setPassword(encodedPassword);
-        Arrays.fill(password, '\0');
     }
 
-    private void sendEmailConfirmationMessage(UserDTO user) {
-        ConfirmationCode code = confirmationCodeService.createConfirmationCode(user.getId());
-        Message message = confirmationMessageService.createEmailConfirmationMessage(user.getEmail(), code);
+    private String encodePassword(char[] password) {
+        String encodedPassword = passwordEncoder.encode(new String(password));
+        Arrays.fill(password, '\0');
+        return encodedPassword;
+    }
+
+    private void sendEmailConfirmationMessage(String userId, String email) {
+        ConfirmationCode code = confirmationCodeService.createConfirmationCode(userId);
+        Message message = confirmationMessageService.createEmailConfirmationMessage(email, code);
         notificationService.sendMessage(message);
     }
 }

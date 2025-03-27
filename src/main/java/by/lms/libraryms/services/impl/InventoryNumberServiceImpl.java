@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
 @Service
 @RequiredArgsConstructor
 public class InventoryNumberServiceImpl implements InventoryNumberService {

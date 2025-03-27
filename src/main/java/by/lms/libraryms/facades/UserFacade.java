@@ -2,7 +2,9 @@ package by.lms.libraryms.facades;
 
 import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.common.UserDTO;
+import by.lms.libraryms.dto.req.ChangePasswordDTO;
 import by.lms.libraryms.dto.req.UserSearchReqDTO;
+import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.mappers.UserMapper;
 import by.lms.libraryms.services.UserService;
 import by.lms.libraryms.services.messages.UserMessageService;
@@ -14,8 +16,14 @@ public interface UserFacade extends AbstractFacade<User, UserDTO,
         UserMapper> {
     /**
      * User email verification method.
+     *
      * @param code Code sent to the user's email.
-     * @return User ID in case of successful confirmation.
+     * @return ObjectChangedDTO<UserDTO> in case of successful confirmation.
      */
-    String confirmEmail(String code);
+    ObjectChangedDTO<UserDTO> confirmEmail(String code);
+
+    void sendEmailConfirmationCode(String id);
+
+    ObjectChangedDTO<UserDTO> changePassword(ChangePasswordDTO changePasswordDTO);
+
 }

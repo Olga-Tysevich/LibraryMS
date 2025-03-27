@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -49,12 +50,14 @@ public abstract class AbstractServiceImpl<
         return mapper.toDTO(entity);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Transactional
     @Override
     public ObjectChangedDTO<DTO> add(@NotNull DTO dto) {
         return save(dto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Transactional
     @Override
     public ObjectListChangedDTO<DTO> delete(SRD searchReqDTO) {
@@ -77,6 +80,7 @@ public abstract class AbstractServiceImpl<
         return new ObjectListChangedDTO<>(list);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Transactional
     @Override
     public ObjectChangedDTO<DTO> update(DTO dto) {

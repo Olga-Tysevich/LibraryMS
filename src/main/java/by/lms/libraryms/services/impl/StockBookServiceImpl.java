@@ -17,6 +17,7 @@ import by.lms.libraryms.services.searchobjects.StockBookSearchReq;
 import by.lms.libraryms.utils.Constants;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
         this.bookService = bookService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Override
     @Transactional
     public ObjectChangedDTO<StockBookDTO> add(StockBookDTO dto) {
@@ -55,6 +57,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     }
 
     //TODO переделать когда будет добавлен приход книг
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Override
     @Transactional
     public ObjectChangedDTO<StockBookDTO> update(StockBookDTO dto) {
@@ -96,6 +99,7 @@ public class StockBookServiceImpl extends AbstractServiceImpl<StockBook, StockBo
     }
 
     //TODO переделать когда будет добален приход книг
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @Override
     @Transactional
     public ObjectListChangedDTO<StockBookDTO> delete(StockBookSearchReqDTO searchReqDTO) {

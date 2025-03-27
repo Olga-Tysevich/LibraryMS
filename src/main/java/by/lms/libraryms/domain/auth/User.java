@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,11 +18,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static by.lms.libraryms.utils.Constants.*;
 
+//TODO добавить количество возможных отправок кода
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
@@ -46,8 +47,7 @@ public class User extends AbstractDomainClass implements UserDetails{
     private Set<ObjectId> addressIds;
     @NotEmpty(message = EMPTY_ROLE_SET_MESSAGE)
     private EnumSet<RoleEnum> roles;
-    @NotBlank(message = EMPTY_LOCALE_MESSAGE)
-    private String locale;
+    private Locale locale = Locale.getDefault();
     @Indexed(unique = true)
     private Long telegramChatId;
     private boolean isConfirmed;

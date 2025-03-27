@@ -78,7 +78,7 @@ public class WebSecurityConfig {
                         .requestMatchers(adminUrls).hasRole(RoleEnum.ROLE_ADMIN.getRoleName())
                         .requestMatchers(userUrls).hasRole(RoleEnum.ROLE_USER.getRoleName())
                         .requestMatchers(readerUrls).hasRole(RoleEnum.ROLE_READER.getRoleName())
-                        .requestMatchers(readerUrls).hasRole(RoleEnum.ROLE_LIBRARIAN.getRoleName())
+                        .requestMatchers(librarianUrls).hasRole(RoleEnum.ROLE_LIBRARIAN.getRoleName())
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

@@ -25,6 +25,7 @@ import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import by.lms.libraryms.utils.Constants;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-
+@PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
 @Service
 public class InventoryBookServiceImpl extends AbstractServiceImpl<InventoryBook, InventoryBookDTO,
         InventoryBookSearchReq, InventoryBookSearchReqDTO,

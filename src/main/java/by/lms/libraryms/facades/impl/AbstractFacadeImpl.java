@@ -20,7 +20,7 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Objects;
-
+@Getter
 public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO extends AbstractDTO,
         SR extends SearchReq, SRD extends SearchReqDTO,
         Service extends AbstractService<Entity, DTO, SR, SRD, Mapper>,
@@ -28,9 +28,7 @@ public abstract class AbstractFacadeImpl<Entity extends AbstractDomainClass, DTO
         Mapper extends ObjectMapper<Entity, DTO, SR, SRD>>
         implements AbstractFacade<Entity, DTO, SR, SRD, Service, MService, Mapper> {
     private final Service service;
-    @Getter
     private final NotificationService<DTO> notificationService;
-    @Getter
     private final MService messageService;
 
     public AbstractFacadeImpl(Service service,

@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 
+import java.util.Locale;
 import java.util.Set;
 
 import static by.lms.libraryms.utils.Constants.*;
@@ -35,6 +36,6 @@ public class UserDTO extends AbstractDTO {
     @NotEmpty(message = EMPTY_ROLE_SET_MESSAGE)
     private Set<Integer> roleIds;
     @NotBlank(message = EMPTY_LOCALE_MESSAGE)
-    private String locale;
+    private Locale locale;
     private boolean isConfirmed;
 }

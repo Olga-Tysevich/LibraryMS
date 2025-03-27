@@ -8,10 +8,13 @@ import by.lms.libraryms.exceptions.UnbindInventoryNumberException;
 import by.lms.libraryms.services.searchobjects.InventoryNumberSearchReq;
 import by.lms.libraryms.services.searchobjects.ListForPageResp;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 
 public interface InventoryNumberService {
+
     InventoryNumber getLastNumber();
+
     Inventory bind(@NonNull Inventory inventory) throws BindingInventoryNumberException;
 
     void unbind(@NonNull Inventory relatedObject) throws UnbindInventoryNumberException;
@@ -19,6 +22,7 @@ public interface InventoryNumberService {
     InventoryNumber dispose(@NonNull InventoryNumber number);
 
     InventoryNumberDTO get(@NonNull String id);
+
     InventoryNumberDTO getById(@NonNull String id);
 
     ListForPageResp<InventoryNumberDTO> getAll(@NonNull InventoryNumberSearchReq searchReq);
