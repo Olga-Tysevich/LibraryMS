@@ -1,5 +1,6 @@
 package by.lms.libraryms.facades.impl;
 
+import by.lms.libraryms.conf.i18n.LocaleConfig;
 import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.common.UserDTO;
 import by.lms.libraryms.dto.req.ChangePasswordDTO;
@@ -13,6 +14,9 @@ import by.lms.libraryms.services.messages.UserMessageService;
 import by.lms.libraryms.services.searchobjects.UserSearchReq;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class UserFacadeImpl extends AbstractFacadeImpl<User, UserDTO,
@@ -48,6 +52,16 @@ public class UserFacadeImpl extends AbstractFacadeImpl<User, UserDTO,
 
     @Override
     public ObjectChangedDTO<UserDTO> changePassword(ChangePasswordDTO changePasswordDTO) {
-        return null;
+        return getService().changePassword(changePasswordDTO);
+    }
+
+    @Override
+    public ObjectChangedDTO<UserDTO> changeLocale(String language, String region) {
+        return getService().changeLocale(language, region);
+    }
+
+    @Override
+    public Set<String> getAvailableLocales() {
+        return new HashSet<>(LocaleConfig.LOCALES);
     }
 }

@@ -26,4 +26,11 @@ public class ChangePasswordDTO {
     private char[] passwordConfirmation;
     @ValidPassword
     private char[] oldPassword;
+
+    @Override
+    public String toString() {
+        return "ChangePasswordDTO{" +
+                "userId='" + userId + '\'' +
+                '}';
+    }
 }

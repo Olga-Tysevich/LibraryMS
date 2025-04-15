@@ -9,17 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.LocaleResolver;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserFacade userFacade;
-    private final LocaleResolver localeResolver;
 
     @PostMapping("/add/employee")
     public ResponseEntity<?> add(@RequestBody CreateUserDTO createUserDTO) {
@@ -45,18 +40,16 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // Получение доступных локалей
-    @GetMapping("account/locales")
-    public ResponseEntity<?> getAvailableLocales() {
-        List<String> availableLocales = Arrays.asList("en", "ru", "fr", "de", "es"); // Пример доступных локалей
-        return ResponseEntity.ok(availableLocales);
+    @GetMapping("/account/locale/change/{language_code}/{region_code}")
+    public ResponseEntity<?> changeLocale(@PathVariable("language_code") String language,
+                                            @PathVariable("region_code") String region) {
+        ObjectChangedDTO<UserDTO> user = userFacade.changeLocale(language, region);
+        return ResponseEntity.ok(user);
     }
 
-    // Метод для изменения локали
-    @PostMapping("account/change-locale")
-    public ResponseEntity<?> changeLocale(@RequestParam String id, @RequestParam String locale) {
-//        User user = userFacade.changeUserLocale(username, locale); // Сохраняем выбранную локаль в БД
-//        return ResponseEntity.ok("Locale updated to: " + user.getLocale());
-        return null;
+    @GetMapping("account/locales")
+    public ResponseEntity<?> getAvailableLocales() {
+        return ResponseEntity.ok(userFacade.getAvailableLocales());
     }
+
 }

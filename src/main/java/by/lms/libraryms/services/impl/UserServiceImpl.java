@@ -1,12 +1,14 @@
 package by.lms.libraryms.services.impl;
 
 import by.lms.libraryms.domain.ConfirmationCode;
+import by.lms.libraryms.domain.RoleEnum;
 import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.common.UserDTO;
 import by.lms.libraryms.dto.req.ChangePasswordDTO;
 import by.lms.libraryms.dto.req.CreateUserDTO;
 import by.lms.libraryms.dto.req.UserSearchReqDTO;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
+import by.lms.libraryms.exceptions.ActionProhibitedException;
 import by.lms.libraryms.exceptions.ChangingObjectException;
 import by.lms.libraryms.exceptions.InvalidOldPasswordException;
 import by.lms.libraryms.mappers.UserMapper;
@@ -20,11 +22,13 @@ import by.lms.libraryms.services.messages.Message;
 import by.lms.libraryms.services.searchobjects.UserSearchReq;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -63,9 +67,8 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ObjectChangedDTO<UserDTO> add(UserDTO dto) {
         CreateUserDTO userDTO = (CreateUserDTO) dto;
-        char[] password = userDTO.getPassword();
         User user = getMapper().toEntity(userDTO);
-        setEncodedPassword(password, user);
+        setPassword(userDTO, user);
 
         ObjectChangedDTO<UserDTO> result = Optional.of(user)
                 .map(getRepository()::save)
@@ -97,18 +100,48 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
 
     @Override
     public ObjectChangedDTO<UserDTO> changePassword(ChangePasswordDTO changePasswordDTO) {
-        User user = getRepository().findById(changePasswordDTO.getUserId()).orElseThrow();
+        User currentUser = getCurrentAuthenticatedUser();
 
-        if (!user.isConfirmed()) throw new ChangingObjectException("User with id: " + user.getId() + " is not confirmed!");
+        validatePermissionToChangeObject(currentUser, changePasswordDTO.getUserId());
 
-        String oldEncodedPassword = encodePassword(changePasswordDTO.getOldPassword());
+        User user = getUserById(changePasswordDTO.getUserId());
 
-        if (!passwordEncoder.matches(user.getPassword(), oldEncodedPassword))
-            throw new InvalidOldPasswordException(user.getEmail());
+        validateUserIsConfirmed(user);
 
-        setEncodedPassword(changePasswordDTO.getPassword(), user);
+        String oldPassword = new String(changePasswordDTO.getOldPassword());
+
+        validateOldPassword(user, oldPassword);
+        validateNewPasswordIsDifferent(user, oldPassword);
+
+        setPassword(changePasswordDTO, user);
         getRepository().save(user);
+
         return getMapper().toObjectChangedDTO(user, null);
+    }
+
+    @Override
+    public ObjectChangedDTO<UserDTO> changeLocale(String language, String region) {
+        User user = getCurrentAuthenticatedUser();
+
+        if (!user.isConfirmed())
+            throw new ChangingObjectException("User with id: " + user.getId() + " is not confirmed!");
+
+        Locale locale = new Locale.Builder()
+                .setLanguage(language)
+                .setRegion(region)
+                .build();
+
+        user.setLocale(locale);
+
+        return getMapper().toObjectChangedDTO(user, null);
+    }
+
+    @Override
+    public Locale getCurrentLocale(String email) {
+        return getRepository()
+                .findByEmail(email)
+                .orElseThrow()
+                .getLocale();
     }
 
     @Override
@@ -122,20 +155,63 @@ public class UserServiceImpl extends AbstractServiceImpl<User, UserDTO,
         return User.class;
     }
 
-    private void setEncodedPassword(char[] password, User user) {
-        String encodedPassword = encodePassword(password);
-        user.setPassword(encodedPassword);
+    private void setPassword(ChangePasswordDTO dto, User user) {
+        try {
+            setEncodePassword(dto.getPassword(), user);
+        } finally {
+            Arrays.fill(dto.getPassword(), '\0');
+            Arrays.fill(dto.getPasswordConfirmation(), '\0');
+            Arrays.fill(dto.getOldPassword(), '\0');
+        }
     }
 
-    private String encodePassword(char[] password) {
+    private void setPassword(CreateUserDTO dto, User user) {
+        try {
+            setEncodePassword(dto.getPassword(), user);
+        } finally {
+            Arrays.fill(dto.getPassword(), '\0');
+            Arrays.fill(dto.getPasswordConfirmation(), '\0');
+        }
+    }
+
+    private void setEncodePassword(char[] password, User user) {
         String encodedPassword = passwordEncoder.encode(new String(password));
-        Arrays.fill(password, '\0');
-        return encodedPassword;
+        user.setPassword(encodedPassword);
     }
 
     private void sendEmailConfirmationMessage(String userId, String email) {
         ConfirmationCode code = confirmationCodeService.createConfirmationCode(userId);
         Message message = confirmationMessageService.createEmailConfirmationMessage(email, code);
         notificationService.sendMessage(message);
+    }
+
+    private User getCurrentAuthenticatedUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return getRepository().findByEmail(username).orElseThrow();
+    }
+
+    private void validatePermissionToChangeObject(User currentUser, String targetUserId) {
+        if (!currentUser.getId().equals(targetUserId) && !currentUser.hasRole(RoleEnum.ROLE_ADMIN))
+            throw new ActionProhibitedException("Password change for user id: " + targetUserId
+                    + " is prohibited! Current user id: " + currentUser.getId());
+    }
+
+    private User getUserById(String userId) {
+        return getRepository().findById(userId).orElseThrow();
+    }
+
+    private void validateUserIsConfirmed(User user) {
+        if (!user.isConfirmed())
+            throw new ChangingObjectException("User with id: " + user.getId() + " is not confirmed!");
+    }
+
+    private void validateOldPassword(User user, String oldPassword) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword()))
+            throw new InvalidOldPasswordException(user.getEmail());
+    }
+
+    private void validateNewPasswordIsDifferent(User user, String newPassword) {
+        if (passwordEncoder.matches(newPassword, user.getPassword()))
+            throw new ChangingObjectException("New password must be different from the old one.");
     }
 }

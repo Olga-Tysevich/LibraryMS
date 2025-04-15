@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class AbstractMessageServiceImpl<T > implements MessageService<T> {
+public abstract class AbstractMessageServiceImpl<T> implements MessageService<T> {
     private final MessageConf messageConf;
 
     public Message createMessage(@NotNull String pattern, @NotNull LocalDateTime dateTime, @NotNull Object... args) {
@@ -31,7 +31,7 @@ public abstract class AbstractMessageServiceImpl<T > implements MessageService<T
 
     @Override
     public List<Message> createMessages(MessageTypeEnum typeEnum, ObjectListChangedDTO<T> objects) {
-              List<ObjectChangedDTO<T>> objectList = objects.getObjects();
+        List<ObjectChangedDTO<T>> objectList = objects.getObjects();
         if (Objects.nonNull(objectList)) {
             return objectList.stream()
                     .map(o -> createMessage(typeEnum, o))
