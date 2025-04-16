@@ -1,16 +1,17 @@
 package by.lms.libraryms;
 
 import by.lms.libraryms.utils.DotenvLoader;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableBatchProcessing
 public class LibraryMsApplication {
 
 	public static void main(String[] args) {

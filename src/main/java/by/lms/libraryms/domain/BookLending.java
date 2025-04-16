@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
@@ -21,7 +22,8 @@ public class BookLending extends AbstractDomainClass {
     @NotNull
     private ObjectId librarianId;
     @NotNull
-    private LocalDate returnDate;
-    private int periodOfDelay;
+    private LocalDate requiredReturnDate;
+    private LocalDate actualReturnDate;
+    private Instant periodOfDelay = Instant.EPOCH;
     private String comment;
 }
