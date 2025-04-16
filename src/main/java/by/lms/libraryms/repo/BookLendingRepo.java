@@ -8,8 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Repository
@@ -21,7 +21,7 @@ public interface BookLendingRepo extends MongoRepository<BookLending, String> {
     List<BookLending> findByLibrarianId(@NotNull ObjectId librarianId);
     List<BookLending> findByRequiredReturnDate(LocalDate requiredReturnDate);
     List<BookLending> findByActualReturnDate(LocalDate actualReturnDate);
-    List<BookLending> findByPeriodOfDelay(Instant periodOfDelay);
-    List<BookLending> findByPeriodOfDelayAndReaderId(Instant periodOfDelay, @NotNull ObjectId readerId);
+    List<BookLending> findByPeriodOfDelay(Period periodOfDelay);
+    List<BookLending> findByPeriodOfDelayAndReaderId(Period periodOfDelay, @NotNull ObjectId readerId);
     Page<BookLending> findByRequiredReturnDateIsNotNullAndActualReturnDateIsNull(Pageable pageable);
 }

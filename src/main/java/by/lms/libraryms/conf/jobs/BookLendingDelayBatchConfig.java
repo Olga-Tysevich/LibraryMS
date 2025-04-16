@@ -15,10 +15,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+
 @Configuration
 public class BookLendingDelayBatchConfig {
 
@@ -35,8 +36,8 @@ public class BookLendingDelayBatchConfig {
     @Bean
     public ItemProcessor<BookLending, BookLending> delayProcessor() {
         return bookLending -> {
-            long delayDays = ChronoUnit.DAYS.between(bookLending.getRequiredReturnDate(), LocalDate.now());
-            bookLending.setPeriodOfDelay(delayDays > 0 ? Instant.ofEpochSecond(delayDays * 86400) : Instant.EPOCH);
+            int delayDays = (int) ChronoUnit.DAYS.between(bookLending.getRequiredReturnDate(), LocalDate.now());
+            bookLending.setPeriodOfDelay(delayDays > 0 ? Period.ofDays(delayDays) : Period.ZERO);
             return bookLending;
         };
     }
