@@ -29,7 +29,7 @@ import static by.lms.libraryms.utils.Constants.*;
 @ToString(callSuper = true)
 @Data
 @Document(collection = "users")
-public class User extends AbstractDomainClass implements UserDetails{
+public class User extends AbstractDomainClass implements UserDetails {
     @Pattern(regexp = USERNAME_REGEX, message = INVALID_USERNAME_MESSAGE)
     @Indexed(unique = true)
     private String username;

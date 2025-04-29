@@ -2,6 +2,7 @@ package by.lms.libraryms.services.messages.impl;
 
 import by.lms.libraryms.conf.i18n.MessageConf;
 import by.lms.libraryms.conf.i18n.MessageTypeEnum;
+import by.lms.libraryms.domain.auth.User;
 import by.lms.libraryms.dto.resp.ObjectChangedDTO;
 import by.lms.libraryms.dto.resp.ObjectListChangedDTO;
 import by.lms.libraryms.services.messages.Message;
@@ -9,6 +10,7 @@ import by.lms.libraryms.services.messages.MessageService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -45,8 +47,12 @@ public abstract class AbstractMessageServiceImpl<T> implements MessageService<T>
         T object = dto.getObject();
         List<Object> args = new ArrayList<>();
         if (Objects.nonNull(object)) {
-            //TODO добавить библиотекаря
-            args.add("");
+            User currentUser = (User) SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            String userId = currentUser.getId();
+            args.add(userId);
             addSpecific(typeEnum, dto, args);
         }
         return createMessage(pattern, dto.getUpdatedAt(), args.toArray());
