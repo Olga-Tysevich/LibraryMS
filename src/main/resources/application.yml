@@ -85,6 +85,11 @@ inventory:
     permissibleError:
       7
 
+book:
+  lending:
+    allowedDelayForUpdate:
+      60
+
 aes:
   key:
     path: src/main/resources/aes/aes.key

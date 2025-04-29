@@ -107,7 +107,7 @@ public abstract class AbstractServiceImpl<
                 .orElseThrow(ChangingObjectException::new);
     }
 
-    private List<Entity> find(SR searchReq) {
+    protected List<Entity> find(SR searchReq) {
         List<Entity> result = searchRepo.find(searchReq);
 
         if (Objects.isNull(result)) {

@@ -23,7 +23,6 @@ import java.util.Objects;
 public abstract class AbstractSearchRepo<Entity extends AbstractDomainClass, SR extends SearchReq> implements SearchRepo<Entity, SR> {
     private final MongoTemplate mongoTemplate;
 
-
     //TODO доработать
     public long delete(@NotNull SR searchReq) {
 

@@ -3,14 +3,14 @@ package by.lms.libraryms.mappers;
 import by.lms.libraryms.domain.BookLending;
 import by.lms.libraryms.dto.req.BookLendingDTO;
 import by.lms.libraryms.dto.req.BookLendingSearchReqDTO;
-import by.lms.libraryms.services.searchobjects.BookSearchReq;
+import by.lms.libraryms.services.searchobjects.BookLendingSearchReq;
 import org.mapstruct.*;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface BookLendingMapper extends ObjectMapper<BookLending, BookLendingDTO, BookSearchReq, BookLendingSearchReqDTO> {
+public interface BookLendingMapper extends ObjectMapper<BookLending, BookLendingDTO, BookLendingSearchReq, BookLendingSearchReqDTO> {
 
     @Override
     @Mappings({
@@ -45,5 +45,5 @@ public interface BookLendingMapper extends ObjectMapper<BookLending, BookLending
             @Mapping(target = "readerIds", source = "readerIds", qualifiedByName = "mapStringSetToObjectIdSet"),
             @Mapping(target = "librarianIds", source = "librarianIds", qualifiedByName = "mapStringSetToObjectIdSet")
     })
-    BookSearchReq toSearchReq(BookLendingSearchReqDTO searchReqDTO);
+    BookLendingSearchReq toSearchReq(BookLendingSearchReqDTO searchReqDTO);
 }
