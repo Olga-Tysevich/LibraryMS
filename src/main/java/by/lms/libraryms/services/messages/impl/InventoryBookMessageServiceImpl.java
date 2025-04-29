@@ -26,7 +26,7 @@ public class InventoryBookMessageServiceImpl extends AbstractMessageServiceImpl<
     }
 
     @Override
-    protected void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<InventoryBookDTO> dto, List<Object> args) {
+    public void addSpecific(MessageTypeEnum typeEnum, ObjectChangedDTO<InventoryBookDTO> dto, List<Object> args) {
         ObjectChangedDTO<BookDTO> bookChangedDTO = inventoryBookMapper.toBookChangedDTO(dto);
         InventoryBookDTO inventoryBookDTO = dto.getObject();
         args.add(inventoryBookDTO.getInventoryNumber());

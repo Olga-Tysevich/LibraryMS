@@ -32,6 +32,9 @@ public class MessageConf {
     @Getter(AccessLevel.PACKAGE)
     @Setter(AccessLevel.PACKAGE)
     private Map<String, String> stockBook;
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
+    private Map<String, String> bookLending;
 
     @Getter
     private Map<MessageTypeEnum, String> authorMap;
@@ -43,6 +46,8 @@ public class MessageConf {
     private Map<MessageTypeEnum, String> inventoryBookMap;
     @Getter
     private Map<MessageTypeEnum, String> stockBookMap;
+    @Getter
+    private Map<MessageTypeEnum, String> bookLendingMap;
 
     @Getter
     @Value("emailConfirmation")
@@ -59,6 +64,7 @@ public class MessageConf {
         genreMap = convertToEnumMap(genre);
         inventoryBookMap = convertToEnumMap(inventoryBook);
         stockBookMap = convertToEnumMap(stockBook);
+        bookLendingMap = convertToEnumMap(bookLending);
     }
 
     private Map<MessageTypeEnum, String> convertToEnumMap(Map<String, String> source) {
